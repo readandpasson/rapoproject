@@ -1,0 +1,12 @@
+{% extends "myaccount.html" %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock %}
+
+{% block Centre %}
+<h2>Receive  a book {{ section.title }}</h2>
+    <form method='post' action='.'>
+		{{ form.as_p }}
+    </form>
+{% endblock %}

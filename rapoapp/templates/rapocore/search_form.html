@@ -1,0 +1,48 @@
+{% extends "myaccount.html" %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock %}
+
+{% block Centre %}
+<h2>Search by {{ field }}</h2>
+
+<form method="post" action="/searchresults/" enctype="multipart/form-data">
+<ul>
+        <li>
+            {{ form.stitle.label }}
+            {{ form.stitle }}
+            {{ form.stitle.errors }}
+        </li>
+        <li>
+            {{ form.sauthor.label }}
+            {{ form.sauthor }}
+            {{ form.sauthor.errors }}
+        </li>
+        <li>
+            {{ form.slanguage.label_tag }}
+            {{ form.slanguage }}
+            {{ form.slanguage.errors }}
+        </li>
+{% comment %}
+        <li>
+            {{ form.stag.label_tag }}
+            {{ form.stag }}
+            {{ form.stag.errors }}
+        </li>
+        <li>
+            {{ form.sstatus.label_tag }}
+            {{ form.sstatus }}
+            {{ form.sstatus.errors }}
+        </li>
+        <li>
+            {{ form.scity.label_tag }}
+            {{ form.scity }}
+            {{ form.scity.errors }}
+        </li>
+{% endcomment %}
+        <input type="submit" value="Submit" />
+        </li>
+</ul>
+</form>
+{% endblock %}

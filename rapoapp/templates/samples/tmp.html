@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en-us" >
+<head>
+<title>Add book | Django site admin</title>
+<link rel="stylesheet" type="text/css" href="/static/admin/css/base.css" />
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="/static/admin/css/ie.css" /><![endif]-->
+
+<script type="text/javascript">window.__admin_media_prefix__ = "/static/admin/";</script>
+
+<script type="text/javascript" src="/admin/jsi18n/"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+<script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="/static/admin/js/actions.js"></script>
+<script type="text/javascript" src="/static/admin/js/calendar.js"></script>
+<script type="text/javascript" src="/static/admin/js/admin/DateTimeShortcuts.js"></script>
+
+<meta name="robots" content="NONE,NOARCHIVE" />
+</head>
+
+
+<body class="rapocore-book change-form">
+
+<!-- Container -->
+<div id="container">
+
+    
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+        
+<h1 id="site-name">Django administration</h1>
+
+        </div>
+        
+        <div id="user-tools">
+            Welcome,
+            <strong>rapoadmin</strong>.
+            
+                
+                
+                
+                <a href="/admin/password_change/">Change password</a> /
+                
+                <a href="/admin/logout/">Log out</a>
+            
+        </div>
+        
+        
+    </div>
+    <!-- END Header -->
+    
+<div class="breadcrumbs">
+<a href="/admin/">Home</a>
+&rsaquo; <a href="/admin/rapocore/">Rapocore</a>
+&rsaquo; <a href="/admin/rapocore/book/">Books</a>
+&rsaquo; Add book
+</div>
+
+    
+
+    
+        
+    
+
+    <!-- Content -->
+    <div id="content" class="colM">
+        
+        <h1>Add book</h1>
+        <div id="content-main">
+
+
+
+<form enctype="multipart/form-data" action="" method="post" id="book_form"><input type='hidden' name='csrfmiddlewaretoken' value='JaEcdRlyLm1jjImYozi4al8YRwCZi8SR' />
+<div>
+
+
+
+
+
+
+  <fieldset class="module aligned ">
+    
+    
+    
+        <div class="form-row field-title">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_title" class="required">Title:</label>
+                        
+                            <input class="vTextField" id="id_title" maxlength="255" name="title" type="text" />
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-author">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_author" class="required">Author:</label>
+                        
+                            <select multiple="multiple" id="id_author" name="author">
+<option value="15"># Balasubramaniam</option>
+<option value="102"># PremChannd</option>
+<option value="118"># Saavi</option>
+<option value="44">#Henry Charriere</option>
+<option value="1">Aamer Hussein</option>
+<option value="2">Advaita Kala</option>
+<option value="3">Agatha Christie</option>
+<option value="4">Amish Tripathi</option>
+<option value="5">Amy Tan</option>
+<option value="6">Andre Agassi</option>
+<option value="7">Anita Amirrezvani</option>
+<option value="8">Anton Joe prakash</option>
+<option value="9">APJ Abdul Kalam</option>
+<option value="10">Arthur C Clarke</option>
+<option value="11">Arvind Adiga</option>
+<option value="12">Ashwini Sanghi</option>
+<option value="13">Ayn Rand</option>
+<option value="14">Bachi Karkaria</option>
+<option value="16">Bill Bryson</option>
+<option value="17">Bill Cosby</option>
+<option value="18">Bishwanath Ghosh</option>
+<option value="19">Chandru Bhojwani</option>
+<option value="20">Chetan Bhagat</option>
+<option value="21">Christine Bailey</option>
+<option value="23">Dale Carnegie</option>
+<option value="24">Dan Brown</option>
+<option value="25">Danielle Steel</option>
+<option value="26">Daphne Du Maurier</option>
+<option value="27">David Wise</option>
+<option value="28">Deborah R</option>
+<option value="29">Devadutt Pattanaik</option>
+<option value="30">Dr Spencer Johnson</option>
+<option value="35">E. R. Braithwhite</option>
+<option value="31">Earl Stanley Gardner</option>
+<option value="22">Edited Collection</option>
+<option value="32">Editors Prevention Magazine</option>
+<option value="33">Edward de Bono</option>
+<option value="34">Eliyahu M. Goldratt</option>
+<option value="36">Er.M.K. Gupta</option>
+<option value="38">F. Scott Fitzgerald</option>
+<option value="37">Frederick Forsyth</option>
+<option value="39">George Bernard Shaw</option>
+<option value="40">Gerald I. Nierenberg</option>
+<option value="41">Grace James</option>
+<option value="42">Harold Robbins</option>
+<option value="43">Helen Keller</option>
+<option value="45">Hugh Prather</option>
+<option value="46">Ian Rankin</option>
+<option value="54">J D Salinger</option>
+<option value="47">Jack Canfield</option>
+<option value="48">Jack Higgins</option>
+<option value="49">Jack Krakauer</option>
+<option value="50">James Patterson</option>
+<option value="51">Jane Austen</option>
+<option value="52">Jasper Bengtsson</option>
+<option value="53">Jayanand Ukey</option>
+<option value="55">Jeffrey Archer</option>
+<option value="56">Jesse Jones</option>
+<option value="57">Jhumpa Lahari</option>
+<option value="58">John Battelle</option>
+<option value="59">John Gray</option>
+<option value="60">John Grisham</option>
+<option value="62">John Woodrof</option>
+<option value="61">John Kennedy Toole</option>
+<option value="63">Julie Powell</option>
+<option value="64">Katherine Boo</option>
+<option value="65">Kavita Daswani</option>
+<option value="66">Ken Follett</option>
+<option value="67">Kenneth Blanchard</option>
+<option value="69">Khaled Hosseini</option>
+<option value="70">Khalil Gibran</option>
+<option value="71">Khushwant Singh</option>
+<option value="72">Kiran Bedi</option>
+<option value="73">Kiran Desai</option>
+<option value="74">Krishnamurthy Kalki R.</option>
+<option value="75">Lee child</option>
+<option value="87">M. Scott Peck</option>
+<option value="76">Madhumita Mukherjee</option>
+<option value="77">Mahasweta Devi</option>
+<option value="78">Malay Chaudhari</option>
+<option value="79">Malcolm Gladwell</option>
+<option value="80">Mani Bhaumick</option>
+<option value="81">Manoj BS</option>
+<option value="82">Manreet Sodhi Someshwar</option>
+<option value="83">Mario Puzo</option>
+<option value="84">Mark Twain</option>
+<option value="85">Meghna Pant</option>
+<option value="86">Michael Crichton</option>
+<option value="88">Munshi Premchand</option>
+<option value="90">Nadeem Aslam</option>
+<option value="91">Nandita Puri</option>
+<option value="92">Nathaniel Hawthorne</option>
+<option value="93">Nicholas Sparks</option>
+<option value="94">Norman VIncent Peale</option>
+<option value="95">Omkar Sane</option>
+<option value="96">Paramahansa Yogananda</option>
+<option value="89">Parthasarathy Naa</option>
+<option value="97">Patricia Cornwell</option>
+<option value="98">Paulo Coelho</option>
+<option value="99">Pearl S Buck</option>
+<option value="100">Pratima Mitchell</option>
+<option value="101">Preeti Shenoy</option>
+<option value="108">R. Guha</option>
+<option value="103">Radika Ramnath</option>
+<option value="104">Raghav Bahl</option>
+<option value="105">Rahul Sankrityayan</option>
+<option value="106">Rahul Sankrutya</option>
+<option value="107">Raj Bapna</option>
+<option value="109">Richard Bach</option>
+<option value="110">Richard Branson</option>
+<option value="111">Richard Dawkins</option>
+<option value="112">Robert Ludlum</option>
+<option value="113">Robert T. Kiyoski</option>
+<option value="114">Robin Cook</option>
+<option value="115">Robin Sharma</option>
+<option value="116">Rohini Singh</option>
+<option value="117">Rose Melikan</option>
+<option value="129">S.R. Luis</option>
+<option value="119">Sagarika Chakraborty</option>
+<option value="120">Salman Rushdie</option>
+<option value="121">Shashi Deshpande</option>
+<option value="122">Sheila Hailey</option>
+<option value="123">Siddhartha Mukherjee</option>
+<option value="124">Sidin Vadukut</option>
+<option value="125">Sidney Sheldon</option>
+<option value="126">Somerset Maugham</option>
+<option value="68">Spencer Johnson</option>
+<option value="127">Srini Chandra</option>
+<option value="128">Srividya Natarajan</option>
+<option value="130">Stephen Covey</option>
+<option value="131">Stephen King</option>
+<option value="132">Steve Martini</option>
+<option value="133">Stieg Larsson</option>
+<option value="134">Subrato Bagchi</option>
+<option value="135">Sudha Murty</option>
+<option value="136">Sue Grafton</option>
+<option value="137">Sumrit Shahi</option>
+<option value="138">Swami Niranjananda Saraswati</option>
+<option value="139">Tasleema Nasreen</option>
+<option value="140">Terry McMillan</option>
+<option value="141">Tina Konstant</option>
+<option value="142">Urmila Shastri</option>
+<option value="143">Varun Agarwal</option>
+<option value="144">Vishwanath Tiwari</option>
+<option value="145">Vladimir Nabokov</option>
+<option value="146">William Godman</option>
+</select><a href="/admin/rapocore/author/add/" class="add-another" id="add_id_author" onclick="return showAddAnotherPopup(this);"> <img src="/static/admin/img/icon_addlink.gif" width="10" height="10" alt="Add Another"/></a>
+                        
+                    
+                    
+                        <p class="help"> Hold down "Control", or "Command" on a Mac, to select more than one.</p>
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-tag">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_tag" class="required">Tag:</label>
+                        
+                            <select multiple="multiple" id="id_tag" name="tag">
+<option value="1">Action</option>
+<option value="2">Autobiography</option>
+<option value="3">Biography</option>
+<option value="4">Classic</option>
+<option value="5">Collection</option>
+<option value="6">Compilation</option>
+<option value="7">Cookery</option>
+<option value="8">Crime</option>
+<option value="9">Development</option>
+<option value="10">Dieting</option>
+<option value="11">Drama</option>
+<option value="12">Epics</option>
+<option value="13">Essay</option>
+<option value="14">Facts</option>
+<option value="15">Fiction</option>
+<option value="16">Fiction-Medical</option>
+<option value="17">Fiction-Motivational</option>
+<option value="18">Fiction-Mystery</option>
+<option value="19">Fiction-Thriller</option>
+<option value="20">Health</option>
+<option value="21">Historical</option>
+<option value="22">Historical-Thriller</option>
+<option value="23">Humour</option>
+<option value="24">Legal</option>
+<option value="25">Literary</option>
+<option value="26">Mafioso</option>
+<option value="27">Management</option>
+<option value="28">Medicine</option>
+<option value="29">Memoir</option>
+<option value="30">Motivational</option>
+<option value="31">Mystery</option>
+<option value="32">Mythology</option>
+<option value="33">Non-Fiction</option>
+<option value="34">Novel</option>
+<option value="35">Personal</option>
+<option value="36">Poetry</option>
+<option value="37">Popular</option>
+<option value="38">Psychology</option>
+<option value="39">Retelling</option>
+<option value="40">Romance</option>
+<option value="41">Science</option>
+<option value="42">Self-Help</option>
+<option value="43">Short story</option>
+<option value="44">Speeches</option>
+<option value="45">Spirituality</option>
+<option value="46">Study Material</option>
+<option value="47">Supernatural</option>
+<option value="48">Technology</option>
+<option value="49">Thriller</option>
+<option value="50">Travel</option>
+<option value="51">Travelogue</option>
+</select><a href="/admin/rapocore/tag/add/" class="add-another" id="add_id_tag" onclick="return showAddAnotherPopup(this);"> <img src="/static/admin/img/icon_addlink.gif" width="10" height="10" alt="Add Another"/></a>
+                        
+                    
+                    
+                        <p class="help"> Hold down "Control", or "Command" on a Mac, to select more than one.</p>
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-language">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_language" class="required">Language:</label>
+                        
+                            <select id="id_language" name="language">
+<option value="ENG" selected="selected">English</option>
+<option value="TAM">Tamil</option>
+<option value="TEL">Telugu</option>
+<option value="MAL">Malayalam</option>
+<option value="KAN">Kannada</option>
+<option value="HIN">Hindi</option>
+</select>
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-ownermember">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_ownermember" class="required">Ownermember:</label>
+                        
+                            <select id="id_ownermember" name="ownermember">
+<option value="" selected="selected">---------</option>
+<option value="4">Anita Nair</option>
+<option value="9">Chakravarthy Murugesan</option>
+<option value="10">Devi Sambamoorthy</option>
+<option value="7">Jayasree Sukavanam</option>
+<option value="6">Kavitha Venkatswamy</option>
+<option value="1">Menaka Sankaralingam</option>
+<option value="5">Nagavali Jatavallabhula</option>
+<option value="2">Pia Srinivasan</option>
+<option value="3">Sachin Pisharody</option>
+<option value="8">Sivaguru Pandian</option>
+</select><a href="/admin/rapocore/member/add/" class="add-another" id="add_id_ownermember" onclick="return showAddAnotherPopup(this);"> <img src="/static/admin/img/icon_addlink.gif" width="10" height="10" alt="Add Another"/></a>
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+        <div class="form-row field-datereleased">
+            
+            
+                <div>
+                    
+                    
+                        <label for="id_datereleased_0" class="required">Date of release:</label>
+                        
+                            <p class="datetime">Date: <input class="vDateField" id="id_datereleased_0" name="datereleased_0" size="10" type="text" /><br />Time: <input class="vTimeField" id="id_datereleased_1" name="datereleased_1" size="8" type="text" /></p>
+                        
+                    
+                    
+                </div>
+            
+        </div>
+    
+</fieldset>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="submit-row">
+<input type="submit" value="Save" class="default" name="_save" />
+
+
+<input type="submit" value="Save and add another" name="_addanother" />
+<input type="submit" value="Save and continue editing" name="_continue" />
+</div>
+
+
+
+   <script type="text/javascript">document.getElementById("id_title").focus();</script>
+
+
+
+
+<script type="text/javascript">
+(function($) {
+    var field;
+
+
+})(django.jQuery);
+</script>
+
+
+</div>
+</form></div>
+
+        
+        <br class="clear" />
+    </div>
+    <!-- END Content -->
+
+    <div id="footer"></div>
+</div>
+<!-- END Container -->
+
+</body>
+</html>
+
