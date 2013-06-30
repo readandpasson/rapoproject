@@ -8,6 +8,7 @@
 <h2>Search by {{ field }}</h2>
 
 <form method="post" action="/searchresults/" enctype="multipart/form-data">
+{% csrf_token %}
 <ul>
         <li>
             {{ form.stitle.label }}
@@ -24,11 +25,15 @@
             {{ form.slanguage }}
             {{ form.slanguage.errors }}
         </li>
-{% comment %}
         <li>
             {{ form.stag.label_tag }}
             {{ form.stag }}
             {{ form.stag.errors }}
+        </li>
+        <li>
+            {{ form.smember.label_tag }}
+            {{ form.smember }}
+            {{ form.smember.errors }}
         </li>
         <li>
             {{ form.sstatus.label_tag }}
@@ -40,7 +45,6 @@
             {{ form.scity }}
             {{ form.scity.errors }}
         </li>
-{% endcomment %}
         <input type="submit" value="Submit" />
         </li>
 </ul>

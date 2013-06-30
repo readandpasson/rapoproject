@@ -1,9 +1,10 @@
+import settings
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 import allauth
-import settings
+from allauth.account.views import logout
 from django.contrib import admin
 admin.autodiscover()
 
@@ -18,11 +19,17 @@ from rapocore.views import Search
 from rapocore.models import Book
 
 urlpatterns = patterns('',
+    url(r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'), 
+    url(r'^admin/', include(admin.site.urls)),#why not quotes ?SM
+
+
+
     url(r'^$', TemplateView.as_view(template_name="underconstruction.html"), name="index"),
 
 #    url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'STATIC_URL': settings.STATIC_URL}),
     url(r'^accounts/', include('allauth.urls')),
     #url(r'^login/', 'rapocore.views.Login',name='login'),
+    url(r'^logout/', 'allauth.account.views.logout',name='logout'),
     url(r'^accounts/profile/',  TemplateView.as_view(template_name="myaccount.html") ,name='myaccount'),
     #url(r'^signup/', 'rapocore.views.SignUp',name='signup'),
     url(r'^releasebook/', 'rapocore.views.ReleaseBook',name='release-book'),
@@ -40,7 +47,6 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    url(r'^admin/', include(admin.site.urls)),#why not quotes ?SM
 
 #    url(r'^facebook/', include('rapoapp.fb.urls')),
 # (r'^', include('rapoapp.web.urls')),

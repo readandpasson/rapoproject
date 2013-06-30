@@ -1,12 +1,29 @@
 {% extends "myaccount.html" %}
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script> 
+<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/RelatedObjectLookups.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/actions.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/calendar.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/DateTimeShortcuts.js" %}"></script>
+
+{{ form.media }}
+{% endblock headsection %}
 
 {% block topsection %}
 {{ block.super }} 
-{% endblock %}
+{% endblock topsection %}
 
 {% block Centre %}
 <h2>Send  a book {{ section.title }}</h2>
-    <form method='post' action='.'>
+    <form method='post' action='.'>{% csrf_token %}
 		{{ form.as_p }}
+		<input type="submit" value="Send" />
     </form>
 {% endblock %}

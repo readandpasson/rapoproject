@@ -23,9 +23,9 @@ class Tag(models.Model):
     comments = models.TextField(null=True,blank=True)
 
     def __unicode__(self):
-	return self.taglabel
+		return self.taglabel
     class Meta:
-	ordering = ["taglabel"]
+		ordering = ["taglabel"]
 
 
 class Member(models.Model):
@@ -52,7 +52,7 @@ class Member(models.Model):
     first_name = models.CharField(max_length=25)
     last_name = models.CharField(max_length=25)
     gender = models.CharField(max_length=1,choices=GENDER_CHOICES,default=MALE)
-    username = models.ForeignKey(User)
+    username = models.OneToOneField(User)
     facebook_id = models.IntegerField(blank=True, null=True)
     password = models.CharField(max_length=20)
     email = models.CharField(max_length=25)
@@ -92,7 +92,7 @@ class Book(models.Model):
     tag = models.ManyToManyField(Tag)
     language = models.CharField(max_length=3,choices=LANG_CHOICES,default=ENG)
     ownermember = models.ForeignKey(Member)
-    datereleased = models.DateTimeField('date of release')
+    datereleased = models.DateTimeField( 'date of release',auto_now_add=True)
     def __unicode__(self):
 	return self.title
     class Meta:
@@ -121,8 +121,8 @@ class Transaction(models.Model):
 	(NA,'Not Applicable'),
     )
     book = models.ForeignKey(Book)
-    from_member = models.ForeignKey(Member,related_name='from')
-    to_member = models.ForeignKey(Member,related_name='to')
+    from_member = models.OneToOneField(Member,related_name='from')
+    to_member = models.OneToOneField(Member,related_name='to')
     date_sent = models.DateTimeField()
     date_received = models.DateTimeField(null=True,blank=True)
     via = models.CharField(max_length=100,null=True,blank=True)
@@ -131,6 +131,11 @@ class Transaction(models.Model):
     charges = models.CharField(max_length=20,null=True,blank=True)
     charges_on = models.CharField(max_length=1,choices=CHARGE_CHOICES,default=NA)
     comments = models.TextField(null=True,blank=True)
+
+    def __unicode__(self):
+		return self.book.title
+    class Meta:
+	    ordering = ["date_sent"]
 
 class History(models.Model):
     book = models.ForeignKey(Book)
