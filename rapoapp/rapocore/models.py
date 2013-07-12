@@ -3,6 +3,7 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.forms import ModelForm
+from allauth.socialaccount.models import SocialAccount
 
 
 class Author(models.Model):
@@ -12,156 +13,103 @@ class Author(models.Model):
     comments = models.TextField(null=True,blank=True)
 
     class Admin:
-	pass
+        pass
     def __unicode__(self):
-	return self.first_name+" "+self.last_name
+        return self.first_name+" "+self.last_name
+    def _get_full_name(self):
+        return '%s %s' % (self.first_name,self.last_name)
+    full_name= property(_get_full_name)
     class Meta:
-	ordering = ["first_name"]
+        ordering = ["first_name"]
+        unique_together =(("first_name","last_name"),)
+
+
+class Language(models.Model):
+    languagename = models.CharField(unique=True,max_length=25)
+
+    def __unicode__(self):
+                return self.languagename
+    class Meta:
+                ordering = ["languagename"]
 
 class Tag(models.Model):
     taglabel = models.CharField(unique=True,max_length=25)
     comments = models.TextField(null=True,blank=True)
 
     def __unicode__(self):
-		return self.taglabel
+                return self.taglabel
     class Meta:
-		ordering = ["taglabel"]
-
-
-class Member(models.Model):
-    MALE = 'M'
-    FEMALE = 'F'
-    GENDER_CHOICES = (
-	(MALE,'Male'),
-	(FEMALE,'Female'),
-    )
-    ADMIN = 'A'
-    BASIC = 'B'
-    GUEST = 'G'
-    REGISTERED = 'R'
-    EXPIRED = 'E'
-    LOYAL = 'L'
-    TYPE_CHOICES = (
- 	(ADMIN,'Admin'),
-	(BASIC,'Basic Member'),
-	(GUEST,'Guest'),
-	(REGISTERED,'Registered'),
-	(EXPIRED,'Membership expired'),
-	(LOYAL,'Loyal Member'),
-    )
-    first_name = models.CharField(max_length=25)
-    last_name = models.CharField(max_length=25)
-    gender = models.CharField(max_length=1,choices=GENDER_CHOICES,default=MALE)
-    username = models.OneToOneField(User)
-    facebook_id = models.IntegerField(blank=True, null=True)
-    password = models.CharField(max_length=20)
-    email = models.CharField(max_length=25)
-    address = models.CharField(max_length=150,null=True,blank=True)
-    city = models.CharField(max_length=20)
-    phone = models.CharField(max_length=20,null=True,blank=True)
-    mobile = models.CharField(max_length=20,null=True,blank=True)
-    datesince = models.DateTimeField(null=True,blank=True)
-    membertype = models.CharField(max_length=1,choices=TYPE_CHOICES,default=GUEST)
-    #pic = models.ImageField()
-    comments = models.TextField(null=True,blank=True)
-
-    def __unicode__(self):
-	return self.first_name+" "+self.last_name
-    class Meta:
-	ordering = ["first_name"]
+                ordering = ["taglabel"]
 
 
 class Book(models.Model):
-    ENG='ENG'
-    TAM='TAM'
-    TEL='TEL'
-    MAL='MAL'
-    KAN='KAN'
-    HIN='HIN'
-    LANG_CHOICES = (
-	(ENG,'English'),
-	(TAM,'Tamil'),
-	(TEL,'Telugu'),
-	(MAL,'Malayalam'),
-	(KAN,'Kannada'),
-	(HIN,'Hindi'),
-    )
-    title = models.CharField(max_length=255)
+    title = models.CharField(verbose_name="Title of the book",max_length=255)
     author = models.ManyToManyField(Author)
     #publisher = models.ForeignKey(PU)
     tag = models.ManyToManyField(Tag)
-    language = models.CharField(max_length=3,choices=LANG_CHOICES,default=ENG)
-    ownermember = models.ForeignKey(Member)
-    datereleased = models.DateTimeField( 'date of release',auto_now_add=True)
+    language = models.ForeignKey(Language,default='English')
+    ownermember = models.ForeignKey(SocialAccount,related_name='OriginalOwner',verbose_name="Original Owner")
+    withmember = models.ForeignKey(SocialAccount,related_name='CurrentlyWith',verbose_name="Currently with")
+    datereleased = models.DateTimeField( verbose_name='Date of release',auto_now_add=True)
     def __unicode__(self):
-	return self.title
+        return self.title
     class Meta:
-	ordering = ["title"]
+        ordering = ["title"]
 
 
 class Transaction(models.Model):
-    AVAIL='A'
+    AVAILABLE='A'
     READ='R'
-    TRANS='I'
+    TRANSIT='T'
     BOOKED='B'
     STATUS_CHOICES = (
- 	(AVAIL,'Available'),
-	(READ,'Reading'),
-	(TRANS,'In Transit'),
-	(BOOKED,'Reserved'),
+        (AVAILABLE,'Available'),
+        (READ,'Reading'),
+        (TRANSIT,'In Transit'),
+        (BOOKED,'Reserved'),
     )
     REC='R'
     SEN='S'
     SHARED = 'D'
     NA = 'N'
     CHARGE_CHOICES = (
-	(REC,'Receiver'),
-	(SEN,'Sender'),
-	(SHARED,'Shared'),
-	(NA,'Not Applicable'),
+        (REC,'Receiver'),
+        (SEN,'Sender'),
+        (SHARED,'Shared'),
+        (NA,'Not Applicable'),
     )
     book = models.ForeignKey(Book)
-    from_member = models.OneToOneField(Member,related_name='from')
-    to_member = models.OneToOneField(Member,related_name='to')
+    from_member = models.OneToOneField(SocialAccount,related_name='from')
+    to_member = models.OneToOneField(SocialAccount,related_name='to')
     date_sent = models.DateTimeField()
     date_received = models.DateTimeField(null=True,blank=True)
     via = models.CharField(max_length=100,null=True,blank=True)
     tracking = models.CharField(max_length=30,null=True,blank=True)
-    status = models.CharField(max_length=1,choices=STATUS_CHOICES,default=AVAIL)
+    status = models.CharField(max_length=1,choices=STATUS_CHOICES,default=AVAILABLE)
     charges = models.CharField(max_length=20,null=True,blank=True)
     charges_on = models.CharField(max_length=1,choices=CHARGE_CHOICES,default=NA)
     comments = models.TextField(null=True,blank=True)
 
-    def __unicode__(self):
-		return self.book.title
     class Meta:
-	    ordering = ["date_sent"]
+            ordering = ["date_sent"]
 
 class History(models.Model):
     book = models.ForeignKey(Book)
-    member = models.ForeignKey(Member)
+    member = models.ForeignKey(SocialAccount)
     rating = models.DecimalField(max_digits=2,decimal_places=1)
     review = models.TextField()
     comments = models.TextField(null=True,blank=True)
 
 class Privilege(models.Model):
-    privilege = models.ManyToManyField(Member)
+    privilege = models.ManyToManyField(SocialAccount)
 
 class Queue(models.Model):
     book = models.ForeignKey(Book)
-    member = models.ForeignKey(Member)
+    member = models.ForeignKey(SocialAccount)
     position = models.IntegerField()
 
 class Buylink(models.Model):
     book = models.ForeignKey(Book)
     link = models.URLField()
 
-
-class BookReleaseForm(ModelForm):
-    class Meta:
-	model = Book
-
-class BookSendForm(ModelForm):
-    class Meta:
-	model = Transaction
 

@@ -414,7 +414,7 @@ def password_reset_from_key(request, uidb36, key, **kwargs):
 
 class LogoutView(TemplateResponseMixin, View):
     
-    template_name = "account/logout.html"
+    template_name = "logout.html"
     redirect_field_name = "next"
     
     def get(self, *args, **kwargs):

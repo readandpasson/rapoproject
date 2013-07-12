@@ -1,4 +1,4 @@
-{% extends "myaccount.html" %}
+{% extends "rapocore/myaccount.html" %}
 {% load i18n admin_static admin_list %} 
 {% load admin_urls %} 
 
@@ -21,7 +21,7 @@
 {% endblock topsection %}
 
 {% block Centre %}
-<h2>Receive  a book {{ section.title }}</h2>
+<h2>Receive a book {{ section.title }}</h2>
     <form method='post' action='.'>{% csrf_token %}
 		{{ form.as_p }}
 		<input type="submit" value="Receive" />

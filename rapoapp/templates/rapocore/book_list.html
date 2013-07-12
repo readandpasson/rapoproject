@@ -1,10 +1,31 @@
-{% extends "base.html" %}
+{% extends "rapocore/myaccount.html" %}
 
-{% block content %}
-    <h2>Authors</h2>
-    <ul>
-        {% for author in object_list %}
-            <li>{{ author.first_name }}&nbsp;{{ author.last_name }}</li>
-        {% endfor %}
-    </ul>
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load render_table from django_tables2 %}
+
+{% block headsection %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script> 
+
+<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/RelatedObjectLookups.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/actions.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/calendar.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/DateTimeShortcuts.js" %}"></script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+    <h2>Books</h2>
+    {% render_table table %}
 {% endblock %}
+

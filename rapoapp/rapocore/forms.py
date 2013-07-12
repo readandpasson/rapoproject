@@ -1,13 +1,21 @@
 from django import forms
 from django.forms import ModelForm
 from django.contrib.admin import widgets
-from django.db.models import Q
-from rapoapp.rapocore.models import Author
-from rapoapp.rapocore.models import Book
-from rapoapp.rapocore.models import Member
-from rapoapp.rapocore.models import Tag
-from rapoapp.rapocore.models import Transaction
+from rapoapp.rapocore.widgets import MultipleSelectWithPopUp, SelectWithPopUp
+#from django.db.models import Q
+from rapoapp.rapocore.models import Author,Language, Tag
+from rapoapp.rapocore.models import Transaction, Book
+from allauth.socialaccount.models import SocialAccount
 
+class LanguageForm(ModelForm):
+    class Meta:
+        model = Language
+        fields = [  'languagename' ]
+
+class TagForm(ModelForm):
+    class Meta:
+        model = Tag
+        fields = [  'taglabel' ]
 
 class AuthorForm(ModelForm):
     class Meta:
@@ -17,14 +25,19 @@ class AuthorForm(ModelForm):
 class SearchForm(forms.Form):
     stitle = forms.CharField(label= 'Title contains')
     sauthor = forms.CharField(label='Author contains')
-    slanguage = forms.ChoiceField(choices=Book.LANG_CHOICES,label='Language')
-    stag = forms.ChoiceField(choices=[ (o.id, str(o)) for o in Tag.objects.all()],label ='Tag')
-    smember = forms.ChoiceField(choices=[ (o.id, str(o)) for o in Member.objects.all()],label ='Member')
-    sstatus = forms.ChoiceField(choices=Transaction.STATUS_CHOICES,label='Status')
-    smember = forms.ChoiceField(choices=[ (o.id, str(o)) for o in Member.objects.all()],label ='Member')
-    scity = forms.ChoiceField(choices=[ (o.id, str(o.city)) for o in Member.objects.all()],label ='City')
+    #slanguage = forms.ModelMultipleChoiceField(Language.objects,label='Language')
+    slanguage = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Language.objects.all()],label ='Language')
+    stag = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Tag.objects.all()],label ='Tag')
+    sownermember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in SocialAccount.objects.all()],label ='Original Owner')
+    swithmember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in SocialAccount.objects.all()],label ='Book currently with')
+    sstatus = forms.ChoiceField(choices=tuple([(u'', u'-----')] + list(Transaction.STATUS_CHOICES)),label='Status')
+    #scity = forms.ChoiceField(choices=[ (o.id, str(o.city)) for o in SocialAccount.objects.all()],label ='City')
+
 
 class ReleaseBookForm(ModelForm):
+    author = forms.ModelMultipleChoiceField(Author.objects, widget= MultipleSelectWithPopUp)
+    tag = forms.ModelMultipleChoiceField(Tag.objects, widget= MultipleSelectWithPopUp)
+    language = forms.ModelChoiceField(Language.objects, widget= SelectWithPopUp) 
     class Meta:
         model = Book
         fields = [ 'title', 'author', 'tag', 'language']
@@ -32,17 +45,19 @@ class ReleaseBookForm(ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(ReleaseBookForm, self).__init__(*args, **kwargs)
         self.ownermember = user
+        self.withmember = user
+
 
 class SendBookForm(ModelForm):
     class Meta:
         model = Transaction
-        fields = [ 'book', 'to_member', 'date_sent', 'via', 'tracking', 'status', 'charges', 'charges_on' ]
+        fields = [ 'book', 'to_member', 'date_sent', 'via', 'tracking', 'charges', 'charges_on' ]
 
     def __init__(self, user, *args, **kwargs):
         super(SendBookForm, self).__init__(*args, **kwargs)
         self.from_member = user
-        self.fields["book"].queryset = Book.objects.filter(ownermember= Member.objects.get(username= user))
-        self.fields["to_member"].queryset = Member.objects.all().exclude(username=user)
+        self.fields["book"].queryset = Book.objects.filter(withmember= SocialAccount.objects.get(user= user))
+        self.fields["to_member"].queryset = SocialAccount.objects.all().exclude(user=user)
         self.fields["date_sent"].widget =  widgets.AdminSplitDateTime()
 
 
@@ -54,5 +69,15 @@ class ReceiveBookForm(ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(ReceiveBookForm, self).__init__(*args, **kwargs)
         self.to_member = user
-        self.fields["book"].queryset = Transaction.objects.filter(to_member= Member.objects.get(username= user))
+        self.fields["book"].queryset = Book.objects.filter(transaction__to_member=SocialAccount.objects.get(user=user),transaction__status=Transaction.TRANSIT)
         self.fields["date_received"].widget =  widgets.AdminSplitDateTime()
+
+class PassonForm(ModelForm):
+    class Meta:
+        model = Transaction
+        fields = [ 'book' ]
+
+    def __init__(self, user, *args, **kwargs):
+        super(PassonForm, self).__init__(*args, **kwargs)
+        self.to_member = user
+        self.fields["book"].queryset = Book.objects.filter(transaction__to_member=SocialAccount.objects.get(user=user),transaction__status=Transaction.READ)

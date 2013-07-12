@@ -1,10 +1,11 @@
 from django.contrib import admin
-from rapocore.models import Book,Author,Member,Tag,Transaction,Queue,Privilege,Buylink,History
+from rapocore.models import Book,Author,Tag,Transaction,Queue,Privilege,Buylink,History,Language
+from allauth.socialaccount.models import SocialAccount
 
 admin.site.register(Book)
 admin.site.register(Author)
-admin.site.register(Member)
 admin.site.register(Tag)
+admin.site.register(Language)
 admin.site.register(Transaction)
 admin.site.register(Queue)
 admin.site.register(Privilege)
