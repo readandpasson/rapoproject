@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>RAPO&trade;</title>
+
+
+<style type="text/css">
+
+
+body{
+margin:0;
+padding:0;
+line-height: 1.5em;
+}
+
+b{font-size: 110%;}
+em{color: red;}
+
+
+#topsection{
+/*background: #EAEAEA;*/
+background: #E5F9E5;
+height: 90px; /*Height of top section*/
+}
+
+#topsection h1{
+margin: 0;
+padding-top: 15px;
+}
+
+#contentwrapper{
+float: left;
+width: 100%;
+}
+
+#contentcolumn{
+margin: 0 0 0 20%; /*Margins for content column. Should be "0 RightColumnWidth 0 LeftColumnWidth*/
+}
+
+#leftcolumn{
+float: left;
+width: 20%; /*Width of left column in percentage*/
+margin-left: -100%;
+background: #BBEEBB;
+/*background: #C8FC98;*/
+}
+
+#footer{
+clear: left;
+width: 100%;
+background: black;
+color: #FFF;
+text-align: center;
+padding: 4px 0;
+}
+
+#footer a{
+color: #FFFF80;
+}
+
+.innertube{
+margin: 10px; /*Margins for inner DIV inside each column (to provide padding)*/
+margin-top: 0;
+}
+
+tbody tr.even td {background-color: #bbeebb;}
+tbody tr.odd td {background-color: #e5f9e5;}
+
+.center {text-align:center;} 
+.blank_row {
+  height: 10px !important;
+  background-color: #FFFFFF;
+}
+th {
+	border-bottom: navy solid thin;
+	border-top: navy solid thin;
+	border-left: none;
+	border-right: none;
+    text-align:center;
+	font-size: smaller;
+    background-color: #bbeebb;
+}
+</style>
+
+{% block headsection %} {% endblock headsection %}
+</head>
+
+<body>
+<div id="maincontainer">
+
+<div id="topsection"><div class="innertube">{% block topsection %} <h1>RAPO&trade;</h1> <p>Hello {{ user.first_name }}! &nbsp; &nbsp; You're logged in with {{ user.socialaccount_set.all.0.provider }} as {{ user }}.{% endblock %}</p></div></div>
+
+<div id="contentwrapper">
+<div id="contentcolumn">
+<div class="innertube">{% block Centre %} {% endblock %}</div>
+</div>
+</div>
+
+<div id="leftcolumn">
+<div class="innertube">{% block Left %} {% endblock %}</div>
+
+</div>
+
+
+<div id="footer">Copyright &copy; RAPO&trade; 2013</div>
+
+</div>
+</body>
+</html>
+
+<!--End of CSS Template page source! -->
+
+
+
+

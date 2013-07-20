@@ -1,0 +1,60 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script> 
+
+<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/admin/RelatedObjectLookups.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/actions.js" %}"></script>
+<script type="text/javascript" src="{% static "static/admin/js/calendar.js" %}"></script>
+<script type="text/javascript" src="{% static "admin/js/admin/DateTimeShortcuts.js" %}"></script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+	<h2>Books</h2>
+	<table>
+	<tbody>
+	    <tr class="even">
+			<th class="center"> Id </th>
+			<th class="center"> Title of the book </th>
+			<th class="center"> Author </th>
+			<th class="center"> Language </th>
+			<th class="center"> Original Owner </th>
+			<th class="center"> Currently With </th>
+			<th class="center"> Status </th>
+	    </tr>
+	{% for book in data %}
+	    <tr class="{% cycle 'odd' 'even' %}">
+	      <td> {{ book.id }}</td>
+	      <td> {{ book.title }}</td>
+	      <td> {{ book.author__first_name }} {{ book.author__last_name }}</td>
+	      <td> {{ book.language__languagename }}</td>
+	      <td> {{ book.ownermember__user__first_name }}  {{book.ownermember__user__last_name }}</td>
+	      <td> {{ book.withmember__user__first_name }}  {{book.withmember__user__last_name }}</td>
+	      <td> {{ book.status }}</td>
+	    </tr>
+	{% endfor %}
+	<table>
+	<tbody>
+	    <tr class="odd">
+			<td> &nbsp; </td>
+	    </tr>
+	    <tr class="even">
+			<th> Status:  A - Available, R - Reading, T - In Transit, B - Booked </th>
+	    </tr>
+	</tbody>
+	</table>
+{% endblock %}
+

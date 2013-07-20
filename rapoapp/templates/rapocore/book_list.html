@@ -2,20 +2,19 @@
 
 {% load i18n admin_static admin_list %} 
 {% load admin_urls %} 
-{% load render_table from django_tables2 %}
 
 {% block headsection %}
 {{ block.super }}
-<link rel="stylesheet" href="{{ STATIC_URL }}django_tables2/themes/paleblue/css/screen.css" />
-<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script> 
+<script language="javascript" type="text/javascript">
+<!--
+function popitup(url) {
+    newwindow=window.open(url,'{{title}}','height=200,width=1000');
+    if (window.focus) {newwindow.focus()}
+    return false;
+}
 
-<script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
-<script type="text/javascript" src="{% static "admin/js/RelatedObjectLookups.js" %}"></script>
-<script type="text/javascript" src="{% static "admin/js/jquery.js" %}"></script>
-<script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
-<script type="text/javascript" src="{% static "admin/js/actions.js" %}"></script>
-<script type="text/javascript" src="{% static "admin/js/calendar.js" %}"></script>
-<script type="text/javascript" src="{% static "admin/js/DateTimeShortcuts.js" %}"></script>
+// -->
+</script>
 
 {{ form.media }}
 {% endblock headsection %}
@@ -23,9 +22,49 @@
 {% block topsection %}
 {{ block.super }} 
 {% endblock topsection %}
-
+	
 {% block Centre %}
-    <h2>Books</h2>
-    {% render_table table %}
+	<h2 style="text-align:center">Books</h2>
+<ul>
+   <table>
+   <tbody>
+   <th colspan="8" style="text-align:right;"> Status: A - Available; R - Reading; B - Booked; T - In Transit </th>
+   <tr class="blank_row"> &nbsp; </tr>
+   <tr class="even">
+        <th> Id </th>
+    	<th> Title of the book </th>
+		<th> Author </th>
+		<th> Language </th>
+		<th> Original Owner </th>
+		<th> Currently With </th>
+		<th> Status </th>
+		<th> You can .. </th>
+    </tr>
+{% for book in data %}
+   <tr class="{% cycle 'odd' 'even' %}">
+        <td> {{ book.id}}</td>
+    	<td> {{ book.title }} </td>
+		<td> {{ book.author__first_name }} {{ book.author__last_name }} </td>
+		<td> {{ book.language__languagename }} </td>
+		<td> {{ book.ownermember__user__first_name }} {{ book.ownermember__user__last_name }} </td>
+		<td> {{ book.withmember__user__first_name }} {{ book.withmember__user__last_name }} </td>
+		<td> {{ book.status }} </td>
+		<td> {% ifnotequal user.username book.withmember__user__username %} 
+				<a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" onclick="return popitup(this);">Request/Reserve</a> 
+             {% else %}
+             	{% ifequal book.status 'A' %}
+						<a href="/sendbook" >Send Book</a>
+             	{% else %}
+						<a href="/passon{{ book.id }}" id="passon" class="passon" onclick="return popitup(this);">Pass On</a> 
+             	{% endifequal %}
+             {% endifnotequal %}
+		</td>
+    </tr>
+{% empty %}
+    <tr class="odd" colspan="8"> No books found.</tr>
+{% endfor %}
+   <tr class="blank_row"> &nbsp; </tr>
+   <th colspan="8" style="text-align:right"> Status: A - Available; R - Reading; B - Booked; T - In Transit </th>
+   </tbody>
+   </table>
 {% endblock %}
-

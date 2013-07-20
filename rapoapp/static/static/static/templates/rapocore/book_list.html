@@ -1,0 +1,54 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+
+{% block headsection %}
+{{ block.super }}
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+	<h2>Books</h2>
+	<table>
+	<tbody>
+	    <tr class="even">
+			<th class="center"> Id </th>
+			<th class="center"> Title of the book </th>
+			<th class="center"> Author </th>
+			<th class="center"> Language </th>
+			<th class="center"> Original Owner </th>
+			<th class="center"> Currently With </th>
+			<th class="center"> Status </th>
+			<th class="center"> Reservation Queue </th>
+			<th class="center"> Request/ Reserve it </th>
+	    </tr>
+	{% for book in data %}
+	    <tr class="{% cycle 'odd' 'even' %}">
+	      <td> {{ book.id }}</td>
+	      <td> {{ book.title }}</td>
+	      <td> {{ book.author__first_name }} {{ book.author__last_name }}</td>
+	      <td> {{ book.language__languagename }}</td>
+	      <td> {{ book.ownermember__user__first_name }}  {{book.ownermember__user__last_name }}</td>
+	      <td> {{ book.withmember__user__first_name }}  {{book.withmember__user__last_name }}</td>
+	      <td> {{ book.status }}</td>
+	      <td> {% for member in book.rqueue %} {{ member__first_name }} {{ member__last_name}} <br>{% endfor %} </td>
+    	  <td> <a href="/add2queue" class="add-another" id="add_id_{{ model }}" onclick="return showAdd2QueuePopup(this);"> Request/ Reserve it </a></td>
+	    </tr>
+	{% endfor %}
+	<table>
+	<tbody>
+	    <tr class="odd">
+			<td> &nbsp; </td>
+	    </tr>
+	    <tr class="even">
+			<th> Status:  A - Available, R - Reading, T - In Transit, B - Reserved </th>
+	    </tr>
+	</tbody>
+	</table>
+{% endblock %}
+

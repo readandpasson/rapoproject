@@ -1,0 +1,11 @@
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %}
+    <a
+        href="/add{{ model }}"
+        class="add-another"
+        id="add_id_{{ model }}"
+        onclick="return showAddAnotherPopup(this);">
+            Add Another {{ model }}
+    </a>
+

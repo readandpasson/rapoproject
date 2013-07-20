@@ -1,0 +1,24 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+
+{% block headsection %}
+{{ block.super }}
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+	<h2>Defects</h2>
+<ul>
+{% for defect in object_list %}
+    <li>{{ user}} {{ defect.logdate }}:{{ defect.category_value }} - {{ defect.description }} </li>
+{% empty %}
+    <li>No defects yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}
