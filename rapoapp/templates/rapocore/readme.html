@@ -1,0 +1,91 @@
+{% extends 'rapocore/myaccount.html' %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block headsection %}
+{{ block.super }}
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+<table id='help'>
+   <caption>How it works..</caption>
+   <tr>
+        <th id ='sit'> Situation </th>
+    	<th id='fb'> In facebook RAPO&trade; group </th>
+	 	<th id='rapo'> In rapo.in </th>
+    </tr>
+   <tr>
+        <td><em>Book Sender:</em> You have a book and want to release it to RAPO&trade;</td>
+    	<td>You start a new thread, mention the book name, author, a two line review, and indicate if postal expenses is on you/receiver</td>
+    	<td><pre>
+Click 'Release a book' 
+	- Enter Title 
+	- Select author 
+		- if Author is not listed, - 'Add Another Author',
+			(the author you added will be selected and last in the list), 
+			(for multiple authors, hold on ctrl key and choose),
+	- Select tags 
+		- if tag is not listed - 'Add Another Tag' 
+	- Select Language, 
+		- if Language not listed - 'Add Another Language' 
+	- Clicke 'Release' </pre></td>
+   </tr>
+   <tr>
+        <td><em>Book Receiver:</em> You want to request for the released book</td>
+    	<td>You reply to the thread, and request for the book, when you reply you come to know the order, if you are the first to ask or if you are in queue</td>
+    	<td><pre>
+Click 'Search' 
+   (or)
+Click 'Browse' 
+	- Find the book you want. 
+	- Click on 'Request/Reserve it'
+</pre></td>
+   </tr>
+   <tr>
+        <td><em>Book Sender:</em> You want to indicate to the requestor that you have sent the book</td>
+    	<td>You reply to the thread, indicating that you have sent the book </td>
+    	<td><pre>
+Click 'Send a book'
+ 	- Choose the book
+	- Choose the member from the list of members who are in queue for the book
+	- Enter date and time,
+	- Enter other details like Via, Tracking No. and Charges,
+	- Click 'Send'
+</pre>
+   </tr>
+   <tr>
+        <td><em>Book Receiver:</em> You want to acknowledge receipt of the book </td>
+    	<td>You reply to the thread, and acknowledge in that</td>
+    	<td><pre>
+Click 'Receive a book'
+	- Select the book you have received (the list contains only the books sent to you)
+</pre></td>
+   </tr>
+   <tr>
+        <td><em>Pass On:</em> You finished reading a book and want to pass it on</td>
+    	<td>You reply to the thread, indicating that you would send the book to the next in the Queue or post that it is available</td>
+    	<td><pre>
+Click 'Pass a book on'
+	- Choose the book.
+	- Click 'Pass On'.
+	- The status of the book changes from 'Reading' to 'Available'
+</pre></td>
+   </tr>
+   <tr>
+        <td><em>Any member:</em> Search a book</td>
+    	<td>Go to the spreadsheet, search and get confused!</td>
+    	<td><pre>
+Click 'Search'
+	- Enter one or more details according to your criteria 
+	- Click 'Search'
+</pre> </td>
+   </tr>
+   </table>
+{% endblock %}

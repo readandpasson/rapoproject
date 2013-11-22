@@ -1,0 +1,24 @@
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+
+
+
+
+<html>
+    <head>
+        <title>Are you sure?</title>
+    </head>
+    <body>
+        	<h1>Are you sure? </h1>
+        <p>{{ message }}</p>
+			<p>{{ user}} successfully archived defect "{{ defect }}"</p>
+        		<div>
+        		    <a href="{{ prev_link }}">Cancel</a>
+        		    <form action="{{ action_link }}" method="post">
+        		        <input type="hidden" name="next" value="{{ prev_link }}" />
+        		        <input type="submit" value="Send" />
+        		    </form>
+        		</div>
+
+    </body>
+</html>

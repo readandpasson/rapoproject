@@ -1,0 +1,89 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+    
+function popitup(url,message) {
+    var response= confirm(message) 
+    if (response==true){
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+    }
+    return false;
+}
+
+function ToggleList(IDS) {
+  var CState = document.getElementById(IDS);
+  if (CState.style.display != "table-row") { CState.style.display = "table-row"; }
+                                  else { CState.style.display = "none"; }
+}
+
+</script>
+
+<style type="text/css">
+  .divInfo { display:none;  }
+</style>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+<table id="dashboard" >
+{% comment %} Books currently with me {% endcomment %}
+<td class="closedstatus" rowspan="{{bookswith.count|add:"1"}}">  Books with me  </td> <td class="closedstatus"> Title </td><td class="closedstatus"> Status </td> </tr>
+{% for book in bookswith %} 
+<tr> <td>{{ book.title }} </td> 
+	{% ifnotequal book.rqueue.count 0 %} 
+		<td> In queue : </br>  {% for m in bookswithqlist %} 
+                         {% ifequal book.id m.book__id %}  {{ m.member__user__first_name }} {{ m.member__user__last_name }} 
+       {% ifequal user.is_staff 1 %}
+						<a href="/sendbookto{{ m.uid }}/{{ book.id }}">Send Book</a>   
+		 {% endifequal %}
+				  </br>  {% endifequal %}
+                         {% endfor %} </td>
+	{% else %}
+		<td> {{ book.get_status_display }} </td> 
+	{% endifnotequal %}
+</tr> 
+{% endfor %} 
+
+{% comment %} Books in transit {% endcomment %}
+{% if booksintransitfromme %}  <td class="closedstatus" rowspan="{{booksintransitfromme.count|add:"1"}}"> Books in transit from me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> To </td></tr>
+{% for tr in booksintransitfromme %} <tr> <td>{{ tr.book.title }} </td> <td>  --> {{ tr.to_member.user.first_name }} {{tr.to_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} {% endif %}
+
+{% if booksintransittome %} <td class="closedstatus" rowspan="{{booksintransittome.count|add:"1"}}"> Books in transit to me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> From </td></tr>
+{% for tr in booksintransittome %} <tr> <td>{{ tr.book.title }} </td> <td>  <-- {{ tr.from_member.user.first_name }} {{tr.from_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} {% endif %}
+
+{% comment %} Books requested by me {% endcomment %}
+{% if booksrequested %} <td class="closedstatus" rowspan="{{booksrequested.count|add:"1"}}"> Books requested by me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> Currently with </td></tr>
+{% for qu  in booksrequested %} <tr> <td>{{ qu.book.title }} </td> <td>  {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }} ( {{ qu.book.withmember.user.username }} ) </td> </tr> {% endfor %} </td> </tr>
+{% else %}
+<tr> <td class="closedstatus">No books requested </td> </tr>
+{% endif %}
+
+
+
+
+</table>
+{% comment %} Books released by me {% endcomment %}
+
+<a href="#" color = "#ff00ff" onclick="ToggleList('a')">Books released by me</a>
+<div id="a" class="divInfo">
+<table>
+<tr><td rowspan="{{booksreleased.count|add:"1"}}"> &nbsp; </td> <td class="closedstatus"> Title </td> <td class="closedstatus"> On</td> <td class="closedstatus"> Currently with </td></tr>
+{% for book in booksreleased %} <tr> <td>{{ book.title }} </td> <td>  {{ book.datereleased }} </td> <td>{{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} ( {{ book.withmember.user.username }} )</td> </tr> {% endfor %} </td> </tr>
+</table> 
+</div>
+
+
+{% endblock %}

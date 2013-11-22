@@ -1,4 +1,3 @@
-# Create your views here.
 from django.utils.html import escape 
 from datetime import datetime
 from django.db.models import Q
@@ -8,17 +7,10 @@ from django.template import RequestContext, Context
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
-#from django.contrib.formtools.wizard.views import SessionWizardView
 
-from django_tables2   import RequestConfig
 from rapocore.models import Author,SocialAccount,Book,Transaction, Queue, Defect
-from rapocore.forms import ReleaseBookForm, SendBookForm, ReceiveBookForm, SearchForm, ReportDefectForm
-from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2QueueForm
-
-#class SendBookWizard(SessionWizardView):
-#    def done(self, form_list, **kwargs):
-#        return HttpResponseRedirect('/thanks/')
-#
+from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
+from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm
 
 # make a book release
 @login_required
@@ -27,17 +19,16 @@ def ReleaseBook(request):
         form = ReleaseBookForm(request.user,request.POST) # A form bound to the POST data
         if form.has_changed():
             if form.is_valid(): # All validation rules pass
-                # Process the data in form.cleaned_data
                 f_type = form.save(commit=False)
                 f_type.ownermember = SocialAccount.objects.get(user_id = request.user)
                 f_type.withmember = SocialAccount.objects.get(user_id = request.user)
                 f_type.save()
+                form.save_m2m()
                 return HttpResponseRedirect('/thanks/')
     else:
         form = ReleaseBookForm(request.user)
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Release a book', 'submitmessage':'Release','formaction':'releasebook'},RequestContext(request))
 
-# send a book
 # receive a book
 @login_required
 def ReceiveBook(request):
@@ -47,7 +38,6 @@ def ReceiveBook(request):
         instance = Transaction.objects.get(to_member=SocialAccount.objects.get(user=request.user),book=b)
         form = ReceiveBookForm(request.user,request.POST,instance=instance) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-        #    # Process the data in form.cleaned_data
             f = form.save(commit=False)
             f.book_id = form.cleaned_data['book']
             f.date_received = datetime.now()
@@ -65,8 +55,9 @@ def ReceiveBook(request):
 
 @login_required
 def PassOn(request):
-    results = Book.objects.filter(withmember=SocialAccount.objects.get(user=request.user), status=Book.READ).values('id','title','author__first_name','author__last_name','language__languagename','ownermember__user__first_name','ownermember__user__last_name','withmember__user__username','withmember__user__first_name','withmember__user__last_name','status')
-    return render_to_response('rapocore/book_list.html',{  'data' : results }, RequestContext(request))
+    results = Book.objects.filter(withmember=SocialAccount.objects.get(user=request.user), status=Book.READ).select_related()
+    member = SocialAccount.objects.get(user_id=request.user)
+    return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member }, RequestContext(request))
 
 @login_required
 def Search(request):
@@ -87,34 +78,37 @@ def SearchResults(request):
     sownermember = request.POST['sownermember']
     swithmember = request.POST['swithmember']
     sstatus = request.POST['sstatus']
-    results = Book.objects.all()
+    results = Book.objects.all().select_related()
     if stitle or sauthor or slanguage or sownermember or swithmember or sstatus:
         if stitle:
-            results = results.filter(title__icontains=stitle)
+            results = results.filter(title__icontains=stitle).select_related()
         if sauthor:
-            results = results.filter(Q(author__first_name__icontains=sauthor)|Q(author__last_name__icontains=sauthor))
+            results = results.filter(Q(author__first_name__icontains=sauthor)|Q(author__last_name__icontains=sauthor)).select_related()
         if slanguage:
-            results = results.filter(language__id__exact=slanguage)
+            results = results.filter(language__id__exact=slanguage).select_related()
         if sownermember:
-            results = results.filter(ownermember__id__exact=sownermember)
+            results = results.filter(ownermember__id__exact=sownermember).select_related()
         if swithmember:
-            results = results.filter(withmember__id__exact=swithmember)
+            results = results.filter(withmember__id__exact=swithmember).select_related()
         if sstatus:
-            results = results.filter(status=sstatus)
+            results = results.filter(status=sstatus).select_related()
 
-        results = results.values('id','title','author__first_name','author__last_name','language__languagename','ownermember__user__first_name','ownermember__user__last_name','withmember__user__first_name','withmember__user__last_name','status')
+        #results = results.values('id','title','author__first_name','author__last_name','language__languagename','ownermember__user__first_name','ownermember__user__last_name','withmember__user__first_name','withmember__user__last_name','status')
         
-        return render_to_response('rapocore/book_list.html',{  'data' : results }, RequestContext(request))
+        member = SocialAccount.objects.get(user_id=request.user)
+        return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member }, RequestContext(request))
     else:
-        return render_to_response('rapocore/book_list.html',{  'data' : [] }, RequestContext(request))
+        member = SocialAccount.objects.get(user_id=request.user)
+        return render_to_response('rapocore/book_list.html',{  'data' : [], 'member': member }, RequestContext(request))
 
 
 
 @login_required
 def Browse(request):
-    
-    results = Book.objects.all().values('id','title','author__first_name','author__last_name','language__languagename','ownermember__user__first_name','ownermember__user__last_name','withmember__user__username','withmember__user__first_name','withmember__user__last_name','status')
-    return render_to_response('rapocore/book_list.html',{  'data' : results }, RequestContext(request))
+    results = Book.objects.all().order_by('-id').select_related()
+    member = SocialAccount.objects.get(user_id=request.user)
+    bookqueue = Queue.objects.all().order_by('id').select_related()
+    return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'bookqueue': bookqueue }, RequestContext(request))
 
 @login_required
 def NewAuthor(request):
@@ -153,6 +147,20 @@ def PassOnBook(request, bookid):
         return render_to_response('rapocore/passon.html',{ 'book': b.title},RequestContext(request))
 
 @login_required
+def ViewQueue(request, bookid):
+        b = Book.objects.get(id= bookid)
+        if b.status  == Book.TRANSIT:
+            temp_tr = Transaction.objects.get(book=b,date_received__isnull = True )
+            to_member = SocialAccount.objects.get(id=temp_tr.to_member.id)
+        else:
+            to_member = ()
+        if Queue.objects.filter(book=b).exists() :
+            qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
+        else :
+            qset = ()
+        return render_to_response('rapocore/viewqueue.html',{ 'book': b.title,'queue':qset,'to_member':to_member}, RequestContext(request))
+
+@login_required
 def Add2Queue(request, bookid):
         b = Book.objects.get(id= bookid)
         m = SocialAccount.objects.get(user_id=request.user)
@@ -166,12 +174,13 @@ def Add2Queue(request, bookid):
             qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
         return render_to_response('rapocore/add2queue.html',{ 'book': b.title,'queue':qset, 'success': success}, RequestContext(request))
 
+
+# send a book
 @login_required
 def SendBook(request):
     if request.method == "POST":
         form = SendBookForm(request.user, request.POST) # A form bound to the POST data
         if form.is_valid(): # All validation rules pass
-            # Process the data in form.cleaned_data
             f = form.save(commit=False)
             f.from_member = SocialAccount.objects.get(user_id = request.user)
             f.save()
@@ -188,16 +197,39 @@ def SendBook(request):
 
     return render_to_response('rapocore/sendbook_form.html',{ 'form': form, 'formtitle':'Send a book', 'submitmessage':'Send','formaction':'sendbook'},RequestContext(request))
 
+# send a book to a particular member
+@login_required
+def SendBookTo(request,bookid,memberid):
+    if request.method == "POST":
+        form = SendBookToForm(request.user, bookid, memberid, request.POST) # A form bound to the POST data
+        if form.is_valid(): # All validation rules pass
+            f = form.save(commit=False)
+            f.from_member = SocialAccount.objects.get(user_id = request.user)
+            f.to_member = SocialAccount.objects.get(uid = memberid)
+            f.book = Book.objects.get(id=bookid)
+            f.save()
 
-def GetMembers(request,bookid):
-    # Expect an auto 'type' to be passed in via Ajax and POST
-    if request.is_ajax():
-    #   from django.core import serializers
+            b = f.book
+            b.status = Book.TRANSIT
+            b.save()
+            
+            m = f.to_member
+            Queue.objects.get(book=b,member=m).delete()
+            return HttpResponseRedirect('/thanks/')
+    else:
+        form = SendBookToForm(request.user,bookid,memberid)
         b = Book.objects.get(id=bookid)
-    #   json_members = serializers.serialize("json", Queue.objects.filter(book_id=b).order_by('id').values('member'))
-    #   return HttpResponse(json_members, mimetype="application/javascript")
-        members = Queue.objects.filter(book_id=b).order_by('id').values('member','member__user__first_name','member__user__last_name')
+        m = SocialAccount.objects.get(uid = memberid)
 
+    return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Send the book \''+ b.title + '\' to '+m.user.first_name+' '+m.user.last_name, 'submitmessage':'Send','formaction':'sendbookto'+memberid+'/'+ bookid},RequestContext(request))
+
+
+
+@login_required
+def GetMembers(request,bookid):
+    if request.is_ajax():
+        b = Book.objects.get(id=bookid)
+        members = Queue.objects.filter(book_id=b).order_by('id').values('member','member__user__first_name','member__user__last_name','member__user__username')
         return render_to_response('rapocore/getmembers.html', { 'members': members },RequestContext(request))
 
 @login_required
@@ -206,7 +238,6 @@ def ReportDefect(request):
         form = ReportDefectForm(request.user,request.POST) # A form bound to the POST data
         if form.has_changed():
             if form.is_valid(): # All validation rules pass
-                # Process the data in form.cleaned_data
                 f = form.save(commit=False)
                 f.bymember = SocialAccount.objects.get(user_id = request.user)
                 f.save()
@@ -215,8 +246,64 @@ def ReportDefect(request):
         form = ReportDefectForm(request.user)
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Report a defect', 'submitmessage':'Report','formaction':'defect'},RequestContext(request))
 
-# send a book
-# receive a book
-
 class DefectListView(ListView):
     model  = Defect
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(DefectListView, self).get_context_data(**kwargs)
+        context['archived'] = Defect.objects.filter(status=Defect.ARCHIVED)
+        return context
+
+@login_required
+def Closeit(request, defectid):
+        d = Defect.objects.get(id= defectid)
+        d.status = Defect.CLOSED
+        d.save()
+        return render_to_response('rapocore/closeit.html',{ 'defect': d.description}, RequestContext(request))
+
+@login_required
+def Archiveit(request, defectid):
+        d = Defect.objects.get(id= defectid)
+        d.status = Defect.ARCHIVED
+        d.save()
+        return render_to_response('rapocore/archiveit.html',{ 'defect': d.description}, RequestContext(request))
+
+@login_required
+def CancelRequest(request,bookid):
+        b = Book.objects.get(id= bookid)
+        instance = Queue.objects.get(member=SocialAccount.objects.get(user_id=request.user),book=b)
+        instance.delete()
+        success = True # Success will be false when sender has already sent to this person  - To be implemented TBD
+        return render_to_response('rapocore/cancelrequest.html',{ 'book': b.title, 'success': success}, RequestContext(request))
+
+class MemberListView(ListView):
+    model  = SocialAccount
+    template_name = "rapocore/socialaccount_list.html"
+
+
+
+@login_required
+def Test(request):
+    member = SocialAccount.objects.get(user_id=request.user)
+    booksreleased = Book.objects.filter(ownermember = member).order_by('datereleased')
+    #booksrequested_available = Queue.objects.filter(member= member) 
+    booksrequested = Queue.objects.filter(member= member).select_related()
+    bookssentome = Transation.objects.filter(tomember=member).select_related()
+    bookswith = Book.objects.filter(withmember=member).select_related()
+    #booksread = Book.objects.filter(withmember=member).select_related()
+    return render_to_response('rapocore/try.html',{ 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookssenttome':bookssentome,'bookswith': bookswith}, RequestContext(request))
+
+@login_required
+def MyAccount(request):
+    me = SocialAccount.objects.get(user_id=request.user)
+    booksreleased = Book.objects.filter(ownermember = me).order_by('datereleased')
+    #booksrequested_available = Queue.objects.filter(member= member) 
+    booksrequested = Queue.objects.filter(member= me).select_related()
+    bookswith = Book.objects.filter(withmember=me).select_related().exclude(status=Book.TRANSIT)
+    bookswithqlist = []
+    for bk in bookswith:
+    	bookswithqlist.extend(list(Queue.objects.filter(book=bk).order_by('id').values('book__id','member__user__first_name','member__user__last_name')))
+
+    booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=Book.TRANSIT)).select_related()
+    booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=Book.TRANSIT)).select_related()
+    return render_to_response('rapocore/dashboard.html',{ 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookswith': bookswith, 'bookswithqlist' : bookswithqlist,'booksintransitfromme': booksintransitfromme,'booksintransittome': booksintransittome}, RequestContext(request))

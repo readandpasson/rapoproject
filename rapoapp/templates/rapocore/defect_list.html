@@ -5,6 +5,20 @@
 
 {% block headsection %}
 {{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script language="javascript" type="text/javascript">
+<!--
+function popitup(url,message) {
+    var response= confirm(message) 
+    if (response==true){
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+    }
+    return false;
+}
+
+// -->
+</script>
 {{ form.media }}
 {% endblock headsection %}
 
@@ -13,12 +27,51 @@
 {% endblock topsection %}
 	
 {% block Centre %}
-	<h2>Defects</h2>
-<ul>
+<table id="defects" class="sortable">
+	<caption style="text-align:center">Defects</caption>
+   	<tr>
+	<th id="by"> Logged by </th>
+	<th id="date"> Log date</th>
+	<th id="cat"> Category </th>
+	<th id="desc"> Description </th>
+	<th id="comm"> Comments </th>
+	<th id="stat"> Status </th>
+	</tr>
+
 {% for defect in object_list %}
-    <li>{{ user}} {{ defect.logdate }}:{{ defect.category_value }} - {{ defect.description }} </li>
+    {% ifnotequal defect.status 'AR' %}
+   	<tr>
+			<td>{{ defect.bymember }}</td>
+			<td>{{ defect.logdate|date:"Y/m/d h:i:s A" }}</td>
+			<td>{{ defect.get_category_display }}</td>
+			<td>{{ defect.description }} </td>
+			<td>{{ defect.comments }} </td>
+			<td class="{{ defect.get_status_display|lower }}status">{{ defect.get_status_display }} {% ifequal user.is_staff 1 %}
+                {% ifnotequal defect.status 'CL' %}
+				<a href="/closeit{{ defect.id }}" id="closeit" class="closeit" onclick="return popitup(this,'Are you sure you want to close this defect?');">Close it</a> 
+                {% else %}
+				<a href="/archiveit{{ defect.id }}" id="archiveit" class="archiveit" onclick="return popitup(this,'Are you sure you want to archive this defect?');">Archive it</a> </br>
+                {% endifnotequal %}
+ 				{% endifequal %}</td>
+			
+	</tr>
+    {% else %}
+       {% ifequal user.is_staff 1 %}
+   	       <tr>
+	       		<td>{{ defect.bymember }}</td>
+	       		<td>{{ defect.logdate|date:"Y/m/d h:i:s A" }}</td>
+	       		<td>{{ defect.get_category_display }}</td>
+	       		<td>{{ defect.description }} </td>
+	       		<td>{{ defect.comments }} </td>
+	       		<td class="{{ defect.get_status_display|lower }}status">{{ defect.get_status_display }} </td>
+	       		
+	       </tr>
+       {% endifequal %}
+    {% endifnotequal %}
 {% empty %}
-    <li>No defects yet.</li>
+    <tr class="odd">No defects yet.</tr>
 {% endfor %}
-</ul>
+   <tfoot><tr> <td class="closedstatus" colspan="8"> {{ object_list.count }} defects logged </td> </tr>
+		<tr> <td class="closedstatus" colspan="8"> {{ archived.count }} defects archived </td> </tr> </tfoot>
+</table>
 {% endblock %}

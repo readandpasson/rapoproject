@@ -7085,11 +7085,17 @@ function getmembersinqueue(sel_val) {
 	<table>
     {% for field in form %}
 			<tr>
-            {{ field.errors }}
-            <td> {{ field.label_tag }}  </td> <td>{{ field }}</td>
+			<label>
+			<td>
+        	{% if field.field.required %}<span class="required">{{ field.label_tag }}</span>
+        	{% else %}{{ field.label_tag }}{% endif %}
+			</td>
+    		</label>
+            <td>{{ field }}</td> <td> {{ field.errors }} </td>
 			</tr>
     {% endfor %}
 	</table>
+			<span class="required"> &nbsp; </span> Required fields </br>
 		<input type="submit" value="{{ submitmessage }}" />
     </form>
 {% endblock %}

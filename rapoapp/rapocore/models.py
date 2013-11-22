@@ -1,6 +1,7 @@
 # Create your models here.
 from django.db import models
 from datetime import datetime
+from datetime import date
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from allauth.socialaccount.models import SocialAccount
@@ -47,11 +48,15 @@ class Book(models.Model):
     READ='R'
     TRANSIT='T'
     BOOKED='B'
+    LOST='L'
+    DELETED='D'
     STATUS_CHOICES = (
         (AVAILABLE,'Available'),
         (READ,'Reading'),
         (TRANSIT,'In Transit'),
         (BOOKED,'Reserved'),
+        (LOST,'Lost'),
+        (DELETED,'Deleted'),
     )
     title = models.CharField(verbose_name='Title of the book',max_length=255)
     author = models.ManyToManyField(Author)
@@ -68,6 +73,11 @@ class Book(models.Model):
         return self.title
     class Meta:
         ordering = ['title']
+    @property
+    def is_new(self):
+        if (date.today() -  self.datereleased.date()).total_seconds() < 604800:  # 7 days
+           return True
+        return False
 
 
 class Transaction(models.Model):
@@ -87,7 +97,7 @@ class Transaction(models.Model):
     date_sent = models.DateTimeField()
     date_received = models.DateTimeField(null=True,blank=True)
     via = models.CharField(max_length=100,null=True,blank=True)
-    tracking = models.CharField(max_length=30,null=True,blank=True)
+    tracking = models.CharField(max_length=256,null=True,blank=True,verbose_name='Tracking id/url')
     charges = models.CharField(max_length=20,null=True,blank=True)
     charges_on = models.CharField(max_length=1,choices=CHARGE_CHOICES,default=NA)
     comments = models.TextField(null=True,blank=True)
@@ -95,6 +105,9 @@ class Transaction(models.Model):
     class Meta:
             ordering = ['date_sent']
             unique_together =(('book','from_member','to_member','date_sent'),)
+
+    def __unicode__(self):
+        return u'%s : %s %s --> %s %s ON %s' % (self.book,self.from_member.user.first_name,self.from_member.user.last_name,self.to_member.user.first_name,self.to_member.user.last_name,self.date_sent)
 
 class History(models.Model):
     book = models.ForeignKey(Book)
@@ -110,7 +123,10 @@ class Queue(models.Model):
     book = models.ForeignKey(Book)
     member = models.ForeignKey(SocialAccount)
     class Meta:
+        ordering = ['id']
         unique_together =(('book','member'),)
+    def __unicode__(self):
+        return "%s " % (self.book.title)
 
 
 class Buylink(models.Model):
@@ -122,11 +138,13 @@ class Defect(models.Model):
     CLOSED='CL'
     NOTDEFECT='ND'
     INFUTURE='FU'
+    ARCHIVED='AR'
     DEFECT_STATUS_CHOICES = (
         (OPEN,'Open'),
         (CLOSED,'Closed'),
         (NOTDEFECT,'Not a defect'),
         (INFUTURE,'In future'),
+        (ARCHIVED,'Archived'),
     )
     SITEFUNCTIONALITY='SF'
     BOOKRELATED='BK'
@@ -147,3 +165,7 @@ class Defect(models.Model):
     status = models.CharField(max_length=2,choices=DEFECT_STATUS_CHOICES,default=OPEN)
     fixedon = models.DateTimeField(null=True,blank=True)
     comments = models.TextField(null=True,blank=True)
+    def __unicode__(self):
+        return self.description
+    class Meta:
+        ordering = ['-logdate']

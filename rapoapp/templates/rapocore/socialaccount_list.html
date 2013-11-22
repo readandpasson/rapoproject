@@ -1,0 +1,44 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script language="javascript" type="text/javascript">
+<!--
+function popitup(url) {
+    newwindow=window.open(url,'{{title}}','height=200,width=1000');
+    if (window.focus) {newwindow.focus()}
+    return false;
+}
+
+// -->
+</script>
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+<table id="members" class="sortable">
+	<caption style="text-align:center">Members</caption>
+   	<tr>
+	<th id="firstname"> First Name </th>
+	<th id="lastname"> Last Name</th>
+	<th id="username"> Username </th>
+	</tr>
+
+{% for member in object_list %}
+   	<tr>
+			<td>{{ member.user.first_name }}</td>
+			<td>{{ member.user.last_name }}</td>
+			<td>{{ member.user.username }}</td>
+	</tr>
+{% endfor %}
+   <tfoot><tr> <td class="closedstatus" colspan="8"> {{ object_list.count }} members found </td> </tr></tfoot
+</table>
+{% endblock %}

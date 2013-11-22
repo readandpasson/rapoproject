@@ -1,0 +1,84 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+    
+function popitup(url,message) {
+    var response= confirm(message) 
+    if (response==true){
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+    }
+    return false;
+}
+
+</script>
+ <script language="JavaScript" type="text/javascript">
+      
+      function blocking(nr)
+      // for displaying or hiding parts of the page
+      {
+        displayNew = (document.getElementById(nr).style.display == 'none') ? 'block' : 'none';
+         document.getElementById(nr).style.display = displayNew;
+      }
+   
+   </script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+<table id="dashboard" >
+<tr> 
+<td class="closedstatus" rowspan="{{booksreleased.count|add:"1"}}">   <a href="" onclick="blocking('whatItIs'); return false;">Books released  by me</a>  </td> <div id="whatItIs"> <td class="closedstatus"> Title </td> <td class="closedstatus"> On</td> <td class="closedstatus"> Currently with </td></tr>
+{% for book in booksreleased %} 
+	<tr> 	<td> {{ book.id }} </td>
+			<td> {{ book.title }} </td> 
+			<td>  {{ book.datereleased }} </td> 
+   			<td>{{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} ( {{ book.withmember.user.username }} )</td> </tr> {% endfor %} </td> </div></tr>
+<td class="closedstatus" rowspan="{{booksrequested.count|add:"1"}}"> Books requested by me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> Currently with </td></tr>
+{% for qu  in booksrequested %} <tr> <td>{{ qu.book.title }} </td> <td>  {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }} ( {{ qu.book.withmember.user.username }} ) </td> </tr> {% endfor %} </td> </tr>
+<td class="closedstatus" rowspan="{{bookssenttome.count|add:"1"}}">   <a href="" onclick="blocking('whatItIs'); return false;">Books sent to me</a>  </td> <div id="whatItIs"> <td class="closedstatus"> Title </td> <td class="closedstatus"> On</td> <td class="closedstatus"> Currently with </td></tr>
+{% for tr in booksentome %} 
+	<tr> 	<td> {{ tr.book.id }} </td>
+			<td> {{ tr.book.title }} </td> 
+			<td>  {{ book.datesent }} </td> 
+   			<td>{{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} ( {{ book.withmember.user.username }} )</td> </tr> {% endfor %} </td> </div></tr>
+<td class="closedstatus" rowspan="{{booksrequested.count|add:"1"}}"> Books requested by me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> Currently with </td></tr>
+<td class="closedstatus" rowspan="{{bookswith.count|add:"1"}}">  Books with me  </td> <td class="closedstatus"> Title </td><td class="closedstatus"> Queue </td> </tr>
+{% for book in bookswith %} <tr> <td>{{ book.title }} </td> <td>  {% if book.rqueue %} 
+																		{% for m in book.rqueue.all %}
+																			{% if not forloop.first %}, {% endif %}
+                                                                         {{ m.user.first_name }} {{ m.user.last_name }} ( {{ m.user.username }} )
+{% endfor %} {% else %} None {% endif %}</td> </tr> {% endfor %} </td> </tr>
+{% comment %}
+<td rowspan="{{booksread.count|add:"1"}}"> Books requested </td> <td> &nbsp; </td> </tr>
+{% for book in booksread %} <tr> <td>{{ book.title }} </td> <td>  {{ book.withmember }} </td> </tr> {% endfor %} </td> </tr>
+Books requested - available - to be sent {{ Queue  on top - Book A }}
+				- reading /in queue- wait {{ Queue on top - Book R }} {{ Queue not on top }}
+                   - sent - in transit {{ Transaction  to = user }}
+                                
+Books currently with - reading {{ Book withmember = user status = R }}
+			- aval = no requests {{ Book withmember = user status = A  no Queue}}
+			    - available  - requested (to be sent) {{ Book withmem = user status = A has Queue }}
+                 - sent ( in transit) {{ Transaction  from - user Book status T}}
+                  - esnt - (received) {{ Transaction from - received }}
+Books read (history) {{ Transaction entries  and Book entries }}
+
+Change password
+
+History of books
+</tr>
+{% endcomment %}
+   </table>
+{% endblock %}

@@ -3,7 +3,8 @@ import os
 
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
-DEBUG = True
+DEBUG =  True
+
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -18,6 +19,7 @@ DATABASES = {
         'NAME': 'rapodb',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
         'PASSWORD': 'rootMY1!',                  # Not used with sqlite3.
+#        'HOST': '/var/run/mysql',                      # Set to empty string for localhost. Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 		'OPTIONS': {
@@ -84,7 +86,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     #os.path.join(PROJECT_ROOT,"static"),
-	'/home/rapoadmin/public_html/rapoproject/rapoapp/',
+	'/home/rapoadmin/public_html/rapoproject/rapoapp/mystatic/',
 )
 
 # List of finder classes that know how to find static files in
@@ -130,7 +132,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
-    'django_tables2',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'rapocore',
@@ -182,6 +183,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'allauth.account.context_processors.account',
     'allauth.socialaccount.context_processors.socialaccount'
 )
-#AUTHENTICATION_BACKENDS = (
-#    "allauth.account.auth_backends.AuthenticationBackend",
-#)
+AUTHENTICATION_BACKENDS = (
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+#LOGIN_REDIRECT_URL = '/'

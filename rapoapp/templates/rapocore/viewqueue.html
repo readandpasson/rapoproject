@@ -4,22 +4,26 @@
 
 <html>
     <head>
-        <title>Add to queue</title>
+        <title>View queue</title>
     </head>
     <body>
-        {% if success %}
-        	<h1>Added to queue </h1>
-			<p>{{ user}} successfully added to queue for {{ book }}</p>
-        {% else %}
-        	<h1>Already in queue </h1>
-			<p>{{ user}} already in queue for {{ book }}</p>
-        {% endif %}
+        	<h1>View queue </h1>
+			<p>Queue for '{{ book }}'</p>
+
+{% if to_member %}
+   In Transit ---> {{ to_member.user.first_name }} {{ to_member.user.last_name }} </br>
+{% endif %}
+{% if queue %}
             <table>
             {% for m in queue  %}
                  <tr> {{ m.member__user__first_name }} {{ m.member__user__last_name }} </br></tr>
             {% endfor %}
-				
             </table>
+{% else %}
+    ---None---
+{% endif %}
+ 
+				
             <p><a href="javascript: window.close();"/>Close</p></a>
     </body>
 </html>

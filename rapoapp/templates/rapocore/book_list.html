@@ -2,18 +2,27 @@
 
 {% load i18n admin_static admin_list %} 
 {% load admin_urls %} 
+{% load staticfiles %} 
 
 {% block headsection %}
 {{ block.super }}
-<script language="javascript" type="text/javascript">
-<!--
-function popitup(url) {
-    newwindow=window.open(url,'{{title}}','height=200,width=1000');
-    if (window.focus) {newwindow.focus()}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+    
+function popup(url,message) {
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+		return false;
+}
+function popitup(url,message) {
+    var response= confirm(message) 
+    if (response==true){
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+    }
     return false;
 }
 
-// -->
 </script>
 
 {{ form.media }}
@@ -24,47 +33,81 @@ function popitup(url) {
 {% endblock topsection %}
 	
 {% block Centre %}
-	<h2 style="text-align:center">Books</h2>
-<ul>
-   <table>
-   <tbody>
-   <th colspan="8" style="text-align:right;"> Status: A - Available; R - Reading; B - Booked; T - In Transit </th>
-   <tr class="blank_row"> &nbsp; </tr>
-   <tr class="even">
-        <th> Id </th>
-    	<th> Title of the book </th>
-		<th> Author </th>
-		<th> Language </th>
-		<th> Original Owner </th>
-		<th> Currently With </th>
-		<th> Status </th>
-		<th> You can .. </th>
+<table id="books" class="sortable">
+   <caption>Books</caption>
+   <tr>
+        <th id="id" title="Click to sort"> Id </th>
+    	<th id="title" title="Click to sort"> Title of the book </th>
+	 	<th id="author" title="Click to sort"> Author </th>
+	 	<th id="tag" title="Click to sort"> Tags </th>
+		<th id="language" title="Click to sort"> Language &nbsp; </th>
+		<th id="oowner" title="Click to sort"> Original Owner </th>
+		<th id="currentowner" title="Click to sort"> Currently With </th>
+		<th id="status" title="Click to sort"> Status </th>
+		<th id="queue" class="sorttable_nosort"> Queue </th>
+		<th id="can" class="sorttable_nosort"> You can .. </th>
     </tr>
+{% if data %}
 {% for book in data %}
-   <tr class="{% cycle 'odd' 'even' %}">
-        <td> {{ book.id}}</td>
+   <tr>
+ {% comment %}
+        <td> <img src="{% static "new.jpg" %}" alt="New" height="2" width="2"> </td>
+ {% endcomment %}
+        <td> {% if book.is_new %} <img src="{% static "new.jpg" %}" alt="New" height="15" width="30"> {% endif %} {{ book.id }}</td>
     	<td> {{ book.title }} </td>
-		<td> {{ book.author__first_name }} {{ book.author__last_name }} </td>
-		<td> {{ book.language__languagename }} </td>
-		<td> {{ book.ownermember__user__first_name }} {{ book.ownermember__user__last_name }} </td>
-		<td> {{ book.withmember__user__first_name }} {{ book.withmember__user__last_name }} </td>
-		<td> {{ book.status }} </td>
-		<td> {% ifnotequal user.username book.withmember__user__username %} 
-				<a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" onclick="return popitup(this);">Request/Reserve</a> 
-             {% else %}
-             	{% ifequal book.status 'A' %}
-						<a href="/sendbook" >Send Book</a>
-             	{% else %}
-						<a href="/passon{{ book.id }}" id="passon" class="passon" onclick="return popitup(this);">Pass On</a> 
-             	{% endifequal %}
-             {% endifnotequal %}
+		<td> {% for author in book.author.all %}
+  				{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
+			{% endfor %}
+		</td>
+		<td> {% for tag in book.tag.all %}
+  				{{ tag.taglabel }}{% if not forloop.last %},{% endif %}
+			{% endfor %}
+		</td>
+		<td> {{ book.language.languagename }} </td>
+		<td> {% ifequal book.ownermember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
+		 {{ book.ownermember.user.first_name }} {{ book.ownermember.user.last_name }} {% endifequal %}</td>
+		<td> {% ifequal book.withmember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
+		 {{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} {% endifequal %} </td>
+		<td> {% ifequal book.status 'A' %}
+				Available {% else %} {% ifequal book.status 'T' %}
+					In Transit {% else %} {% ifequal book.status 'R' %} Reading {% endifequal %} {% endifequal %} {% endifequal %} </td>
+		<td> 
+
+				<a href="/viewqueue{{ book.id }}" id="viewqueue" class="viewqueue" onclick="return popup(this);">View Queue</a> 
+
+
+</td>
+		<td> {% ifequal book.withmember.user.username 'rapo.admin' %}
+					<em> Need Info </em>
+			 {% else %}
+				{% ifnotequal user.username book.withmember.user.username %} 
+    {% if member in book.rqueue.all %} 
+		In queue: <a href="/cancelrequest{{ book.id }}" id="cancelrequest" class="cancelrequest" onclick="return popitup(this,'Are you sure you want to cancel your request for  this book - {{ book.title }}?');">Cancel Request</a> 
+                    {% else %}     
+				<a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" onclick="return popitup(this,'Are you sure you want to request this book - {{ book.title }}?');">Request/Reserve</a> 
+    {% endif %}
+		             {% else %}
+		             	{% ifequal book.status 'A' %}
+								<a href="/sendbook" >Send Book</a>
+		             	{% else %}
+							{% ifequal book.status 'R' %}
+								<a href="/passon{{ book.id }}" id="passon" class="passon" onclick="return popitup(this,'Are you sure you want to pass this book on - {{ book.title }}?');">Pass On</a> 
+							{% else %}
+								{% ifequal book.status 'T' %}
+								   In Transit
+								{% else %}
+									Where is it?
+		 						{% endifequal %}
+							{% endifequal %}
+						{% endifequal %}	
+		             {% endifnotequal %}
+			{% endifequal %}
 		</td>
     </tr>
-{% empty %}
-    <tr class="odd" colspan="8"> No books found.</tr>
 {% endfor %}
-   <tr class="blank_row"> &nbsp; </tr>
-   <th colspan="8" style="text-align:right"> Status: A - Available; R - Reading; B - Booked; T - In Transit </th>
-   </tbody>
+   <tfoot><tr> <td class="closedstatus" colspan="10"> {{ data.count }} books found </td> </tr> </tfoot>
+{% else %}
+    <tr> <td class="odd" colspan="10"> No books found.</td></tr>
+{% endif %}
    </table>
 {% endblock %}

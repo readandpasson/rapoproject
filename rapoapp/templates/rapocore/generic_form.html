@@ -15,10 +15,22 @@
 	<table>
     {% for field in form %}
 			<tr>
-            <td> {{ field.label_tag }}  </td> <td>{{ field }}</td> <td> {{ field.errors }} </td>
+			<label>
+			<td>
+             {% ifnotequal submitmessage 'Search' %}
+        	{% if field.field.required %}<span class="required">{{ field.label_tag }}</span>
+        	{% else %}{{ field.label_tag }}{% endif %}
+        	{% else %}{{ field.label_tag }}{% endifnotequal %}
+			</td>
+    		</label>
+            <td>{{ field }}</td> <td> {{ field.errors }} </td>
 			</tr>
     {% endfor %}
 	</table>
+			{% ifnotequal submitmessage 'Search' %}
+			<span class="required"> &nbsp; </span> Required fields </br>
+			{% endifnotequal %}
 		<input type="submit" value="{{ submitmessage }}" />
+    
     </form>
 {% endblock %}
