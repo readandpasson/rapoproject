@@ -1,3 +1,4 @@
-.pyc
+*.pyc
 rapoapp/django-basic-apps
 rapoapp/basic
+django
