@@ -1,0 +1,16 @@
+.page-header
+{
+	margin-top: 10px;
+}
+
+.navbar
+{
+	margin-bottom: 0px;
+}
+
+a.list-group-item:hover, a.list-group-item:focus
+{
+	text-decoration: none;
+background-color: #CEFCB8;
+}
+

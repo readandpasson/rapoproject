@@ -1,0 +1,253 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+function popup(url,message) {
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+		return false;
+}
+function popitup(url,message) {
+    var response= confirm(message) 
+    if (response==true){
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+    }
+    return false;
+}
+
+//Benitha Date: 08-Nov-2013 To display the book queue details on click of the Queue Hyperlink
+function display()
+{
+var e = document.getElementById('showqueue');
+var f = document.getElementById('viewqueue');
+
+	if (e.style.display == 'none')
+	{
+		e.style.display = '';
+		f.innerHTML="Hide Book Queue";
+	}
+	else
+	{
+		e.style.display = 'none';
+		f.innerHTML="View Book Queue";
+	}
+}
+
+//Benitha Date: 12-Nov-2013 To display the book RAPO history details on click of the History Hyperlink
+function history()
+{
+var e = document.getElementById('showhistory');
+var f = document.getElementById('viewhistory');
+
+	if (e.style.display == 'none')
+	{
+		e.style.display = '';
+		f.innerHTML="Hide Book RAPO™ History";
+	}
+	else
+	{
+		e.style.display = 'none';
+		f.innerHTML="View Book RAPO™ History";
+	}
+}
+</script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+<div class="panel panel-success">
+<div class="panel-heading">
+    <strong>Book Details </strong>
+</div>
+{% if book %}
+ {% comment %}
+        <td> <img src="{% static "new.jpg" %}" alt="New" height="2" width="2"> </td>
+ {% endcomment %}
+<table id="books" class="table table-hover" rules="rows">
+<tr>
+        <td id ="id" ><b> Book ID </b></td>
+        <td> {% if book.is_new %} <img src="{% static "new.jpg" %}" alt="New" height="15" width="30"> {% endif %} {{ book.id }}</td>
+</tr>
+<tr>
+        <td id ="bookcover"><b> Book Cover </b></td>
+	<td> <img src={{book.imgurl}} title='Image courtesy : flipkart'> </td>
+</tr>
+<tr>
+        <td id ="title"><b> Title of the book </b></td>
+    	<td> {{ book.title }}   </td>
+</tr>
+<tr>
+        <td id ="author"><b> Author </b></td>
+	<td> {% for author in book.author.all %}
+  		{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+	</td>
+</tr>
+<tr>
+ 	<td id="genre"><b> Genre </b> </td>
+	<td> {% for tag in book.tag.all %}
+  			{{ tag.taglabel }}{% if not forloop.last %}<br>{% endif %}
+	     {% endfor %}
+	</td>
+</tr>
+<tr>
+	<td id="language"><b> Language </b> </td>
+	<td> {{ book.language.languagename }} </td>
+</tr>
+<tr>
+	<td id="oowner"><b> Released By </b></td>
+	<td> {% ifequal book.ownermember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
+		 {{ book.ownermember.user.first_name }} {{ book.ownermember.user.last_name }} {% endifequal %}</td>
+</tr>
+<tr>
+	<td id="currentowner"><b> Currently With </b></td>
+	<td> {% ifequal book.withmember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
+		 {{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} {% endifequal %} </td>
+</tr>
+<tr>
+	<td id="status"><b> Status </b></td>
+	<td> {% ifequal book.status 'A' %}
+				Available {% else %} {% ifequal book.status 'T' %}
+					In Transit {% else %} {% ifequal book.status 'R' %} Reading {% endifequal %} {% endifequal %} {% endifequal %} </td>
+</tr>
+<tr>
+	<td id="queue" class="sorttable_nosort"><b> Queue </b></td>
+	<td> 
+<!--	<a href="/viewqueue/{{ book.id }}" id="viewqueue" class="viewqueue" title="View the queue status of the book" onclick="return popup(this);">View Book Queue</a> -->
+	<a id="viewqueue" href="javascript:display()" title="View the queue status of the book" >View Book Queue</a> 
+	</td>
+</tr>
+	<tr id="showqueue" style="display:none">
+	  <td>	</td>
+	  <td>
+		{% if to_member %}
+   			In Transit ---> {{ to_member.user.first_name }} {{ to_member.user.last_name }} </br>
+		{% endif %}
+	
+		{% if queue %}
+                	<table id="queue" class="table table-hover" rules="rows">
+
+                 	<tr>
+                    		<td id="queueid" width="50%"> <b> No. in queue </b></td>
+                    		<td id="name" width="50%"> <b> Requested By </b> </td>
+                  	</tr>
+
+        	    {% for m in queue  %}
+                  	<tr>
+                    		<td> {{ forloop.counter }} </td>
+                    		<td> {{ m.member__user__first_name }} {{ m.member__user__last_name }} </td>
+                    		</br>
+                  	</tr>
+            	     {% endfor %}
+
+                	</table>
+		{% else %}
+        		<table id="none">
+                		<th> No Queue details found! </th>
+        		</table>
+		{% endif %}
+
+	  </td>
+	</tr>
+	<tr>
+	  <td id="can"><b> Activity Link </b></td>
+          <td>  {% ifequal book.withmember.user.username 'rapo.admin' %}
+                    <em> Need Info </em>
+                {% else %}
+                    {% ifnotequal user.username book.withmember.user.username %}
+                        {% if member in book.rqueue.all %}
+                            In queue: <a href="/cancelrequest{{ book.id }}" id="cancelrequest" class="cancelrequest" title="Click to cancel the requested book" onclick="return popitup(this,'Are you sure you want to cancel your request for  this book - {{ book.title }}?');">Cancel Request</a>
+                        {% else %}
+                                {% if dateNull %}
+                                        {% ifequal dateNull.0.to_member.user.username user.username %}
+                                                <a href="/receivebook" title="Click to acknowledge reciept of the book" >Receive Book</a>
+                                        {% else %}
+											{% ifequal dateNull.0.from_member.user.username user.username %}
+												In Transit
+											{% else %}
+												<a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" title="Click to Request/Reserve the book" onclick="return popitup(this,'Are you sure you want to request this book - {{ book.title }}?');">Request/Reserve</a>
+											{% endifequal %}	
+                                        {% endifequal %}
+                                {% else %}
+                                        <a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" title="Click to Request/Reserve the book" onclick="return popitup(this,'Are you sure you want to request this book - {{ book.title }}?');">Request/Reserve</a>
+                                {% endif %}
+                        {% endif %}
+                    {% else %}
+                        {% ifequal book.status 'A' %}
+                                <a href="/sendbook" title="Click to send the book to the receiver" >Send Book</a>
+                        {% else %}
+                                {% ifequal book.status 'R' %}
+                                        <a href="/passon{{ book.id }}" id="passon" class="passon" title ="Click to Pass on the book back to the next person in the queue" onclick="return popitup(this,'Are you sure you want to pass this book on - {{ book.title }}?');">Pass On</a>
+                                {% else %}
+                                        {% ifequal book.status 'T' %}
+                                                In Transit
+                                        {% else %}
+                                                Where is it?
+                                        {% endifequal %}
+                                {% endifequal %}
+                        {% endifequal %}
+                    {% endifnotequal %}
+                {% endifequal %}
+          </td>
+</tr>
+<tr>
+	<td><b>Buy Book</b></td>
+	<td> <a href={{book.buyurl}}><img src="http://img8a.flixcart.com/www/prod/images/buy_btn_1-b05fffbb.png"></a> </td>
+</tr>
+<!--	<td><a href="http://www.flipkart.com/search?q={{book.title}}">Click to buy <b>{{book.title}}</b> </a></td>-->
+<tr>
+	<td><b> History </b></td>
+	<td>
+	<a id="viewhistory" href="javascript:history()"> View Book RAPO™ History </a>
+	</td>
+</tr>
+	<tr id="showhistory" style="display:none">
+	  <td>	</td>
+	  <td>
+		{% if tran %}
+                	<table id="history" class="table table-hover" rules="rows">
+
+                 	<tr>
+                    		<td id="member" width="50%"> <b> RAPO'ed By </b></td>
+                    		<td id="date" width="50%"> <b>  Date </b> </td>
+                  	</tr>
+
+        	    {% for t in tran  %}
+                  	<tr>
+                    		<td> {{ t.from_member.user.first_name  }} {{ t.from_member.user.last_name }}  </td>
+                    		<td> {{ t.date_received }} </td>
+                    		</br>
+                  	</tr>
+
+            	     {% endfor %}
+                	</table>
+		{% else %}
+        		<table id="none">
+                		<th> No History details found! </th>
+        		</table>
+		{% endif %}
+	   </td>
+	</tr>
+{% else %}
+    <tr> <td class="odd" colspan="10"> <b> Book details not found </b></td></tr>
+{% endif %}
+
+</table>
+</div>
+{% endblock %}

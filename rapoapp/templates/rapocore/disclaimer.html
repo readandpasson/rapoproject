@@ -1,0 +1,35 @@
+{% extends 'rapocore/myaccount.html' %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} Disclaimer
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+<div class="panel panel-success">
+                    <div class="panel-heading">
+                    <strong>Disclaimer and Terms & Conditions of use</strong>
+                  </div>
+<strong>Terms & Conditions of Use:</strong>
+<li>rapo.in is an online system which facilitates sending and receiving of books between members. </li>
+<li>The members of RAPO are expected to adhere in good faith to the guidelines of RAPO. </li>
+<li>The RAPO team cannot guarantee / enforce the members to comply to the guidelines specified. </li>
+<li>Non-adherence to the guidelines may lead to suspension of the member and he/she will not be able to use the system. </li>
+<li>Books released to RAPO become a part of the common pool of books in circulation; the ownership right on the book is transferred to RAPO community.</li>
+<strong>Disclaimer:</strong>
+<li>The RAPO team cannot guarantee / enforce the members to comply to the guidelines specified. </li>
+<li>RAPO will not be liable for any loss that a member may have incurred through using rapo.in</li>
+  </div>
+{% endblock %}

@@ -1,4 +1,6 @@
 *.pyc
 rapoapp/django-basic-apps
 rapoapp/basic
+rapoapp/settings.py
+rapoapp/mystatic
 django

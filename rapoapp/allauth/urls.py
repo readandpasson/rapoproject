@@ -11,7 +11,7 @@ urlpatterns = patterns('', url('^', include('allauth.account.urls')))
 if app_settings.SOCIALACCOUNT_ENABLED:
     urlpatterns += patterns('', url('^social/', 
                                     include('allauth.socialaccount.urls')))
-	sys.stderr.write('This goes to the apache error log')
+    sys.stderr.write('This goes to the apache error log')
 
 for provider in providers.registry.get_list():
     try:
