@@ -7,7 +7,15 @@
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
-{% block topsection %}
+
+
+{% block Login %} 
+        <form class="navbar-form navbar-right">
+{% for provider in socialaccount.providers %}
+  <a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}">Authenticate with {{provider.name}}</a>
+{% endfor %}
+</form>
+{% endblock %}
 
 <h1>{% trans "Sign In" %}</h1>
 {% comment %}
@@ -17,32 +25,6 @@
 <p>{% blocktrans with site.name as site_name %} Welcome to RAPO&trade;. Please sign in using your {% endblocktrans %}
 
 {% for provider in socialaccount.providers %}
-  <a title="{{provider.name}}" class="socialaccount_provider {{provider.id}}" 
-     href="{% provider_login_url provider.id process=process %}">{{provider.name}}</a>
+
 {% endfor %}
 {% blocktrans %} account.{% endblocktrans %}
-
-</p>
-{% comment %}
-
-  <div class="login-or">{% trans 'or' %}</div>
-
-</div>
-
-{% include "socialaccount/snippets/login_extra.html" %}
-
-{% endif %}
-
-<form class="login" method="POST" action="{% url 'account_login' %}">
-  {% csrf_token %}
-  {{ form.as_p }}
-  {% if redirect_field_value %}
-  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-  {% endif %}
-  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-  <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
-</form>
-
-{% endcomment %}
-{% endblock %}
-

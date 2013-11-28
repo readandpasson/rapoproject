@@ -14,14 +14,18 @@
 {% endblock topsection %}
 	
 {% block Centre %}
-<table id='help'>
-   <caption>How it works..</caption>
-   <tr>
-        <th id ='sit'> Situation </th>
-    	<th id='fb'> In facebook RAPO&trade; group </th>
-	 	<th id='rapo'> In rapo.in </th>
-    </tr>
-   <tr>
+<div class="panel panel-success">
+                    <div class="panel-heading">
+                    <strong>Books Released by Me</strong>
+                  </div>
+<table class="table table-hover" id='help'>
+    <thead>
+          <tr>
+            <th>Situation</th>
+            <th>In facebook RAPO&trade; group</th>
+            <th>In rapo.in</th>
+          </tr>
+        </thead>
         <td><em>Book Sender:</em> You have a book and want to release it to RAPO&trade;</td>
     	<td>You start a new thread, mention the book name, author, a two line review, and indicate if postal expenses is on you/receiver</td>
     	<td><pre>
@@ -88,4 +92,5 @@ Click 'Search'
 </pre> </td>
    </tr>
    </table>
+  </div>
 {% endblock %}

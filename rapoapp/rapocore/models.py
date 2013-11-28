@@ -6,6 +6,8 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from allauth.socialaccount.models import SocialAccount
+from mptt.models import MPTTModel, TreeForeignKey
+
 
 
 class Author(models.Model):
@@ -79,7 +81,8 @@ class Book(models.Model):
         if (date.today() -  self.datereleased.date()).total_seconds() < 604800:  # 7 days
            return True
         return False
-
+    imgurl = models.URLField(max_length=2048)
+    buyurl = models.URLField(max_length=2048)
 
 class Transaction(models.Model):
     REC='R'
@@ -170,3 +173,20 @@ class Defect(models.Model):
         return self.description
     class Meta:
         ordering = ['-logdate']
+
+class Comment(MPTTModel):
+    """ Threaded comments for blog posts """
+    book = models.ForeignKey(Book)
+    author = models.CharField(max_length=60)
+    comment = models.TextField(help_text="Comment here...")
+    added  = models.DateTimeField(default=datetime.now)
+    # a link to comment that is being replied, if one exists
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
+
+    class MPTTMeta:
+        # comments on one level will be ordered by date of creation
+        order_insertion_by=['added']
+
+# Benitha: 13-Nov-2013 Model for book cover img
+class Document(models.Model):
+	docfile = models.FileField(upload_to='documents/%Y/%m/%d')

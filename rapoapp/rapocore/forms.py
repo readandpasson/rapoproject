@@ -45,7 +45,8 @@ class SearchForm(forms.Form):
     sauthor = forms.CharField(label='Author contains')
     #slanguage = forms.ModelMultipleChoiceField(Language.objects,label='Language')
     slanguage = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Language.objects.all()],label ='Language')
-    #stag = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Tag.objects.all()],label ='Tag')
+# Benitha: 16-Nov-2013 Uncommented the Genre field search 
+    stag = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Tag.objects.all()],label ='Genre')
     sownermember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, force_text(u'%s %s (%s)' % (o.user.first_name.decode('utf-8'),o.user.last_name.decode('utf-8'),o.user.username))) for o in SocialAccount.objects.all().order_by(u'user__first_name',u'user__last_name')],label ='Original Owner')
     #sownermember = forms.ChoiceField(choices=[('','-----')],label ='Original Owner')
     #swithmember = forms.ChoiceField(choices=[('','-----')],label = 'Book currently with')
@@ -56,10 +57,12 @@ class SearchForm(forms.Form):
 
 
 class ReleaseBookForm(ModelForm):
+
     title = forms.CharField(widget=forms.TextInput(attrs={'size':'50'}))
     author = forms.ModelMultipleChoiceField(queryset=Author.objects.order_by('first_name'), widget= MultipleSelectWithPopUp)
     tag = forms.ModelMultipleChoiceField(Tag.objects, widget= MultipleSelectWithPopUp)
     language = forms.ModelChoiceField(Language.objects, widget= SelectWithPopUp) 
+#    docfile = forms.FileField(label='Select the book cover', help_text='Max. size 1MB')
     class Meta:
         model = Book
         fields = [ 'title', 'author', 'tag', 'language']
@@ -69,6 +72,9 @@ class ReleaseBookForm(ModelForm):
         self.ownermember = user
         self.withmember = user
         self.status = Book.AVAILABLE
+        self.fields['tag'].label = "Genre"
+        self.fields['author'].help_text = "If there are multiple authors, hold down control key and select"
+        self.fields['tag'].help_text = "If there are multiple genres, hold down control key and select"
 
 class ReceiveBookForm(ModelForm):
     class Meta:

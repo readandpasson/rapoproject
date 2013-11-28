@@ -1,29 +1,54 @@
-{% load i18n admin_static admin_list %} 
-{% load admin_urls %} 
+<!-- Benitha: 07-Nov-2013 for formatting the queue -->
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
+<div class="container">
+<div class="row">
+<div class="col-sm-3">
+<div id="leftcolumn">
+<div class="innertube">{% block Left %} {% endblock %}</div>
+</div>
+</div>
+<div class="col-sm-9">
+ {% block Centre %} {% endblock %}
+</div>
+</div>
 
+<div class="panel panel-success">
+<div class="panel-heading">
+          <strong>People in Queue for the book '{{ book }}'</strong>
+</div>
 
-<html>
-    <head>
-        <title>View queue</title>
-    </head>
-    <body>
-        	<h1>View queue </h1>
-			<p>Queue for '{{ book }}'</p>
-
+<div>
 {% if to_member %}
    In Transit ---> {{ to_member.user.first_name }} {{ to_member.user.last_name }} </br>
 {% endif %}
 {% if queue %}
-            <table>
             {% for m in queue  %}
-                 <tr> {{ m.member__user__first_name }} {{ m.member__user__last_name }} </br></tr>
+		<table id="queue" class="table table-hover" rules="rows">
+		  <thead>
+		    <th id="queueid" width="20%"> No. in queue </th>
+		    <th id="name" width="80%"> Requested By </th>
+		  </thead>
+
+		  <tr>
+		    <td> {{ forloop.counter }} </td>
+                    <td> {{ m.member__user__first_name }} {{ m.member__user__last_name }} </td>
+		    </br>
+		  </tr>
+		</table>
             {% endfor %}
-            </table>
 {% else %}
-    ---None---
+	<table id="none">
+    		<th> No Queue details found! </th>
+	</table>
 {% endif %}
  
-				
-            <p><a href="javascript: window.close();"/>Close</p></a>
-    </body>
-</html>
+            <p align="center"><a href="javascript: window.close();"/>Close</p></a>
+</div>
+</div>
+
+<div class="row">
+<div class="well">Copyright &copy; RAPO&trade; 2013</div>
+</div>
+
+</div>

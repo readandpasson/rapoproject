@@ -2,6 +2,7 @@
 {% load i18n admin_static admin_list %} 
 {% load admin_urls %} 
 	 
+{% block title %} {{ block.super }} {% endblock title %}
 {% block headsection %}
 <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script> 
 <script type="text/javascript" src="{% static "admin/js/core.js" %}"></script>
@@ -11,12 +12,15 @@
 <script type="text/javascript" src="{% static "admin/js/actions.js" %}"></script>
 <script type="text/javascript" src="{% static "admin/js/calendar.js" %}"></script>
 <script type="text/javascript" src="{% static "admin/js/admin/DateTimeShortcuts.js" %}"></script>
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/changelists.css" %}" /> 
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" /> 
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/base.css" %}" /> 
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/global.css" %}" /> 
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/widgets.css" %}" /> 
+
 {% endblock headsection %}
-<p>You're logged in with {{ user.get_provider }} as {{ user }}.</p> 
+
+{% block Login %} 
+          <ul class="nav navbar-nav navbar-right">
+          <li> <a href="#"><span class="text-success"><strong>Hello {{ user.first_name }}!</strong></span></a></li>
+          <li><img height="50px" width="50px" src="http://graph.facebook.com/{{ user.username }}/picture"></img></li> 
+	  <li> <a href="/logout" class="text-success" title="Click to signout">Logout</a> </li>
+          </ul>
+{% endblock %}
 	 
 {% block Left %} {% include "rapocore/_nav.html" %} {% endblock %}

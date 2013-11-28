@@ -1,6 +1,10 @@
 {% extends "rapocore/myaccount.html" %}
 {% load staticfiles %}
 
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
 {% block headsection %}
 {{ block.super }} 
 
@@ -7079,23 +7083,24 @@ function getmembersinqueue(sel_val) {
 {% endblock %}
 
 {% block Centre %}
-<h2>{{ formtitle }}</h2>
-    <form method='post' action='/{{ formaction }}/'>{% csrf_token %}
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+					<strong>{{ formtitle }}</strong></br>
+        			{{ formnote }} 
+                  </div>
+                  <div class="panel-body">
+    <form method='post' role="form" action='/{{ formaction }}/'>{% csrf_token %}
 
-	<table>
     {% for field in form %}
-			<tr>
-			<label>
-			<td>
+			<div class="form-group">
         	{% if field.field.required %}<span class="required">{{ field.label_tag }}</span>
         	{% else %}{{ field.label_tag }}{% endif %}
-			</td>
-    		</label>
-            <td>{{ field }}</td> <td> {{ field.errors }} </td>
-			</tr>
+           {{ field }}</td> <td> {{ field.errors }}
+			</div>
     {% endfor %}
-	</table>
 			<span class="required"> &nbsp; </span> Required fields </br>
-		<input type="submit" value="{{ submitmessage }}" />
+		<input type="submit" value="{{ submitmessage }}" class="btn btn-default"/>
     </form>
+  </div>
+</div>
 {% endblock %}

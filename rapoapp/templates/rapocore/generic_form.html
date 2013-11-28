@@ -1,7 +1,11 @@
 {% extends "rapocore/myaccount.html" %}
 
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
 {% block headsection %}
-{{ block.super }} 
+{{ block.super }}
 {% endblock %}
 
 {% block topsection %}
@@ -9,28 +13,27 @@
 {% endblock %}
 
 {% block Centre %}
-<h2>{{ formtitle }}</h2>
-    <form method='post' action='/{{ formaction }}/'>{% csrf_token %}
-
-	<table>
-    {% for field in form %}
-			<tr>
-			<label>
-			<td>
-             {% ifnotequal submitmessage 'Search' %}
-        	{% if field.field.required %}<span class="required">{{ field.label_tag }}</span>
-        	{% else %}{{ field.label_tag }}{% endif %}
-        	{% else %}{{ field.label_tag }}{% endifnotequal %}
-			</td>
-    		</label>
-            <td>{{ field }}</td> <td> {{ field.errors }} </td>
-			</tr>
-    {% endfor %}
-	</table>
-			{% ifnotequal submitmessage 'Search' %}
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>{{ formtitle }}</strong></br>
+        {{ formnote }} 
+	</div>
+	<div class="panel-body">
+		<form role="form" method='post' action='/{{ formaction }}/' enctype="multipart/form-data">{% csrf_token %}
+<table>
+		{% for field in form %}
+			<div class="form-group">
+				{{ field.label_tag }}
+				{{ field }}{{ field.help_text }}
+				{{ field.errors }}
+			</div>
+		{% endfor %}
+		{% ifnotequal submitmessage 'Search' %}
 			<span class="required"> &nbsp; </span> Required fields </br>
-			{% endifnotequal %}
-		<input type="submit" value="{{ submitmessage }}" />
-    
-    </form>
+		{% endifnotequal %}
+		<input type="submit" value="{{ submitmessage }}" class="btn btn-default"/>
+</table>
+		</form>
+	</div>
+</div>
 {% endblock %}

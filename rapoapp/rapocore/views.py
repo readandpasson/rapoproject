@@ -5,10 +5,11 @@ from django.conf.urls import patterns, include, url
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext, Context
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
 
-from rapocore.models import Author,SocialAccount,Book,Transaction, Queue, Defect
+from rapocore.models import Author,SocialAccount,Book,Transaction, Queue, Defect, Document, Buylink
 from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
 from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm
 
@@ -16,18 +17,28 @@ from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2Qu
 @login_required
 def ReleaseBook(request):
     if request.method == 'POST': # If the form has been submitted...
-        form = ReleaseBookForm(request.user,request.POST) # A form bound to the POST data
+        form = ReleaseBookForm(request.user,request.POST,request.FILES) # A form bound to the POST data
         if form.has_changed():
             if form.is_valid(): # All validation rules pass
                 f_type = form.save(commit=False)
                 f_type.ownermember = SocialAccount.objects.get(user_id = request.user)
                 f_type.withmember = SocialAccount.objects.get(user_id = request.user)
+#		f_type.doc = Document(docfile = request.FILES['docfile'])
+#		f_type.doc.save()
                 f_type.save()
                 form.save_m2m()
                 return HttpResponseRedirect('/thanks/')
+	    else:
+		messages.error(request, "Error")
     else:
         form = ReleaseBookForm(request.user)
-    return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Release a book', 'submitmessage':'Release','formaction':'releasebook'},RequestContext(request))
+
+    documents = Document.objects.all()
+    return render_to_response('rapocore/generic_form.html',{ 'form': form, 
+			'formtitle':'Release a book', 
+			'formnote':'Do you want to release a book? Please Fill in the details in the form below and click on Release.', 
+			'submitmessage':'Release',
+			'formaction':'releasebook'},RequestContext(request))
 
 # receive a book
 @login_required
@@ -51,13 +62,23 @@ def ReceiveBook(request):
     else:
         form = ReceiveBookForm(request.user)
 
-    return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Receive a book', 'submitmessage':'Receive','formaction':'receivebook'},RequestContext(request))
+    return render_to_response('rapocore/generic_form.html',{ 'form': form, 
+		'formtitle':'Receive a book', 
+		'formnote':'Has a book sent to you by another member reached you? Please confirm here by choosing the book received by you.', 
+		'submitmessage':'Receive',
+		'formaction':'receivebook'},RequestContext(request))
 
 @login_required
-def PassOn(request):
+def PassOn(request): # Pass On is the act of moving a book from status 'Reading' to 'Available' 
+
     results = Book.objects.filter(withmember=SocialAccount.objects.get(user=request.user), status=Book.READ).select_related()
     member = SocialAccount.objects.get(user_id=request.user)
-    return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member }, RequestContext(request))
+    return render_to_response('rapocore/book_list.html',{  'data' : results, 
+			'formtitle':'Pass On',
+			'formnote':'Finished reading a book? Let others know. Select which book you have completed/read and click on Pass On', 
+			'member': member, 
+			'search' : False ,
+			'passon' : True}, RequestContext(request))
 
 @login_required
 def Search(request):
@@ -65,7 +86,11 @@ def Search(request):
     if form.has_changed():
         if form.is_valid():
             print "the form is valid"
-    return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Search for a book', 'submitmessage':'Search','formaction':'searchresults'},RequestContext(request))
+    return render_to_response('rapocore/generic_form.html',{ 'form': form, 
+			'formtitle':'Search for a book', 
+			'formnote':'Looking for something? Search our repository by providing search criteria', 
+			'submitmessage':'Search',
+			'formaction':'searchresults'},RequestContext(request))
 
 
 @login_required
@@ -74,18 +99,20 @@ def SearchResults(request):
     stitle = request.POST['stitle']
     sauthor = request.POST['sauthor']
     slanguage = request.POST['slanguage']
-    #stag = request.POST['stag']
+    stag = request.POST['stag']
     sownermember = request.POST['sownermember']
     swithmember = request.POST['swithmember']
     sstatus = request.POST['sstatus']
     results = Book.objects.all().select_related()
-    if stitle or sauthor or slanguage or sownermember or swithmember or sstatus:
+    if stitle or sauthor or slanguage or stag or sownermember or swithmember or sstatus:
         if stitle:
             results = results.filter(title__icontains=stitle).select_related()
         if sauthor:
             results = results.filter(Q(author__first_name__icontains=sauthor)|Q(author__last_name__icontains=sauthor)).select_related()
         if slanguage:
             results = results.filter(language__id__exact=slanguage).select_related()
+	if stag:
+	    results = results.filter(tag__id__exact=stag).select_related()
         if sownermember:
             results = results.filter(ownermember__id__exact=sownermember).select_related()
         if swithmember:
@@ -96,10 +123,11 @@ def SearchResults(request):
         #results = results.values('id','title','author__first_name','author__last_name','language__languagename','ownermember__user__first_name','ownermember__user__last_name','withmember__user__first_name','withmember__user__last_name','status')
         
         member = SocialAccount.objects.get(user_id=request.user)
-        return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member }, RequestContext(request))
+	form = SearchForm(request.GET or None)
+        return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'search': True, 'form':form }, RequestContext(request))
     else:
         member = SocialAccount.objects.get(user_id=request.user)
-        return render_to_response('rapocore/book_list.html',{  'data' : [], 'member': member }, RequestContext(request))
+        return render_to_response('rapocore/book_list.html',{  'data' : [], 'member': member, 'search': True, 'form':form }, RequestContext(request))
 
 
 
@@ -108,7 +136,23 @@ def Browse(request):
     results = Book.objects.all().order_by('-id').select_related()
     member = SocialAccount.objects.get(user_id=request.user)
     bookqueue = Queue.objects.all().order_by('id').select_related()
-    return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'bookqueue': bookqueue }, RequestContext(request))
+    return render_to_response('rapocore/book_list.html',{  'data' : results, 
+			'formtitle': 'Browse books',
+			'member': member, 'bookqueue': bookqueue, 'search' : False }, RequestContext(request))
+
+# Benitha: added code for Book details page: 06-Nov-2013
+
+@login_required
+def BookDetails(request,bookid):
+    results = Book.objects.select_related().get(id= bookid)
+    book = Book.objects.get(id=bookid)
+    member = SocialAccount.objects.get(user_id=request.user)
+    queueDetails = ViewQueue(request, bookid)
+    booksTran = Transaction.objects.filter(book_id=bookid)
+    dateTran = Transaction.objects.filter(book_id=bookid).filter(date_received__isnull = True )
+    data = {  'book' : results, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid }
+    data.update(queueDetails)
+    return render_to_response('rapocore/book_details.html', data, RequestContext(request))
 
 @login_required
 def NewAuthor(request):
@@ -158,7 +202,8 @@ def ViewQueue(request, bookid):
             qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
         else :
             qset = ()
-        return render_to_response('rapocore/viewqueue.html',{ 'book': b.title,'queue':qset,'to_member':to_member}, RequestContext(request))
+	return {'queue':qset,'to_member':to_member}
+#        return render_to_response('rapocore/viewqueue.html',{ 'book': b.title,'queue':qset,'to_member':to_member}, RequestContext(request))
 
 @login_required
 def Add2Queue(request, bookid):
@@ -195,7 +240,11 @@ def SendBook(request):
     else:
         form = SendBookForm(request.user)
 
-    return render_to_response('rapocore/sendbook_form.html',{ 'form': form, 'formtitle':'Send a book', 'submitmessage':'Send','formaction':'sendbook'},RequestContext(request))
+    return render_to_response('rapocore/sendbook_form.html',{ 'form': form, 
+		'formtitle':'Send a book', 
+		'formnote':'Have you physically sent a book to another member in the queue? Fill in the details below.', 
+		'submitmessage':'Send',
+		'formaction':'sendbook'},RequestContext(request))
 
 # send a book to a particular member
 @login_required
@@ -244,7 +293,11 @@ def ReportDefect(request):
                 return HttpResponseRedirect('/thanks/')
     else:
         form = ReportDefectForm(request.user)
-    return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Report a defect', 'submitmessage':'Report','formaction':'defect'},RequestContext(request))
+    return render_to_response('rapocore/generic_form.html',{ 'form': form, 
+		'formtitle':'Report a defect', 
+		'formnote':'Have you noticed any error in the database? Or a bug in the application? Do you need a new feature? Please let us know', 
+		'submitmessage':'Report',
+		'formaction':'defect'},RequestContext(request))
 
 class DefectListView(ListView):
     model  = Defect

@@ -4,7 +4,6 @@ import os
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
 DEBUG =  True
-
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -16,21 +15,21 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'rapodb',                      # Or path to database file if using sqlite3.
+        #'NAME': '/home/rapoadmin/public_html/devrapo/rapoapp/rapo.db',                      # Or path to database file if using sqlite3.
+        'NAME': 'testdb',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
         'PASSWORD': 'rootMY1!',                  # Not used with sqlite3.
-#        'HOST': '/var/run/mysql',                      # Set to empty string for localhost. Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-		'OPTIONS': {
-	             "init_command": "SET foreign_key_checks = 0;",
-	    } 
+		#'OPTIONS': {
+	    #         "init_command": "SET foreign_key_checks = 0;",
+	    #} 
     }
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['.rapo.in']
+ALLOWED_HOSTS = ['.test.rapo.in']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -45,7 +44,7 @@ TIME_ZONE = 'Asia/Kolkata'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 2
+SITE_ID = 3
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -55,9 +54,11 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
+
+USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/home/rapoadmin/public_html/rapoproject/rapoapp/media/'
+MEDIA_ROOT = '/home/rapoadmin/public_html/devrapo/rapoapp/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -69,7 +70,7 @@ MEDIA_URL = '/media/'
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 #STATIC_ROOT = '/home/rapoadmin/public_html/rapoproject/rapoapp/static/'
-STATIC_ROOT = '/home/rapoadmin/public_html/rapoproject/rapoapp/static/'
+STATIC_ROOT = '/home/rapoadmin/public_html/devrapo/rapoapp/static/'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -86,7 +87,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     #os.path.join(PROJECT_ROOT,"static"),
-	'/home/rapoadmin/public_html/rapoproject/rapoapp/mystatic/',
+	'/home/rapoadmin/public_html/devrapo/rapoapp/mystatic/',
 )
 
 # List of finder classes that know how to find static files in
@@ -107,12 +108,47 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+#    "mezzanine.core.middleware.UpdateCacheMiddleware",
+#    "mezzanine.core.middleware.UpdateCacheMiddleware",
+#    "django.contrib.sessions.middleware.SessionMiddleware",
+#    "django.contrib.auth.middleware.AuthenticationMiddleware",
+#    "django.middleware.common.CommonMiddleware",
+#    "django.middleware.csrf.CsrfViewMiddleware",
+#    "django.contrib.messages.middleware.MessageMiddleware",
+#    "mezzanine.core.request.CurrentRequestMiddleware",
+#    "mezzanine.core.middleware.RedirectFallbackMiddleware",
+#    "mezzanine.core.middleware.TemplateForDeviceMiddleware",
+#    "mezzanine.core.middleware.TemplateForHostMiddleware",
+#    "mezzanine.core.middleware.AdminLoginInterfaceSelectorMiddleware",
+#    "mezzanine.core.middleware.SitePermissionMiddleware",
+#    # Uncomment the following if using any of the SSL settings:
+#    # "mezzanine.core.middleware.SSLRedirectMiddleware",
+#    "mezzanine.pages.middleware.PageMiddleware",
+#    "mezzanine.core.middleware.FetchFromCacheMiddleware",
+#)
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
+
+
+#mez specific
+
+#PACKAGE_NAME_FILEBROWSER = "filebrowser_safe"
+#PACKAGE_NAME_GRAPPELLI = "grappelli_safe"
+#
+#OPTIONAL_APPS = (
+#    "debug_toolbar",
+#    "django_extensions",
+#    "compressor",
+#    PACKAGE_NAME_FILEBROWSER,
+#    PACKAGE_NAME_GRAPPELLI,
+#)
+# mez specific over
+
+
 
 ROOT_URLCONF = 'rapoapp.urls'
 
@@ -139,7 +175,18 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
-    #'allauth.socialaccount.providers.google',
+# extra for mez
+#    "django.contrib.redirects",
+#    "django.contrib.sitemaps",
+#    "mezzanine.boot",
+#    "mezzanine.conf",
+#    "mezzanine.core",
+#    "mezzanine.generic",
+#    "mezzanine.blog",
+#    "mezzanine.forms",
+#    "mezzanine.pages",
+#    "mezzanine.galleries",
+#    "mezzanine.twitter",
 )
 
 # A sample logging configuration. The only tangible logging
@@ -180,6 +227,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.static',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
     'allauth.account.context_processors.account',
     'allauth.socialaccount.context_processors.socialaccount'
 )
@@ -187,3 +236,8 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 #LOGIN_REDIRECT_URL = '/'
+GEOIP_PATH = '/home/rapoadmin/public_html/devrapo/rapoapp/static/GeoIP.dat'
+GEOIPV6_PATH = '/home/rapoadmin/public_html/devrapo/rapoapp/static/GeoIPv6.dat'
+COMMENTS_APP = 'comments'
+
+POSTMAN_AUTO_MODERATE_AS = True

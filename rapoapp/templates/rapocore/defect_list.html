@@ -3,6 +3,10 @@
 {% load i18n admin_static admin_list %} 
 {% load admin_urls %} 
 
+{% block title %}
+{{ block.super }} Browse Defects
+{% endblock %}
+
 {% block headsection %}
 {{ block.super }}
 <script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
@@ -27,8 +31,11 @@ function popitup(url,message) {
 {% endblock topsection %}
 	
 {% block Centre %}
+<div class="panel panel-success">
+     <div class="panel-heading">
+     <strong>Defects</strong>
+</div>
 <table id="defects" class="sortable">
-	<caption style="text-align:center">Defects</caption>
    	<tr>
 	<th id="by"> Logged by </th>
 	<th id="date"> Log date</th>

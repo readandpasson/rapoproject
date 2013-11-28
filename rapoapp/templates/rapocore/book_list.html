@@ -4,6 +4,10 @@
 {% load admin_urls %} 
 {% load staticfiles %} 
 
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
 {% block headsection %}
 {{ block.super }}
 <script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
@@ -23,30 +27,47 @@ function popitup(url,message) {
     return false;
 }
 
-</script>
 
+</script>
 {{ form.media }}
 {% endblock headsection %}
 
 {% block topsection %}
 {{ block.super }} 
 {% endblock topsection %}
-	
+
 {% block Centre %}
-<table id="books" class="sortable">
-   <caption>Books</caption>
+{% if search %}
+<div class="panel panel-success">
+     <div class="panel-heading">
+     <strong>Search Books</strong>
+</div>
+<br/>
+<form action="/searchresults/" method="post">{% csrf_token %}
+<table>{{ form }} </table>
+<br/>
+<input type="submit" value="Submit" />
+</form>
+</div>
+{% endif %}
+
+<div class="panel panel-success">
+                    <div class="panel-heading">
+{% if passon %} 
+<strong>{{ formtitle }} </strong> </br> {{ formnote }}
+{% else %}
+                    <strong>List of RAPO™ Books</strong>
+{% endif %}
+                  </div>
+<table id="books" class="table table-hover sortable">
+	<thead>
    <tr>
-        <th id="id" title="Click to sort"> Id </th>
-    	<th id="title" title="Click to sort"> Title of the book </th>
-	 	<th id="author" title="Click to sort"> Author </th>
-	 	<th id="tag" title="Click to sort"> Tags </th>
-		<th id="language" title="Click to sort"> Language &nbsp; </th>
-		<th id="oowner" title="Click to sort"> Original Owner </th>
-		<th id="currentowner" title="Click to sort"> Currently With </th>
-		<th id="status" title="Click to sort"> Status </th>
-		<th id="queue" class="sorttable_nosort"> Queue </th>
-		<th id="can" class="sorttable_nosort"> You can .. </th>
+        <td id ="id" width="20%"><b> Book ID </b></td>
+<!--	<th id = "bookcover" width="20%"> Book Cover </th> -->
+    	<th id="title" width="30%"> Title of the book </th>
+ 	<th id="author" width="30%"> Author </th>
     </tr>
+</thead>
 {% if data %}
 {% for book in data %}
    <tr>
@@ -54,55 +75,12 @@ function popitup(url,message) {
         <td> <img src="{% static "new.jpg" %}" alt="New" height="2" width="2"> </td>
  {% endcomment %}
         <td> {% if book.is_new %} <img src="{% static "new.jpg" %}" alt="New" height="15" width="30"> {% endif %} {{ book.id }}</td>
-    	<td> {{ book.title }} </td>
-		<td> {% for author in book.author.all %}
-  				{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
-			{% endfor %}
-		</td>
-		<td> {% for tag in book.tag.all %}
-  				{{ tag.taglabel }}{% if not forloop.last %},{% endif %}
-			{% endfor %}
-		</td>
-		<td> {{ book.language.languagename }} </td>
-		<td> {% ifequal book.ownermember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
-		 {{ book.ownermember.user.first_name }} {{ book.ownermember.user.last_name }} {% endifequal %}</td>
-		<td> {% ifequal book.withmember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
-		 {{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} {% endifequal %} </td>
-		<td> {% ifequal book.status 'A' %}
-				Available {% else %} {% ifequal book.status 'T' %}
-					In Transit {% else %} {% ifequal book.status 'R' %} Reading {% endifequal %} {% endifequal %} {% endifequal %} </td>
-		<td> 
-
-				<a href="/viewqueue{{ book.id }}" id="viewqueue" class="viewqueue" onclick="return popup(this);">View Queue</a> 
-
-
-</td>
-		<td> {% ifequal book.withmember.user.username 'rapo.admin' %}
-					<em> Need Info </em>
-			 {% else %}
-				{% ifnotequal user.username book.withmember.user.username %} 
-    {% if member in book.rqueue.all %} 
-		In queue: <a href="/cancelrequest{{ book.id }}" id="cancelrequest" class="cancelrequest" onclick="return popitup(this,'Are you sure you want to cancel your request for  this book - {{ book.title }}?');">Cancel Request</a> 
-                    {% else %}     
-				<a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" onclick="return popitup(this,'Are you sure you want to request this book - {{ book.title }}?');">Request/Reserve</a> 
-    {% endif %}
-		             {% else %}
-		             	{% ifequal book.status 'A' %}
-								<a href="/sendbook" >Send Book</a>
-		             	{% else %}
-							{% ifequal book.status 'R' %}
-								<a href="/passon{{ book.id }}" id="passon" class="passon" onclick="return popitup(this,'Are you sure you want to pass this book on - {{ book.title }}?');">Pass On</a> 
-							{% else %}
-								{% ifequal book.status 'T' %}
-								   In Transit
-								{% else %}
-									Where is it?
-		 						{% endifequal %}
-							{% endifequal %}
-						{% endifequal %}	
-		             {% endifnotequal %}
-			{% endifequal %}
-		</td>
+    <!--    <td> <a href="/bookdetails/{{ book.id }}" title="Click to view the details of the book"> <img src={{book.imgurl}}  alt="New" height="15" width="30"> </a> </td> -->
+    	<td> <a href = "/bookdetails/{{ book.id }}" title="Click to view the details of the book" >{{ book.title }}  </a> </td>
+	<td> {% for author in book.author.all %}
+  		{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+	</td>
     </tr>
 {% endfor %}
    <tfoot><tr> <td class="closedstatus" colspan="10"> {{ data.count }} books found </td> </tr> </tfoot>
@@ -110,4 +88,5 @@ function popitup(url,message) {
     <tr> <td class="odd" colspan="10"> No books found.</td></tr>
 {% endif %}
    </table>
+</div>
 {% endblock %}

@@ -1,11 +1,13 @@
 {% load i18n admin_static admin_list %} 
 {% load admin_urls %} 
 {% load staticfiles %}
+{{ form.media }}
     <a
         href="/add{{ model }}"
         class="add-another"
         id="add_id_{{ model }}"
         onclick="return showAddAnotherPopup(this);">
-            Add Another {{ model }}
+<!--            Add Another {{ model }} -->
+	<img src="{% static "icon_addlink.gif" %}" alt="Add another">
     </a>
 

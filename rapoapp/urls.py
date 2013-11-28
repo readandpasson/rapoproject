@@ -1,7 +1,9 @@
 import settings
+import settings
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView, ListView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 
 import allauth
 from allauth.account.views import logout
@@ -18,6 +20,7 @@ from rapocore.models import Book
 urlpatterns = patterns('',
     url(r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'), 
     url(r'^admin/', include(admin.site.urls)),#why not quotes ?SM
+#    url(r'^some/', include('djang0byte.urls')),
 
 
     #url(r'^$', TemplateView.as_view(template_name="underconstruction.html"), name="index"),
@@ -26,6 +29,7 @@ urlpatterns = patterns('',
     url(r'^about/', TemplateView.as_view(template_name="about.html"), name="index"),
     url(r'^contact/', TemplateView.as_view(template_name="contact.html"), name="index"),
     url(r'^readme$', TemplateView.as_view(template_name="rapocore/readme.html"), name="index"),
+    url(r'^disclaimer$', TemplateView.as_view(template_name="rapocore/disclaimer.html"), name="disclaimer"),
 
     url(r'^thanks/', TemplateView.as_view(template_name="rapocore/thanks.html"), name="thanks"),
 
@@ -42,6 +46,10 @@ urlpatterns = patterns('',
     url(r'^search/', 'rapocore.views.Search',name='search'),
     url(r'^searchresults', 'rapocore.views.SearchResults',name='search-results'),
     url(r'^bookbrowse/', 'rapocore.views.Browse', name='book-browse'),
+# Benitha to work on Browse details page and view queue page : Date: 06-Nov-2013 	
+    url(r'^bookdetails/(?P<bookid>\d+)/$', 'rapocore.views.BookDetails', name='book-details'),
+    url(r'^viewqueue/(?P<bookid>\d+)/$', 'rapocore.views.ViewQueue', name='view-queue'),
+
     url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
     url(r'^test/', 'rapocore.views.Test', name='book-view'),
 
@@ -50,15 +58,14 @@ urlpatterns = patterns('',
     url(r'^addtag/', 'rapocore.views.NewTag',name='add-tag'),
     url(r'^addlanguage/', 'rapocore.views.NewLanguage',name='add-language'),
     url(r'^add2queue(?P<bookid>[0-9]*)/$', 'rapocore.views.Add2Queue',name='add-queue'),
-    url(r'^viewqueue(?P<bookid>[0-9]*)/$', 'rapocore.views.ViewQueue',name='view-queue'),
     url(r'^cancelrequest(?P<bookid>[0-9]*)/$', 'rapocore.views.CancelRequest',name='cancel-request'),
     url(r'^archiveit(?P<defectid>[0-9]*)/$', 'rapocore.views.Archiveit',name='archiveit'),
     url(r'^closeit(?P<defectid>[0-9]*)/$', 'rapocore.views.Closeit',name='closeit'),
     url(r'^passon(?P<bookid>[0-9]*)/$', 'rapocore.views.PassOnBook',name='passon-book'),
-    url(r'^sendbookto(?P<memberid>[^\/]*)/(?P<bookid>[0-9]*)/$', 'rapocore.views.SendBookTo',name='send-book'),
 
     url(r'^defect/', 'rapocore.views.ReportDefect',name='report-defect'),
     url(r'^defectbrowse/', DefectListView.as_view(),name='defect-browse'),
+    
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

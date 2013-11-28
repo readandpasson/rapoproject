@@ -4,6 +4,10 @@
 {% load admin_urls %} 
 {% load staticfiles %} 
 
+{% block title %}
+{{ block.super }} My Account
+{% endblock %}
+
 {% block headsection %}
 {{ block.super }}
 <script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
@@ -17,18 +21,14 @@ function popitup(url,message) {
     }
     return false;
 }
-
+/*
 function ToggleList(IDS) {
   var CState = document.getElementById(IDS);
   if (CState.style.display != "table-row") { CState.style.display = "table-row"; }
                                   else { CState.style.display = "none"; }
-}
+}*/
 
 </script>
-
-<style type="text/css">
-  .divInfo { display:none;  }
-</style>
 
 {{ form.media }}
 {% endblock headsection %}
@@ -38,9 +38,20 @@ function ToggleList(IDS) {
 {% endblock topsection %}
 	
 {% block Centre %}
-<table id="dashboard" >
+                <div class="panel panel-success">
+                  <div class="panel-heading">
+                    <strong>Books with me</strong>
+                  </div>
+                  <div class="panel-body">
+<table class="table table-hover" >
 {% comment %} Books currently with me {% endcomment %}
-<td class="closedstatus" rowspan="{{bookswith.count|add:"1"}}">  Books with me  </td> <td class="closedstatus"> Title </td><td class="closedstatus"> Status </td> </tr>
+  <thead>
+          <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Requested By</th>
+          </tr>
+        </thead>
 {% for book in bookswith %} 
 <tr> <td>{{ book.title }} </td> 
 	{% ifnotequal book.rqueue.count 0 %} 
@@ -58,31 +69,46 @@ function ToggleList(IDS) {
 {% endfor %} 
 
 {% comment %} Books in transit {% endcomment %}
-{% if booksintransitfromme %}  <td class="closedstatus" rowspan="{{booksintransitfromme.count|add:"1"}}"> Books in transit from me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> To </td></tr>
+{% if booksintransitfromme %}  
+
+<td> Books in transit from me </td> <td> Title </td>  <td> To </td></tr>
 {% for tr in booksintransitfromme %} <tr> <td>{{ tr.book.title }} </td> <td>  --> {{ tr.to_member.user.first_name }} {{tr.to_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} {% endif %}
 
-{% if booksintransittome %} <td class="closedstatus" rowspan="{{booksintransittome.count|add:"1"}}"> Books in transit to me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> From </td></tr>
+{% if booksintransittome %} <td> Books in transit to me </td> <td> Title </td>  <td> From </td></tr>
 {% for tr in booksintransittome %} <tr> <td>{{ tr.book.title }} </td> <td>  <-- {{ tr.from_member.user.first_name }} {{tr.from_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} {% endif %}
 
 {% comment %} Books requested by me {% endcomment %}
-{% if booksrequested %} <td class="closedstatus" rowspan="{{booksrequested.count|add:"1"}}"> Books requested by me </td> <td class="closedstatus"> Title </td>  <td class="closedstatus"> Currently with </td></tr>
+{% if booksrequested %} <td> Books requested by me </td> <td> Title </td>  <td> Currently with </td></tr>
 {% for qu  in booksrequested %} <tr> <td>{{ qu.book.title }} </td> <td>  {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }} ( {{ qu.book.withmember.user.username }} ) </td> </tr> {% endfor %} </td> </tr>
 {% else %}
-<tr> <td class="closedstatus">No books requested </td> </tr>
+<tr> <td>No books requested </td> </tr>
 {% endif %}
 
 
 
 
 </table>
+</div>
+</div>
 {% comment %} Books released by me {% endcomment %}
 
-<a href="#" color = "#ff00ff" onclick="ToggleList('a')">Books released by me</a>
-<div id="a" class="divInfo">
-<table>
-<tr><td rowspan="{{booksreleased.count|add:"1"}}"> &nbsp; </td> <td class="closedstatus"> Title </td> <td class="closedstatus"> On</td> <td class="closedstatus"> Currently with </td></tr>
+<!--<a href="#" color = "#ff00ff" onclick="ToggleList('a')">Books released by me</a> -->
+<div class="panel panel-success">
+                  <div class="panel-heading">
+                    <strong>Books Released by Me</strong>
+                  </div>
+  <div class="panel-body">
+<table class="table table-hover">
+  <thead>
+          <tr>
+            <th>Title</th>
+            <th>On</th>
+            <th>Currently With</th>
+          </tr>
+        </thead>
 {% for book in booksreleased %} <tr> <td>{{ book.title }} </td> <td>  {{ book.datereleased }} </td> <td>{{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} ( {{ book.withmember.user.username }} )</td> </tr> {% endfor %} </td> </tr>
 </table> 
+</div>
 </div>
 
 
