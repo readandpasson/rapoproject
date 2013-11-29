@@ -54,7 +54,15 @@ class SearchForm(forms.Form):
     sstatus = forms.ChoiceField(choices=tuple([(u'', u'-----')] + list(Book.STATUS_CHOICES)),label='Status')
     #scity = forms.ChoiceField(choices=[ (o.id, str(o.city)) for o in SocialAccount.objects.all()],label ='City')
 
-
+    def __init__(self, user, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        self.fields['stitle'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['sauthor'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['stag'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['slanguage'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['sownermember'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['swithmember'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['sstatus'].widget.attrs.update({'class' : 'form-control'})
 
 class ReleaseBookForm(ModelForm):
 
@@ -149,6 +157,8 @@ class ReportDefectForm(ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super(ReportDefectForm, self).__init__(*args, **kwargs)
+        self.fields['category'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['description'].widget.attrs.update({'class' : 'form-control'})
         self.bymember = user
         self.status = Defect.OPEN
 
@@ -161,6 +171,7 @@ class CancelRequestForm(ModelForm):
 
     def __init__(self, user, *args, **kwargs):
         super(CancelRequestForm, self).__init__(*args, **kwargs)
+        self.fields['book'].widget.attrs.update({'class' : 'form-control'})
         self.member = user
         self.fields['book'].queryset = Queue.objects.filter(member= SocialAccount.objects.get(user= user))
 
