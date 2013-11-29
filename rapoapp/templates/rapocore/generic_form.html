@@ -24,12 +24,13 @@
 		{% for field in form %}
 			<div class="form-group">
 				{{ field.label_tag }}
+				{% if field.field.required %}<span class="required">*</span> {% endif %}
 				{{ field }}{{ field.help_text }}
 				{{ field.errors }}
 			</div>
 		{% endfor %}
 		{% ifnotequal submitmessage 'Search' %}
-			<span class="required"> &nbsp; </span> Required fields </br>
+			<span class="required">*</span> Required fields </br>
 		{% endifnotequal %}
 		<input type="submit" value="{{ submitmessage }}" class="btn btn-default"/>
 </table>

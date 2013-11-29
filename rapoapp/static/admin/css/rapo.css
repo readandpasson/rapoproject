@@ -32,3 +32,6 @@ ul.nav li.li-no-hover>a:hover {
 	background-color:#468847;
 }
 
+.required {
+	color: red;
+}
