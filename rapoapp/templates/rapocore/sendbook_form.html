@@ -7092,13 +7092,12 @@ function getmembersinqueue(sel_val) {
     <form method='post' role="form" action='/{{ formaction }}/'>{% csrf_token %}
 
     {% for field in form %}
-			<div class="form-group">
-        	{% if field.field.required %}<span class="required">{{ field.label_tag }}</span>
-        	{% else %}{{ field.label_tag }}{% endif %}
+			<div class="form-group">{{ field.label_tag }}
+				{% if field.field.required %}<span class="required">*</span> {% endif %}
            {{ field }}</td> <td> {{ field.errors }}
 			</div>
     {% endfor %}
-			<span class="required"> &nbsp; </span> Required fields </br>
+			<span class="required">*</span> Required fields </br>
 		<input type="submit" value="{{ submitmessage }}" class="btn btn-default"/>
     </form>
   </div>
