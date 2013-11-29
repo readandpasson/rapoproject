@@ -58,7 +58,7 @@ USE_L10N = True
 USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/home/rapoadmin/public_html/devrapo/rapoapp/media/'
+MEDIA_ROOT = '~/Development/rapoapp/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -70,7 +70,7 @@ MEDIA_URL = '/media/'
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 #STATIC_ROOT = '/home/rapoadmin/public_html/rapoproject/rapoapp/static/'
-STATIC_ROOT = '/home/ganesh/Development/rapoproject/rapoapp/mystatic'
+STATIC_ROOT = '~/Development/rapoproject/rapoapp/mystatic'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -87,7 +87,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 #    os.path.join(PROJECT_ROOT,"static"),
-	'/home/ganesh/Development/rapoproject/rapoapp/static',
+	'~/Development/rapoproject/rapoapp/static',
         
 )
 
