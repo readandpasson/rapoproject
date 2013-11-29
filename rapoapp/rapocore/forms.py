@@ -47,10 +47,10 @@ class SearchForm(forms.Form):
     slanguage = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Language.objects.all()],label ='Language')
 # Benitha: 16-Nov-2013 Uncommented the Genre field search 
     stag = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Tag.objects.all()],label ='Genre')
-    sownermember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, force_text(u'%s %s (%s)' % (o.user.first_name,o.user.last_name,o.user.username))) for o in SocialAccount.objects.all().order_by(u'user__first_name',u'user__last_name')],label ='Original Owner')
+    sownermember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, force_text(u'%s %s (%s)' % (o.user.first_name.decode('utf-8'),o.user.last_name.decode('utf-8'),o.user.username))) for o in SocialAccount.objects.all().order_by(u'user__first_name',u'user__last_name')],label ='Original Owner')
     #sownermember = forms.ChoiceField(choices=[('','-----')],label ='Original Owner')
     #swithmember = forms.ChoiceField(choices=[('','-----')],label = 'Book currently with')
-    swithmember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, force_text(u'%s %s (%s)' % (o.user.first_name,o.user.last_name,o.user.username))) for o in SocialAccount.objects.all().order_by(u'user__first_name',u'user__last_name')],label = 'Book currently with')
+    swithmember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, force_text(u'%s %s (%s)' % (o.user.first_name.decode('utf-8'),o.user.last_name.decode('utf-8'),o.user.username))) for o in SocialAccount.objects.all().order_by(u'user__first_name',u'user__last_name')],label = 'Book currently with')
     sstatus = forms.ChoiceField(choices=tuple([(u'', u'-----')] + list(Book.STATUS_CHOICES)),label='Status')
     #scity = forms.ChoiceField(choices=[ (o.id, str(o.city)) for o in SocialAccount.objects.all()],label ='City')
 
