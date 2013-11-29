@@ -14,3 +14,7 @@ a.list-group-item:hover, a.list-group-item:focus
 background-color: #CEFCB8;
 }
 
+.navbar-brand {
+	padding:0px;
+}
+
