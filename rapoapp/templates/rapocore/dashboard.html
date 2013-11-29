@@ -57,9 +57,11 @@ function ToggleList(IDS) {
 	{% ifnotequal book.rqueue.count 0 %} 
 		<td> In queue : </br>  {% for m in bookswithqlist %} 
                          {% ifequal book.id m.book__id %}  {{ m.member__user__first_name }} {{ m.member__user__last_name }} 
+{% comment %}
        {% ifequal user.is_staff 1 %}
 						<a href="/sendbookto{{ m.uid }}/{{ book.id }}">Send Book</a>   
 		 {% endifequal %}
+{% endcomment %}
 				  </br>  {% endifequal %}
                          {% endfor %} </td>
 	{% else %}
