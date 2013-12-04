@@ -18,7 +18,7 @@ DATABASES = {
         #'NAME': '/home/rapoadmin/public_html/devrapo/rapoapp/rapo.db',                      # Or path to database file if using sqlite3.
         'NAME': 'testdb',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 'rootMY1!',                  # Not used with sqlite3.
+        'PASSWORD': 'rootSQ1!',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 		#'OPTIONS': {
