@@ -1,5 +1,6 @@
 # Django settings for rapoapp project.
 import os
+import sys
 
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 
@@ -12,7 +13,15 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
+if 'test' in sys.argv:
+ DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME':'testdb'
+        }
+    }
+else:
+ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
         #'NAME': '/home/rapoadmin/public_html/devrapo/rapoapp/rapo.db',                      # Or path to database file if using sqlite3.
@@ -58,7 +67,7 @@ USE_L10N = True
 USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/home/rapoadmin/public_html/devrapo/rapoapp/media/'
+MEDIA_ROOT = '/home/ganeshran/Development/rapoapp/media/'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -70,7 +79,7 @@ MEDIA_URL = '/media/'
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 #STATIC_ROOT = '/home/rapoadmin/public_html/rapoproject/rapoapp/static/'
-STATIC_ROOT = '/home/rapoadmin/public_html/devrapo/rapoapp/static/'
+STATIC_ROOT = '/home/ganeshran/Development/rapoproject/rapoapp/mystatic'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -86,8 +95,9 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    #os.path.join(PROJECT_ROOT,"static"),
-	'/home/rapoadmin/public_html/devrapo/rapoapp/mystatic/',
+#    os.path.join(PROJECT_ROOT,"static"),
+	'/home/ganeshran/Development/rapoproject/rapoapp/static',
+        
 )
 
 # List of finder classes that know how to find static files in
