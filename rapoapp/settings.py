@@ -18,9 +18,9 @@ DATABASES = {
         #'NAME': '/home/rapoadmin/public_html/devrapo/rapoapp/rapo.db',                      # Or path to database file if using sqlite3.
         'NAME': 'testdb',                      # Or path to database file if using sqlite3.
         'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': 'rootMY1!',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'PASSWORD': 'sa',                  # Not used with sqlite3.
+        'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
 		#'OPTIONS': {
 	    #         "init_command": "SET foreign_key_checks = 0;",
 	    #} 
@@ -58,7 +58,7 @@ USE_L10N = True
 USE_TZ = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = '/home/rapoadmin/public_html/devrapo/rapoapp/media/'
+MEDIA_ROOT = 'f:\rapo\rapoproject\rapoapp\media\\'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -70,7 +70,7 @@ MEDIA_URL = '/media/'
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 #STATIC_ROOT = '/home/rapoadmin/public_html/rapoproject/rapoapp/static/'
-STATIC_ROOT = '/home/rapoadmin/public_html/devrapo/rapoapp/static/'
+STATIC_ROOT = 'f:\rapo\rapoproject\rapoapp\static\\'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -87,7 +87,7 @@ STATICFILES_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     #os.path.join(PROJECT_ROOT,"static"),
-	'/home/rapoadmin/public_html/devrapo/rapoapp/mystatic/',
+	'f:\rapo\rapoproject\rapoapp\mystatic\\',
 )
 
 # List of finder classes that know how to find static files in
@@ -236,8 +236,8 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 #LOGIN_REDIRECT_URL = '/'
-GEOIP_PATH = '/home/rapoadmin/public_html/devrapo/rapoapp/static/GeoIP.dat'
-GEOIPV6_PATH = '/home/rapoadmin/public_html/devrapo/rapoapp/static/GeoIPv6.dat'
+GEOIP_PATH = 'f:\rapo\rapoproject\rapoapp\static\GeoIP.dat'
+GEOIPV6_PATH = 'f:\rapo\rapoproject\rapoapp\static\GeoIPv6.dat'
 COMMENTS_APP = 'comments'
 
 POSTMAN_AUTO_MODERATE_AS = True
