@@ -87,6 +87,9 @@ class ReleaseBookForm(ModelForm):
         self.fields['tag'].label = "Genre"
         self.fields['author'].help_text = "If there are multiple authors, hold down control key and select"
         self.fields['tag'].help_text = "If there are multiple genres, hold down control key and select"
+        defLanguage = Language.objects.filter(languagename='English')
+        self.fields['language'].initial = defLanguage[0].id
+
 
 class ReceiveBookForm(ModelForm):
     class Meta:
