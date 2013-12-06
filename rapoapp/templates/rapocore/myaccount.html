@@ -19,6 +19,7 @@
           <ul class="nav navbar-nav navbar-right">
           <li> <a href="#"><span class="text-success"><strong>Hello {{ user.first_name }}!</strong></span></a></li>
           <li><img height="50px" width="50px" src="http://graph.facebook.com/{{ user.username }}/picture"></img></li> 
+          <li><a href="/accounts/profile" title="View your RAPO&#153; information">My Account</a></li>
 	  <li class="li-no-hover"> <a href="/logout" class="btn btn-success" title="Click to signout">Logout</a> </li>
           </ul>
 {% endblock %}
