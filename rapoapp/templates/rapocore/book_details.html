@@ -85,8 +85,12 @@ var f = document.getElementById('viewhistory');
         <td> {% if book.is_new %} <img src="{% static "new.jpg" %}" alt="New" height="15" width="30"> {% endif %} {{ book.id }}</td>
 </tr>
 <tr>
-        <td id ="bookcover"><b> Book Cover </b></td>
+	<td id ="bookcover"><b> Book Cover </b></td>
+	{% if book.imgurl %}
 	<td> <img src={{book.imgurl}} title='Image courtesy : flipkart'> </td>
+	{% else %}
+	<td> Image not available </td>
+	{% endif %}
 </tr>
 <tr>
         <td id ="title"><b> Title of the book </b></td>
