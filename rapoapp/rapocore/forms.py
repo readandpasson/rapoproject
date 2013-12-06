@@ -68,7 +68,7 @@ class ReleaseBookForm(ModelForm):
 
     title = forms.CharField(widget=forms.TextInput(attrs={'size':'50'}))
     author = forms.ModelMultipleChoiceField(queryset=Author.objects.order_by('first_name'), widget= MultipleSelectWithPopUp)
-    tag = forms.ModelMultipleChoiceField(Tag.objects, widget= MultipleSelectWithPopUp)
+    tag = forms.ModelMultipleChoiceField(Tag.objects, widget= MultipleSelectWithPopUp, initial=Tag.objects.filter(taglabel='Uncategorized'))
     language = forms.ModelChoiceField(Language.objects, widget= SelectWithPopUp) 
 #    docfile = forms.FileField(label='Select the book cover', help_text='Max. size 1MB')
     class Meta:
