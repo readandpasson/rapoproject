@@ -22,10 +22,10 @@
 		<form role="form" method='post' action='/{{ formaction }}/' enctype="multipart/form-data">{% csrf_token %}
 <table>
 		{% for field in form %}
-			<div class="form-group">
+			<div class="form-group" title="{{ field.help_text }}">
 				{{ field.label_tag }}
 				{% if field.field.required and submitmessage != 'Search' %}<span class="required">*</span> {% endif %}
-				{{ field }}{{ field.help_text }}
+				{{ field }}
 				{{ field.errors }}
 			</div>
 		{% endfor %}
