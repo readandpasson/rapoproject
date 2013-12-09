@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
 
-from rapocore.models import Author,SocialAccount,Book,Transaction, Queue, Defect, Document, Buylink
+from rapocore.models import Author,SocialAccount,Book,Transaction, Queue, Defect, Document, Buylink, Tag
 from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
 from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm
 
@@ -136,9 +136,11 @@ def Browse(request):
     results = Book.objects.all().order_by('-id').select_related()
     member = SocialAccount.objects.get(user_id=request.user)
     bookqueue = Queue.objects.all().order_by('id').select_related()
+    transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
+
     return render_to_response('rapocore/book_list.html',{  'data' : results, 
 			'formtitle': 'Browse books',
-			'member': member, 'bookqueue': bookqueue, 'search' : False }, RequestContext(request))
+			'member': member, 'bookqueue': bookqueue, 'transaction': transaction, 'search' : False }, RequestContext(request))
 
 # Benitha: added code for Book details page: 06-Nov-2013
 
