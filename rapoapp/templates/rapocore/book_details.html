@@ -89,7 +89,7 @@ var f = document.getElementById('viewhistory');
 	{% if book.imgurl %}
 	<td> <img src={{book.imgurl}} title='Image courtesy : flipkart'> </td>
 	{% else %}
-	<td> Image not available </td>
+	<td> {{ book.title }} </td>
 	{% endif %}
 </tr>
 <tr>
