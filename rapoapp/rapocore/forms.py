@@ -63,12 +63,20 @@ class SearchForm(forms.Form):
         self.fields['sownermember'].widget.attrs.update({'class' : 'form-control'})
         self.fields['swithmember'].widget.attrs.update({'class' : 'form-control'})
         self.fields['sstatus'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['stitle'].help_text=mark_safe('Enter the title of the book to search')
+        self.fields['sauthor'].help_text=mark_safe('Enter author''s name to search the list of books written by the author')
+        self.fields['slanguage'].help_text=mark_safe('Select the language to search the books')
+        self.fields['stag'].help_text=mark_safe('Select the genre to search the books')
+        self.fields['sownermember'].help_text=mark_safe('Select to search the list of books released by the member')
+        self.fields['swithmember'].help_text=mark_safe('Select to search the list of books currently with the member')
+        self.fields['sstatus'].help_text=mark_safe('Select to search the list of books with a particular status')
+
 
 class ReleaseBookForm(ModelForm):
 
     title = forms.CharField(widget=forms.TextInput(attrs={'size':'50'}))
     author = forms.ModelMultipleChoiceField(queryset=Author.objects.order_by('first_name'), widget= MultipleSelectWithPopUp)
-    tag = forms.ModelMultipleChoiceField(Tag.objects, widget= MultipleSelectWithPopUp)
+    tag = forms.ModelMultipleChoiceField(Tag.objects, widget= MultipleSelectWithPopUp, initial=Tag.objects.filter(taglabel='Uncategorized'))
     language = forms.ModelChoiceField(Language.objects, widget= SelectWithPopUp) 
 #    docfile = forms.FileField(label='Select the book cover', help_text='Max. size 1MB')
     class Meta:
@@ -87,6 +95,13 @@ class ReleaseBookForm(ModelForm):
         self.fields['tag'].label = "Genre"
         self.fields['author'].help_text = "If there are multiple authors, hold down control key and select"
         self.fields['tag'].help_text = "If there are multiple genres, hold down control key and select"
+        defLanguage = Language.objects.filter(languagename='English')
+        self.fields['language'].initial = defLanguage[0].id
+        self.fields['title'].help_text=mark_safe('Enter the title of the book')
+        self.fields['language'].help_text=mark_safe('Select the language of the book')
+        self.fields['author'].help_text = mark_safe('If there are multiple authors, hold down control key and select')
+        self.fields['tag'].help_text = mark_safe('If there are multiple genres, hold down control key and select')
+
 
 class ReceiveBookForm(ModelForm):
     class Meta:
@@ -137,6 +152,8 @@ class SendBookForm(ModelForm):
         self.fields['charges_on'].widget.attrs.update({'class' : 'form-control'})
         self.fields['book'].queryset = Book.objects.filter(withmember= SocialAccount.objects.get(user= user)).exclude(status=Book.TRANSIT)
         self.fields['date_sent'].widget =  widgets.AdminSplitDateTime()
+        self.fields['book'].help_text=mark_safe('Enter the title of the book to send')
+        self.fields['to_member'].help_text=mark_safe('Select the recipient to send the book')
 
 class SendBookToForm(ModelForm):
     class Meta:
@@ -161,6 +178,8 @@ class ReportDefectForm(ModelForm):
         self.fields['description'].widget.attrs.update({'class' : 'form-control'})
         self.bymember = user
         self.status = Defect.OPEN
+        self.fields['category'].help_text=mark_safe('Select the category of the defect to be reported')
+        self.fields['description'].help_text=mark_safe('Enter the details of the defect to be reported')
 
 
 class CancelRequestForm(ModelForm):
@@ -174,4 +193,5 @@ class CancelRequestForm(ModelForm):
         self.fields['book'].widget.attrs.update({'class' : 'form-control'})
         self.member = user
         self.fields['book'].queryset = Queue.objects.filter(member= SocialAccount.objects.get(user= user))
+        self.fields['book'].help_text=mark_safe('Select the book to be cancelled')
 

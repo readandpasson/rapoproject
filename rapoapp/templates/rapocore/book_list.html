@@ -66,6 +66,7 @@ function popitup(url,message) {
 <!--	<th id = "bookcover" width="20%"> Book Cover </th> -->
     	<th id="title" width="30%"> Title of the book </th>
  	<th id="author" width="30%"> Author </th>
+	<th id="queue" width="30%"> Activity Link </th>
     </tr>
 </thead>
 {% if data %}
@@ -81,6 +82,49 @@ function popitup(url,message) {
   		{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
 		{% endfor %}
 	</td>
+	    <td> 
+                {% ifequal book.withmember.user.username 'rapo.admin' %}
+                    <em> Need Info </em>
+                {% else %}
+                    {% ifnotequal user.username book.withmember.user.username %}
+                        {% if member in book.rqueue.all %}
+                            In queue: <a href="/cancelrequest{{ book.id }}" id="cancelrequest" class="cancelrequest" title="Click to cancel the requested book" onclick="return popitup(this,'Are you sure you want to cancel your request for  this book - {{ book.title }}?');">Cancel Request</a>
+                        {% else %}
+                            {% ifequal book.status 'T' %}
+                                {% for tran in transaction %}
+                                    {% ifequal book.id tran.book_id %}
+					{% ifequal tran.to_member.user.username user.username %}
+						<a href="/receivebook" title="Click to acknowledge reciept of the book" >Receive Book</a>
+					{% else %}
+						{% ifequal tran.from_member.user.username user.username %}
+							In Transit
+						{% else %}
+							<a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" title="Click to Request/Reserve the book" onclick="return popitup(this,'Are you sure you want to request this book - {{ book.title }}?');">Request/Reserve</a>
+						{% endifequal %}
+					{% endifequal %}
+				    {% endifequal %}
+                                {% endfor %}
+                            {% else %}
+                                <a href="/add2queue{{ book.id }}" id="add2queue" class="add2queue" title="Click to Request/Reserve the book" onclick="return popitup(this,'Are you sure you want to request this book - {{ book.title }}?');">Request/Reserve</a>
+                            {% endifequal %}
+                        {% endif %}
+                    {% else %}
+                        {% ifequal book.status 'A' %}
+                            <a href="/sendbook" title="Click to send the book to the receiver" >Send Book</a>
+                        {% else %}
+                            {% ifequal book.status 'R' %}
+                                <a href="/passon{{ book.id }}" id="passon" class="passon" title ="Click to Pass on the book back to the next person in the queue" onclick="return popitup(this,'Are you sure you want to pass this book on - {{ book.title }}?');">Pass On</a>
+                            {% else %}
+                                {% ifequal book.status 'T' %}
+                                    In Transit
+                                {% else %}
+                                    Where is it?
+                                {% endifequal %}
+                            {% endifequal %}
+                        {% endifequal %}
+                    {% endifnotequal %}
+                {% endifequal %}
+        </td>
     </tr>
 {% endfor %}
    <tfoot><tr> <td class="closedstatus" colspan="10"> {{ data.count }} books found </td> </tr> </tfoot>
