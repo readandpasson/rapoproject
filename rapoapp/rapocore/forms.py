@@ -4,6 +4,8 @@ from django.contrib.admin import widgets
 from rapoapp.rapocore.widgets import MultipleSelectWithPopUp, SelectWithPopUp
 from rapoapp.rapocore.models import Author,Language, Tag, Transaction, Book, Queue, Defect
 from allauth.socialaccount.models import SocialAccount
+from django.utils.safestring import mark_safe
+
 try:
     from django.utils.encoding import force_text
 except ImportError:

@@ -106,11 +106,11 @@ def SearchResults(request):
     results = Book.objects.all().select_related()
     if stitle or sauthor or slanguage or stag or sownermember or swithmember or sstatus:
         if stitle:
-            results = results.filter(title__icontains__iexact=stitle).select_related()
+            results = results.filter(title__icontains=stitle).select_related()
         if sauthor:
             results = results.filter(Q(author__first_name__icontains=sauthor)|Q(author__last_name__icontains=sauthor)).select_related()
         if slanguage:
-            results = results.filter(language__id__iexact=slanguage).select_related()
+            results = results.filter(language__id__exact=slanguage).select_related()
 	if stag:
 	    results = results.filter(tag__id__exact=stag).select_related()
         if sownermember:
