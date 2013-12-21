@@ -12,7 +12,7 @@ admin.autodiscover()
 
 from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount
-from rapocore.views import NewAuthor,NewLanguage, NewTag, ReportDefect, DefectListView, MemberListView
+from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView
 #from rapocore.views import SendBookWizard
 from rapocore.models import Book
 
@@ -50,12 +50,10 @@ urlpatterns = patterns('',
     url(r'^bookdetails/(?P<bookid>\d+)/$', 'rapocore.views.BookDetails', name='book-details'),
     url(r'^viewqueue/(?P<bookid>\d+)/$', 'rapocore.views.ViewQueue', name='view-queue'),
 
-    url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
-    url(r'^test/', 'rapocore.views.Test', name='book-view'),
-
+    #url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
 
     url(r'^addauthor/', 'rapocore.views.NewAuthor',name='add-author'),
-    url(r'^addtag/', 'rapocore.views.NewTag',name='add-tag'),
+    url(r'^addgenre/', 'rapocore.views.NewGenre',name='add-genre'),
     url(r'^addlanguage/', 'rapocore.views.NewLanguage',name='add-language'),
     url(r'^add2queue(?P<bookid>[0-9]*)/$', 'rapocore.views.Add2Queue',name='add-queue'),
     url(r'^cancelrequest(?P<bookid>[0-9]*)/$', 'rapocore.views.CancelRequest',name='cancel-request'),
