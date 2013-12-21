@@ -9,9 +9,11 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
 
-from rapocore.models import Author,SocialAccount,Book,Transaction, Queue, Defect, Document, Buylink, Tag
+from allauth.socialaccount.models import SocialAccount
+from rapocore.models import RealBook,Transaction, Queue, Defect
+from rapogen.models import Author,Book,Genre
 from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
-from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm
+from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm
 
 # make a book release
 @login_required
@@ -33,7 +35,7 @@ def ReleaseBook(request):
     else:
         form = ReleaseBookForm(request.user)
 
-    documents = Document.objects.all()
+    #documents = Document.objects.all()
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 
 			'formtitle':'Release a book', 
 			'formnote':'Do you want to release a book? Please Fill in the details in the form below and click on Release.', 
@@ -55,7 +57,7 @@ def ReceiveBook(request):
             f.save()
             b = form.cleaned_data['book']
             b.withmember = SocialAccount.objects.get(user=request.user)
-            b.status = Book.READ
+            b.status = RealBook.READ
             b.save()
             return HttpResponseRedirect('/thanks/')
 
@@ -71,7 +73,7 @@ def ReceiveBook(request):
 @login_required
 def PassOn(request): # Pass On is the act of moving a book from status 'Reading' to 'Available' 
 
-    results = Book.objects.filter(withmember=SocialAccount.objects.get(user=request.user), status=Book.READ).select_related()
+    results = RealBook.objects.filter(withmember=SocialAccount.objects.get(user=request.user), status=RealBook.READ).select_related()
     member = SocialAccount.objects.get(user_id=request.user)
     return render_to_response('rapocore/book_list.html',{  'data' : results, 
 			'formtitle':'Pass On',
@@ -99,20 +101,20 @@ def SearchResults(request):
     stitle = request.POST['stitle']
     sauthor = request.POST['sauthor']
     slanguage = request.POST['slanguage']
-    stag = request.POST['stag']
+    sgenre = request.POST['sgenre']
     sownermember = request.POST['sownermember']
     swithmember = request.POST['swithmember']
     sstatus = request.POST['sstatus']
-    results = Book.objects.all().select_related()
-    if stitle or sauthor or slanguage or stag or sownermember or swithmember or sstatus:
+    results = RealBook.objects.all().select_related()
+    if stitle or sauthor or slanguage or sgenre or sownermember or swithmember or sstatus:
         if stitle:
-            results = results.filter(title__icontains=stitle).select_related()
+            results = results.filter(book__title__icontains=stitle).select_related()
         if sauthor:
-            results = results.filter(Q(author__first_name__icontains=sauthor)|Q(author__last_name__icontains=sauthor)).select_related()
+            results = results.filter(Q(book__author__first_name__icontains=sauthor)|Q(book__author__last_name__icontains=sauthor)).select_related()
         if slanguage:
-            results = results.filter(language__id__exact=slanguage).select_related()
-	if stag:
-	    results = results.filter(tag__id__exact=stag).select_related()
+            results = results.filter(book__language__id__exact=slanguage).select_related()
+	if sgenre:
+	    results = results.filter(book__genre__id__exact=sgenre).select_related()
         if sownermember:
             results = results.filter(ownermember__id__exact=sownermember).select_related()
         if swithmember:
@@ -133,7 +135,7 @@ def SearchResults(request):
 
 @login_required
 def Browse(request):
-    results = Book.objects.all().order_by('-id').select_related()
+    results = RealBook.objects.all().order_by('-id').select_related()
     member = SocialAccount.objects.get(user_id=request.user)
     bookqueue = Queue.objects.all().order_by('id').select_related()
     transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
@@ -146,8 +148,8 @@ def Browse(request):
 
 @login_required
 def BookDetails(request,bookid):
-    results = Book.objects.select_related().get(id= bookid)
-    book = Book.objects.get(id=bookid)
+    results = RealBook.objects.select_related().get(id= bookid)
+    book = RealBook.objects.get(id=bookid)
     member = SocialAccount.objects.get(user_id=request.user)
     queueDetails = ViewQueue(request, bookid)
     booksTran = Transaction.objects.filter(book_id=bookid)
@@ -165,8 +167,8 @@ def NewLanguage(request):
     return handlePopAdd(request, LanguageForm, 'language')
 
 @login_required
-def NewTag(request):
-    return handlePopAdd(request, TagForm, 'tag')
+def NewGenre(request):
+    return handlePopAdd(request, GenreForm, 'genre')
 
 def handlePopAdd(request, addForm, field):
 
@@ -187,15 +189,15 @@ def handlePopAdd(request, addForm, field):
 
 @login_required
 def PassOnBook(request, bookid):
-        b = Book.objects.get(id= bookid)
-        b.status = Book.AVAILABLE
+        b = RealBook.objects.get(id= bookid)
+        b.status = RealBook.AVAILABLE
         b.save()
-        return render_to_response('rapocore/passon.html',{ 'book': b.title},RequestContext(request))
+        return render_to_response('rapocore/passon.html',{ 'book': b.book.title},RequestContext(request))
 
 @login_required
 def ViewQueue(request, bookid):
-        b = Book.objects.get(id= bookid)
-        if b.status  == Book.TRANSIT:
+        b = RealBook.objects.get(id= bookid)
+        if b.status  == RealBook.TRANSIT:
             temp_tr = Transaction.objects.get(book=b,date_received__isnull = True )
             to_member = SocialAccount.objects.get(id=temp_tr.to_member.id)
         else:
@@ -209,7 +211,7 @@ def ViewQueue(request, bookid):
 
 @login_required
 def Add2Queue(request, bookid):
-        b = Book.objects.get(id= bookid)
+        b = RealBook.objects.get(id= bookid)
         m = SocialAccount.objects.get(user_id=request.user)
         if Queue.objects.filter(book=b,member=m).exists() :
             success = False
@@ -219,7 +221,7 @@ def Add2Queue(request, bookid):
             q.save()
             success = True
             qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
-        return render_to_response('rapocore/add2queue.html',{ 'book': b.title,'queue':qset, 'success': success}, RequestContext(request))
+        return render_to_response('rapocore/add2queue.html',{ 'book': b.book.title,'queue':qset, 'success': success}, RequestContext(request))
 
 
 # send a book
@@ -233,7 +235,7 @@ def SendBook(request):
             f.save()
 
             b = form.cleaned_data['book']
-            b.status = Book.TRANSIT
+            b.status = RealBook.TRANSIT
             b.save()
             
             m = form.cleaned_data['to_member']
@@ -257,11 +259,11 @@ def SendBookTo(request,bookid,memberid):
             f = form.save(commit=False)
             f.from_member = SocialAccount.objects.get(user_id = request.user)
             f.to_member = SocialAccount.objects.get(uid = memberid)
-            f.book = Book.objects.get(id=bookid)
+            f.book = RealBook.objects.get(id=bookid)
             f.save()
 
             b = f.book
-            b.status = Book.TRANSIT
+            b.status = RealBook.TRANSIT
             b.save()
             
             m = f.to_member
@@ -269,7 +271,7 @@ def SendBookTo(request,bookid,memberid):
             return HttpResponseRedirect('/thanks/')
     else:
         form = SendBookToForm(request.user,bookid,memberid)
-        b = Book.objects.get(id=bookid)
+        b = RealBook.objects.get(id=bookid)
         m = SocialAccount.objects.get(uid = memberid)
 
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 'formtitle':'Send the book \''+ b.title + '\' to '+m.user.first_name+' '+m.user.last_name, 'submitmessage':'Send','formaction':'sendbookto'+memberid+'/'+ bookid},RequestContext(request))
@@ -279,7 +281,7 @@ def SendBookTo(request,bookid,memberid):
 @login_required
 def GetMembers(request,bookid):
     if request.is_ajax():
-        b = Book.objects.get(id=bookid)
+        b = RealBook.objects.get(id=bookid)
         members = Queue.objects.filter(book_id=b).order_by('id').values('member','member__user__first_name','member__user__last_name','member__user__username')
         return render_to_response('rapocore/getmembers.html', { 'members': members },RequestContext(request))
 
@@ -325,11 +327,11 @@ def Archiveit(request, defectid):
 
 @login_required
 def CancelRequest(request,bookid):
-        b = Book.objects.get(id= bookid)
+        b = RealBook.objects.get(id= bookid)
         instance = Queue.objects.get(member=SocialAccount.objects.get(user_id=request.user),book=b)
         instance.delete()
         success = True # Success will be false when sender has already sent to this person  - To be implemented TBD
-        return render_to_response('rapocore/cancelrequest.html',{ 'book': b.title, 'success': success}, RequestContext(request))
+        return render_to_response('rapocore/cancelrequest.html',{ 'book': b.book.title, 'success': success}, RequestContext(request))
 
 class MemberListView(ListView):
     model  = SocialAccount
@@ -340,25 +342,25 @@ class MemberListView(ListView):
 @login_required
 def Test(request):
     member = SocialAccount.objects.get(user_id=request.user)
-    booksreleased = Book.objects.filter(ownermember = member).order_by('datereleased')
+    booksreleased = RealBook.objects.filter(ownermember = member).order_by('datereleased')
     #booksrequested_available = Queue.objects.filter(member= member) 
     booksrequested = Queue.objects.filter(member= member).select_related()
     bookssentome = Transation.objects.filter(tomember=member).select_related()
-    bookswith = Book.objects.filter(withmember=member).select_related()
-    #booksread = Book.objects.filter(withmember=member).select_related()
+    bookswith = RealBook.objects.filter(withmember=member).select_related()
+    #booksread = RealBook.objects.filter(withmember=member).select_related()
     return render_to_response('rapocore/try.html',{ 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookssenttome':bookssentome,'bookswith': bookswith}, RequestContext(request))
 
 @login_required
 def MyAccount(request):
     me = SocialAccount.objects.get(user_id=request.user)
-    booksreleased = Book.objects.filter(ownermember = me).order_by('datereleased')
+    booksreleased = RealBook.objects.filter(ownermember = me).order_by('datereleased')
     #booksrequested_available = Queue.objects.filter(member= member) 
     booksrequested = Queue.objects.filter(member= me).select_related()
-    bookswith = Book.objects.filter(withmember=me).select_related().exclude(status=Book.TRANSIT)
+    bookswith = RealBook.objects.filter(withmember=me).select_related().exclude(status=RealBook.TRANSIT)
     bookswithqlist = []
     for bk in bookswith:
     	bookswithqlist.extend(list(Queue.objects.filter(book=bk).order_by('id').values('book__id','member__user__first_name','member__user__last_name')))
 
-    booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=Book.TRANSIT)).select_related()
-    booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=Book.TRANSIT)).select_related()
+    booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
+    booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
     return render_to_response('rapocore/dashboard.html',{ 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookswith': bookswith, 'bookswithqlist' : bookswithqlist,'booksintransitfromme': booksintransitfromme,'booksintransittome': booksintransittome}, RequestContext(request))
