@@ -1,0 +1,73 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+{% endblock %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock %}
+
+{% block Centre %}
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>{{ formtitle }}</strong></br>
+        {{ formnote }} 
+	</div>
+	<div class="panel-body">
+	{% if book %}
+		<table id="reviews" class="table table-hover" rules="rows" border="1">
+			<tr>
+				<td><strong>Title</strong></td>
+				<td> {{ book.title }} </td>
+			</tr>
+			<tr>
+				<td> <strong>Author(s) </strong></td>
+				<td>
+				{% for author in book.author.all %}
+					{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
+				{% endfor %}
+				</td>
+			</tr>
+			<tr>
+				<td> <strong>Genre </strong> </td>
+				<td> {{ book.genre }}
+			</tr>
+			<tr>
+				<td> <strong>Language</strong> </td>
+				<td> {{book.language}} </td>
+			</tr>
+		</table>
+			{% endif %}
+	</div>
+	<div class="panel-body">
+		<form role="form" method='post' action='/{{ formaction }}/' enctype="multipart/form-data">{% csrf_token %}
+	<table>
+		{% for field in form %}
+			<div class="form-group" title="{{ field.help_text }}">
+				{% ifequal field.label 'Declaration' %}
+					{{ field }}
+					{{ field.label_tag }}
+					{% if field.field.required %}<span class="required">*</span> {% endif %}
+					{{ field.errors }}
+				{% else %}
+					{{ field.label_tag }}
+					{% if field.field.required %}<span class="required">*</span> {% endif %}
+					{{ field }}
+					{{ field.errors }}
+				{% endifequal %}
+			</div>
+		{% endfor %}
+		<input type="submit" value="{{ submitmessage }}" class="btn btn-default"/>
+		{% ifequal submitmessage 'Submit Review' %}
+			<p><i><b><font size="2" color="red"> All the submitted reviews will be screened and are subject to moderation by the Admin before publishing!</font> </b></i></p>
+		{% endifequal %}
+	</table>
+		</form>
+	</div>
+</div>
+{% endblock %}
