@@ -51,7 +51,8 @@ urlpatterns = patterns('',
     url(r'^viewqueue/(?P<bookid>\d+)/$', 'rapocore.views.ViewQueue', name='view-queue'),
 
     #url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
-
+    url(r'^writebookreview/(?P<bookid>\d+)/$', 'rapocore.views.WriteBookReview', name='write-bookreview'),
+    
     url(r'^addauthor/', 'rapocore.views.NewAuthor',name='add-author'),
     url(r'^addgenre/', 'rapocore.views.NewGenre',name='add-genre'),
     url(r'^addlanguage/', 'rapocore.views.NewLanguage',name='add-language'),

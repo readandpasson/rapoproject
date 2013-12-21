@@ -256,4 +256,28 @@ var f = document.getElementById('viewhistory');
 
 </table>
 </div>
+
+<div class="panel panel-success">
+<div class="panel-heading">
+    <strong>Book Reviews </strong>
+</div>
+
+<table id="books" class="table table-hover" rules="rows">
+<!--<tr>
+        <td id ="goodreadreview" ><b> Goodreads Reviews </b></td>
+        <td> <a href="https://www.goodreads.com/book/title.xml?&key=3RYtL3RCPlCSBdOA03bsvQ&title=Hound+of+the+Baskervilles"> Click to read Goodreads Reviews </td>
+</tr>
+<tr>
+        <td id ="raporeview" ><b> RAPO™ Reviews </b></td>
+        <td> <a href="/rapobookreview/{{book.id}}"> Click to read RAPO™ Reviews </td>
+</tr>
+-->
+<tr>
+        <td id ="submitreview" ><b> Submit Reviews </b></td>
+        <td> <a href="/writebookreview/{{book.id}}"> Click to review this book </td>
+</tr>
+
+</table>
+</div>
+
 {% endblock %}
