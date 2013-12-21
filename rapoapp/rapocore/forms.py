@@ -2,7 +2,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.admin import widgets
 from rapoapp.rapocore.widgets import MultipleSelectWithPopUp, SelectWithPopUp
-from rapoapp.rapocore.models import Author,Language, Tag, Transaction, Book, Queue, Defect
+from rapoapp.rapocore.models import Author,Language, Tag, Transaction, Book, Queue, Defect, BookReview
 from allauth.socialaccount.models import SocialAccount
 from django.utils.safestring import mark_safe
 
@@ -196,4 +196,25 @@ class CancelRequestForm(ModelForm):
         self.member = user
         self.fields['book'].queryset = Queue.objects.filter(member= SocialAccount.objects.get(user= user))
         self.fields['book'].help_text=mark_safe('Select the book to be cancelled')
+
+
+class WriteBookReviewForm(ModelForm):
+    spublisher = forms.CharField(label= 'Publisher')
+    spages= forms.IntegerField(label= 'No. of Pages')
+    sbookprice= forms.FloatField(label='Book Price')
+    rating= forms.ChoiceField(label= 'Rating', choices=(('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),('6','6'),('7','7'),('8','8'),('9','9'),('10','10')))
+    review= forms.CharField(label= 'Review', widget=forms.Textarea)
+    sdeclare = forms.BooleanField(label='Declaration',initial=False)
+    
+    class Meta:
+		model = BookReview
+		fields = [ 'rating', 'review']
+
+    def __init__(self, user, *args, **kwargs):
+        super(WriteBookReviewForm, self).__init__(*args, **kwargs)
+        self.fields['spublisher'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['spages'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['sbookprice'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['rating'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['review'].widget.attrs.update({'class' : 'form-control'})
 
