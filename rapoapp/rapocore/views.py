@@ -11,7 +11,7 @@ from django.views.generic.list import ListView
 
 from rapocore.models import Author,SocialAccount,Book,Transaction, Queue, Defect, Document, Buylink, Tag
 from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
-from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm
+from rapocore.forms import AuthorForm, TagForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
 
 # make a book release
 @login_required
@@ -362,3 +362,29 @@ def MyAccount(request):
     booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=Book.TRANSIT)).select_related()
     booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=Book.TRANSIT)).select_related()
     return render_to_response('rapocore/dashboard.html',{ 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookswith': bookswith, 'bookswithqlist' : bookswithqlist,'booksintransitfromme': booksintransitfromme,'booksintransittome': booksintransittome}, RequestContext(request))
+
+@login_required
+def WriteBookReview(request,bookid):
+	book = Book.objects.select_related().get(id= bookid)
+	if request.method == 'POST': # If the form has been submitted...
+		form = WriteBookReviewForm(request.user,request.POST) # A form bound to the POST data
+		if form.has_changed():
+			if form.is_valid():
+				f_type = form.save(commit=False)
+				f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
+				f_type.book_id = bookid
+				f_type.save()
+				book.publisher = form.cleaned_data['spublisher']
+				book.save()
+				form.save_m2m()
+				print "the form is valid"
+				return HttpResponseRedirect('/thanks/')
+			else:
+				 messages.error(request, "Error")
+	else:
+		form = WriteBookReviewForm(request.user)
+	return render_to_response('rapocore/write_bookreviewform.html',{ 'form': form, 
+				'formtitle':'Write book review', 
+				'formnote':'Share your views of the book with others...', 
+				'book':book,
+				'submitmessage':'Submit Review', 'formaction':'writebookreview/'+bookid},RequestContext(request))
