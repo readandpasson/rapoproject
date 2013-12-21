@@ -35,7 +35,11 @@
 			</tr>
 			<tr>
 				<td> <strong>Genre </strong> </td>
-				<td> {{ book.genre }}
+				<td>
+				{% for genre in book.genre.all %}
+					{{ genre }} {% if not forloop.last %},{% endif %}
+				{% endfor %}
+				</td>
 			</tr>
 			<tr>
 				<td> <strong>Language</strong> </td>

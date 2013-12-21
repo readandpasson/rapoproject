@@ -49,14 +49,13 @@ function popitup(url,message) {
 				<tr>
 					<th>Title</th>
 					<th>Status</th>
-					<th>Requested By</th>
 				</tr>
 			</thead>
-			{% for book in bookswith %} 
-			<tr> <td>{{ book.title }} </td> 
-				{% ifnotequal book.rqueue.count 0 %} 
+			{% for bk in bookswith %} 
+			<tr> <td>{{ bk.book.title }} </td> 
+				{% ifnotequal bk.rqueue.count 0 %} 
 				<td> In queue : </br>  {% for m in bookswithqlist %} 
-					{% ifequal book.id m.book__id %}  {{ m.member__user__first_name }} {{ m.member__user__last_name }} 
+					{% ifequal bk.id m.book__id %}  {{ m.member__user__first_name }} {{ m.member__user__last_name }} 
 					{% comment %}
 					{% ifequal user.is_staff 1 %}
 					<a href="/sendbookto{{ m.uid }}/{{ book.id }}">Send Book</a>   
@@ -65,23 +64,45 @@ function popitup(url,message) {
 					</br>  {% endifequal %}
 					{% endfor %} </td>
 				{% else %}
-				<td> {{ book.get_status_display }} </td> 
+				<td> {{ bk.get_status_display }} </td> 
 				{% endifnotequal %}
 			</tr> 
 			{% endfor %} 
 
+</table>
+</div>
+</div>
 			{% comment %} Books in transit {% endcomment %}
 			{% if booksintransitfromme %}  
+<div class="panel panel-success">
+		  <div class="panel-heading">
+		    <strong>Books In Transit from Me</strong>
+		  </div>
+  <div class="panel-body">
+<table class="table table-hover">
 
-			<td> Books in transit from me </td> <td> Title </td>  <td> To </td></tr>
-		{% for tr in booksintransitfromme %} <tr> <td>{{ tr.book.title }} </td> <td>  --> {{ tr.to_member.user.first_name }} {{tr.to_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} {% endif %}
+			<th> Title </th>  <th> To </th></tr>
+		{% for tr in booksintransitfromme %} <tr> <td>{{ tr.book.book.title }} </td> <td>  --> {{ tr.to_member.user.first_name }} {{tr.to_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} 
+</table>
+</div>
+</div>
+{% endif %}
 
-		{% if booksintransittome %} <td> Books in transit to me </td> <td> Title </td>  <td> From </td></tr>
-	{% for tr in booksintransittome %} <tr> <td>{{ tr.book.title }} </td> <td>  <-- {{ tr.from_member.user.first_name }} {{tr.from_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} {% endif %}
+{% if booksintransittome %}
+ <div class="panel panel-success">
+		  <div class="panel-heading">
+		    <strong>Books In Transit to Me</strong>
+		  </div>
+  <div class="panel-body">
+<table class="table table-hover">
+		<th> Title </th>  <th> From </th></tr>
+	{% for tr in booksintransittome %} <tr> <td>{{ tr.book.title }} </td> <td>  <-- {{ tr.from_member.user.first_name }} {{tr.from_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %}
 
 </table>
 </div>
 </div>
+ {% endif %}
+
 	{% comment %} Books requested by me {% endcomment %}
 <div class="panel panel-success">
 		  <div class="panel-heading">
@@ -96,7 +117,7 @@ function popitup(url,message) {
 <th>Currently With</th>
 	  </tr>
 	</thead>
-{% for qu  in booksrequested %} <tr> <td>{{ qu.book.title }} </td> <td>  {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }} ( {{ qu.book.withmember.user.username }} ) </td> </tr> {% endfor %} </td> </tr>
+{% for qu  in booksrequested %} <tr> <td>{{ qu.book.book.title }} </td> <td>  {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }} ( {{ qu.book.withmember.user.username }} ) </td> </tr> {% endfor %} </td> </tr>
 {% else %}
 <tr> <td>No books requested </td> </tr>
 {% endif %}
@@ -122,7 +143,7 @@ function popitup(url,message) {
 <th>Currently With</th>
 	  </tr>
 	</thead>
-{% for book in booksreleased %} <tr> <td>{{ book.title }} </td> <td>  {{ book.datereleased }} </td> <td>{{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} ( {{ book.withmember.user.username }} )</td> </tr> {% endfor %} </td> </tr>
+{% for bk in booksreleased %} <tr> <td>{{ bk.book.title }} </td> <td>  {{ bk.datereleased }} </td> <td>{{ bk.withmember.user.first_name }} {{ bk.withmember.user.last_name }} ( {{ bk.withmember.user.username }} )</td> </tr> {% endfor %} </td> </tr>
 </table> 
 </div>
 </div>

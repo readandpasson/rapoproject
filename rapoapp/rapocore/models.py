@@ -6,47 +6,11 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from allauth.socialaccount.models import SocialAccount
-from mptt.models import MPTTModel, TreeForeignKey
+from rapogen.models import Book,Author,Genre, Language
 
 
 
-class Author(models.Model):
-    first_name = models.CharField(max_length=25)
-    last_name = models.CharField(max_length=25)
-    email = models.EmailField(null=True,blank=True)
-    comments = models.TextField(null=True,blank=True)
-
-    class Admin:
-        pass
-    def __unicode__(self):
-        return self.first_name+' '+self.last_name
-    def _get_full_name(self):
-        return '%s %s' % (self.first_name,self.last_name)
-    full_name= property(_get_full_name)
-    class Meta:
-        ordering = ['first_name']
-        unique_together =(('first_name','last_name'),)
-
-
-class Language(models.Model):
-    languagename = models.CharField(unique=True,max_length=25)
-
-    def __unicode__(self):
-                return self.languagename
-    class Meta:
-                ordering = ['languagename']
-
-class Tag(models.Model):
-    taglabel = models.CharField(unique=True,max_length=25)
-    comments = models.TextField(null=True,blank=True)
-
-    def __unicode__(self):
-                return self.taglabel
-    class Meta:
-                ordering = ['taglabel']
-
-
-class Book(models.Model):
+class RealBook(models.Model):
     AVAILABLE='A'
     READ='R'
     TRANSIT='T'
@@ -61,11 +25,7 @@ class Book(models.Model):
         (LOST,'Lost'),
         (DELETED,'Deleted'),
     )
-    title = models.CharField(verbose_name='Title of the book',max_length=255)
-    author = models.ManyToManyField(Author)
-    #publisher = models.ForeignKey(PU)
-    tag = models.ManyToManyField(Tag)
-    language = models.ForeignKey(Language,default='English')
+    book= models.ForeignKey(Book)
     ownermember = models.ForeignKey(SocialAccount,related_name='OriginalOwner',verbose_name='Original Owner')
     withmember = models.ForeignKey(SocialAccount,related_name='CurrentlyWith',verbose_name='Currently with')
     status = models.CharField(max_length=1,choices=STATUS_CHOICES,default=AVAILABLE)
@@ -73,16 +33,15 @@ class Book(models.Model):
     rqueue = models.ManyToManyField(SocialAccount,through='Queue',related_name='Queue',verbose_name='Reservation Queue')
     comments = models.TextField(null=True,blank=True)
     def __unicode__(self):
-        return self.title
+        return self.book.title
     class Meta:
-        ordering = ['title']
+        ordering = ['book']
+
     @property
     def is_new(self):
         if (date.today() -  self.datereleased.date()).total_seconds() < 604800:  # 7 days
            return True
         return False
-    imgurl = models.URLField(max_length=2048)
-    buyurl = models.URLField(max_length=2048)
 
 class Transaction(models.Model):
     REC='R'
@@ -95,7 +54,7 @@ class Transaction(models.Model):
         (SHARED,'Shared'),
         (NA,'Not Applicable'),
     )
-    book = models.ForeignKey(Book)
+    book = models.ForeignKey(RealBook)
     from_member = models.ForeignKey(SocialAccount,related_name='from')
     to_member = models.ForeignKey(SocialAccount,related_name='to')
     date_sent = models.DateTimeField()
@@ -113,18 +72,8 @@ class Transaction(models.Model):
     def __unicode__(self):
         return u'%s : %s %s --> %s %s ON %s' % (self.book,self.from_member.user.first_name,self.from_member.user.last_name,self.to_member.user.first_name,self.to_member.user.last_name,self.date_sent)
 
-class History(models.Model):
-    book = models.ForeignKey(Book)
-    member = models.ForeignKey(SocialAccount)
-    rating = models.DecimalField(max_digits=2,decimal_places=1)
-    review = models.TextField()
-    comments = models.TextField(null=True,blank=True)
-
-class Privilege(models.Model):
-    privilege = models.ManyToManyField(SocialAccount)
-
 class Queue(models.Model):
-    book = models.ForeignKey(Book)
+    book = models.ForeignKey(RealBook)
     member = models.ForeignKey(SocialAccount)
     class Meta:
         ordering = ['id']
@@ -132,10 +81,6 @@ class Queue(models.Model):
     def __unicode__(self):
         return "%s " % (self.book.title)
 
-
-class Buylink(models.Model):
-    book = models.ForeignKey(Book)
-    link = models.URLField()
 
 class Defect(models.Model):
     OPEN='OP'
@@ -174,19 +119,6 @@ class Defect(models.Model):
     class Meta:
         ordering = ['-logdate']
 
-class Comment(MPTTModel):
-    """ Threaded comments for blog posts """
-    book = models.ForeignKey(Book)
-    author = models.CharField(max_length=60)
-    comment = models.TextField(help_text="Comment here...")
-    added  = models.DateTimeField(default=datetime.now)
-    # a link to comment that is being replied, if one exists
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
-
-    class MPTTMeta:
-        # comments on one level will be ordered by date of creation
-        order_insertion_by=['added']
-
 # Benitha: 13-Nov-2013 Model for book cover img
-class Document(models.Model):
-	docfile = models.FileField(upload_to='documents/%Y/%m/%d')
+#class Document(models.Model):
+#       docfile = models.FileField(upload_to='documents/%Y/%m/%d')

@@ -367,19 +367,20 @@ def MyAccount(request):
 
 @login_required
 def WriteBookReview(request,bookid):
-	book = Book.objects.select_related().get(id= bookid)
+	rbook = RealBook.objects.select_related().get(id= bookid)
+	book = Book.objects.select_related().get(id= rbook.book_id)
 	if request.method == 'POST': # If the form has been submitted...
 		form = WriteBookReviewForm(request.user,request.POST) # A form bound to the POST data
 		if form.has_changed():
 			if form.is_valid():
 				f_type = form.save(commit=False)
 				f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
-				f_type.book_id = bookid
+				f_type.book_id = book.id
 				f_type.save()
-				book.publisher = form.cleaned_data['spublisher']
-				book.save()
-				form.save_m2m()
-				print "the form is valid"
+				#book.publisher = form.cleaned_data['spublisher']
+				#book.save()
+				#form.save_m2m()
+				#print "the form is valid"
 				return HttpResponseRedirect('/thanks/')
 			else:
 				 messages.error(request, "Error")
