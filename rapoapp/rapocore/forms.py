@@ -2,7 +2,8 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.admin import widgets
 from rapoapp.rapocore.widgets import MultipleSelectWithPopUp, SelectWithPopUp
-from rapoapp.rapocore.models import Author,Language, Tag, Transaction, Book, Queue, Defect
+from rapocore.models import RealBook,Transaction, Queue, Defect
+from rapogen.models import Author,Book,Genre, Language
 from allauth.socialaccount.models import SocialAccount
 from django.utils.safestring import mark_safe
 
@@ -13,23 +14,23 @@ except ImportError:
 
 class Add2QueueForm(ModelForm):
     class Meta:
-        model = Book
+        model = RealBook
         fields = [  'rqueue' ]
 
     def __init__(self, bookid, *args, **kwargs):
         super(Add2QueueForm, self).__init__(*args, **kwargs)
         self.id= bookid
-        self.fields['rqueue'].queryset= Book.objects.get(id=bookid).rqueue.all()
+        self.fields['rqueue'].queryset= RealBook.objects.get(id=bookid).rqueue.all()
 
 class LanguageForm(ModelForm):
     class Meta:
         model = Language
         fields = [  'languagename' ]
 
-class TagForm(ModelForm):
+class GenreForm(ModelForm):
     class Meta:
-        model = Tag
-        fields = [  'taglabel' ]
+        model = Genre
+        fields = [  'genrelabel' ]
 
 #class Add2QueueForm(ModelForm):
 #    class Meta:
@@ -48,19 +49,19 @@ class SearchForm(forms.Form):
     #slanguage = forms.ModelMultipleChoiceField(Language.objects,label='Language')
     slanguage = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Language.objects.all()],label ='Language')
 # Benitha: 16-Nov-2013 Uncommented the Genre field search 
-    stag = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Tag.objects.all()],label ='Genre')
+    sgenre = forms.ChoiceField(choices=[('','-----')]+[ (o.id, str(o)) for o in Genre.objects.all()],label ='Genre')
     sownermember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, force_text(u'%s %s (%s)' % (o.user.first_name.decode('utf-8'),o.user.last_name.decode('utf-8'),o.user.username))) for o in SocialAccount.objects.all().order_by(u'user__first_name',u'user__last_name')],label ='Original Owner')
     #sownermember = forms.ChoiceField(choices=[('','-----')],label ='Original Owner')
     #swithmember = forms.ChoiceField(choices=[('','-----')],label = 'Book currently with')
     swithmember = forms.ChoiceField(choices=[('','-----')]+[ (o.id, force_text(u'%s %s (%s)' % (o.user.first_name.decode('utf-8'),o.user.last_name.decode('utf-8'),o.user.username))) for o in SocialAccount.objects.all().order_by(u'user__first_name',u'user__last_name')],label = 'Book currently with')
-    sstatus = forms.ChoiceField(choices=tuple([(u'', u'-----')] + list(Book.STATUS_CHOICES)),label='Status')
+    sstatus = forms.ChoiceField(choices=tuple([(u'', u'-----')] + list(RealBook.STATUS_CHOICES)),label='Status')
     #scity = forms.ChoiceField(choices=[ (o.id, str(o.city)) for o in SocialAccount.objects.all()],label ='City')
 
     def __init__(self, user, *args, **kwargs):
         super(SearchForm, self).__init__(*args, **kwargs)
         self.fields['stitle'].widget.attrs.update({'class' : 'form-control'})
         self.fields['sauthor'].widget.attrs.update({'class' : 'form-control'})
-        self.fields['stag'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['sgenre'].widget.attrs.update({'class' : 'form-control'})
         self.fields['slanguage'].widget.attrs.update({'class' : 'form-control'})
         self.fields['sownermember'].widget.attrs.update({'class' : 'form-control'})
         self.fields['swithmember'].widget.attrs.update({'class' : 'form-control'})
@@ -68,7 +69,7 @@ class SearchForm(forms.Form):
         self.fields['stitle'].help_text=mark_safe('Enter the title of the book to search')
         self.fields['sauthor'].help_text=mark_safe('Enter author''s name to search the list of books written by the author')
         self.fields['slanguage'].help_text=mark_safe('Select the language to search the books')
-        self.fields['stag'].help_text=mark_safe('Select the genre to search the books')
+        self.fields['sgenre'].help_text=mark_safe('Select the genre to search the books')
         self.fields['sownermember'].help_text=mark_safe('Select to search the list of books released by the member')
         self.fields['swithmember'].help_text=mark_safe('Select to search the list of books currently with the member')
         self.fields['sstatus'].help_text=mark_safe('Select to search the list of books with a particular status')
@@ -76,33 +77,30 @@ class SearchForm(forms.Form):
 
 class ReleaseBookForm(ModelForm):
 
+    language = forms.ModelChoiceField(Language.objects, widget= SelectWithPopUp) 
     title = forms.CharField(widget=forms.TextInput(attrs={'size':'50'}))
     author = forms.ModelMultipleChoiceField(queryset=Author.objects.order_by('first_name'), widget= MultipleSelectWithPopUp)
-    tag = forms.ModelMultipleChoiceField(Tag.objects, widget= MultipleSelectWithPopUp, initial=Tag.objects.filter(taglabel='Uncategorized'))
-    language = forms.ModelChoiceField(Language.objects, widget= SelectWithPopUp) 
+    genre = forms.ModelMultipleChoiceField(Genre.objects, widget= MultipleSelectWithPopUp, initial=Genre.objects.filter(genrelabel='Uncategorized'))
 #    docfile = forms.FileField(label='Select the book cover', help_text='Max. size 1MB')
     class Meta:
-        model = Book
-        fields = [ 'title', 'author', 'tag', 'language']
+        model = RealBook
+        fields = [ 'language', 'title', 'author', 'genre']
 
     def __init__(self, user, *args, **kwargs):
         super(ReleaseBookForm, self).__init__(*args, **kwargs)
         self.fields['title'].widget.attrs.update({'class' : 'form-control'})
         self.fields['author'].widget.attrs.update({'class' : 'form-control'})
-        self.fields['tag'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['genre'].widget.attrs.update({'class' : 'form-control'})
         self.fields['language'].widget.attrs.update({'class' : 'form-control'})
         self.ownermember = user
         self.withmember = user
-        self.status = Book.AVAILABLE
-        self.fields['tag'].label = "Genre"
-        self.fields['author'].help_text = "If there are multiple authors, hold down control key and select"
-        self.fields['tag'].help_text = "If there are multiple genres, hold down control key and select"
+        self.status = RealBook.AVAILABLE
         defLanguage = Language.objects.filter(languagename='English')
         self.fields['language'].initial = defLanguage[0].id
-        self.fields['title'].help_text=mark_safe('Enter the title of the book')
         self.fields['language'].help_text=mark_safe('Select the language of the book')
+        self.fields['title'].help_text=mark_safe('Enter the title of the book')
         self.fields['author'].help_text = mark_safe('If there are multiple authors, hold down control key and select')
-        self.fields['tag'].help_text = mark_safe('If there are multiple genres, hold down control key and select')
+        self.fields['genre'].help_text = mark_safe('If there are multiple genres, hold down control key and select')
 
 
 class ReceiveBookForm(ModelForm):
@@ -115,7 +113,7 @@ class ReceiveBookForm(ModelForm):
         super(ReceiveBookForm, self).__init__(*args, **kwargs)
         self.fields['book'].widget.attrs.update({'class' : 'form-control'})
         self.to_member = user
-        self.fields['book'].queryset = Book.objects.filter(transaction__to_member=SocialAccount.objects.get(user=user),status=Book.TRANSIT)
+        self.fields['book'].queryset = RealBook.objects.filter(transaction__to_member=SocialAccount.objects.get(user=user),status=RealBook.TRANSIT)
         #self.fields['from_member'].widget.attrs['readonly'] = True
         #self.fields['date_sent'].widget.attrs['readonly'] = True
         #self.fields['via'].widget.attrs['readonly'] = True
@@ -126,17 +124,17 @@ class ReceiveBookForm(ModelForm):
 
 class PassonForm(ModelForm):
 
-    title = forms.ModelChoiceField(Book.objects,widget=forms.Select)
+    title = forms.ModelChoiceField(RealBook.objects,widget=forms.Select)
     class Meta:
-        model = Book
+        model = RealBook
         fields = [ 'title' , 'status']
 
     def __init__(self, user, *args, **kwargs):
         super(PassonForm, self).__init__(*args, **kwargs)
-        self.fields['title'].queryset = Book.objects.filter(withmember=SocialAccount.objects.get(user=user),status=Book.READ)
+        self.fields['title'].queryset = RealBook.objects.filter(withmember=SocialAccount.objects.get(user=user),status=RealBook.READ)
 
 class SendBookForm(ModelForm):
-    book = forms.ModelChoiceField(Book.objects,widget=forms.Select(attrs={'onchange':'getmembersinqueue();'}))
+    book = forms.ModelChoiceField(RealBook.objects,widget=forms.Select(attrs={'onchange':'getmembersinqueue();'}))
     to_member = forms.ModelChoiceField(SocialAccount.objects,widget=forms.Select(attrs={'disabled':'true'}))
     class Meta:
         model = Transaction
@@ -152,7 +150,7 @@ class SendBookForm(ModelForm):
         self.fields['tracking'].widget.attrs.update({'class' : 'form-control'})
         self.fields['charges'].widget.attrs.update({'class' : 'form-control'})
         self.fields['charges_on'].widget.attrs.update({'class' : 'form-control'})
-        self.fields['book'].queryset = Book.objects.filter(withmember= SocialAccount.objects.get(user= user)).exclude(status=Book.TRANSIT)
+        self.fields['book'].queryset = RealBook.objects.filter(withmember= SocialAccount.objects.get(user= user)).exclude(status=RealBook.TRANSIT)
         self.fields['date_sent'].widget =  widgets.AdminSplitDateTime()
         self.fields['book'].help_text=mark_safe('Enter the title of the book to send')
         self.fields['to_member'].help_text=mark_safe('Select the recipient to send the book')
