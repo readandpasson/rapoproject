@@ -86,33 +86,33 @@ var f = document.getElementById('viewhistory');
 </tr>
 <tr>
 	<td id ="bookcover"><b> Book Cover </b></td>
-	{% if book.imgurl %}
-	<td> <img src={{book.imgurl}} title='Image courtesy : flipkart'> </td>
+	{% if book.book.imgurl %}
+	<td> <img src={{book.book.imgurl}} title='Image courtesy : flipkart'> </td>
 	{% else %}
-	<td> {{ book.title }} </td>
+	<td> {{ book.book.title }} </td>
 	{% endif %}
 </tr>
 <tr>
         <td id ="title"><b> Title of the book </b></td>
-    	<td> {{ book.title }}   </td>
+    	<td> {{ book.book.title }}   </td>
 </tr>
 <tr>
         <td id ="author"><b> Author </b></td>
-	<td> {% for author in book.author.all %}
+	<td> {% for author in book.book.author.all %}
   		{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
 		{% endfor %}
 	</td>
 </tr>
 <tr>
  	<td id="genre"><b> Genre </b> </td>
-	<td> {% for tag in book.tag.all %}
-  			{{ tag.taglabel }}{% if not forloop.last %}<br>{% endif %}
+	<td> {% for genre in book.book.genre.all %}
+  			{{ genre.genrelabel }}{% if not forloop.last %}<br>{% endif %}
 	     {% endfor %}
 	</td>
 </tr>
 <tr>
 	<td id="language"><b> Language </b> </td>
-	<td> {{ book.language.languagename }} </td>
+	<td> {{ book.book.language.languagename }} </td>
 </tr>
 <tr>
 	<td id="oowner"><b> Released By </b></td>
@@ -214,9 +214,9 @@ var f = document.getElementById('viewhistory');
 </tr>
 <tr>
 	<td><b>Buy Book</b></td>
-	<td> <a href={{book.buyurl}}><img src="http://img8a.flixcart.com/www/prod/images/buy_btn_1-b05fffbb.png"></a> </td>
+	<td> <a href={{book.book.buyurl}}><img src="http://img8a.flixcart.com/www/prod/images/buy_btn_1-b05fffbb.png"></a> </td>
 </tr>
-<!--	<td><a href="http://www.flipkart.com/search?q={{book.title}}">Click to buy <b>{{book.title}}</b> </a></td>-->
+<!--	<td><a href="http://www.flipkart.com/search?q={{book.book.title}}">Click to buy <b>{{book.book.title}}</b> </a></td>-->
 <tr>
 	<td><b> History </b></td>
 	<td>
