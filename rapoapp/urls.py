@@ -49,7 +49,8 @@ urlpatterns = patterns('',
 # Benitha to work on Browse details page and view queue page : Date: 06-Nov-2013 	
     url(r'^bookdetails/(?P<bookid>\d+)/$', 'rapocore.views.BookDetails', name='book-details'),
     url(r'^viewqueue/(?P<bookid>\d+)/$', 'rapocore.views.ViewQueue', name='view-queue'),
-
+    url(r'^writebookreview/(?P<bookid>\d+)/$', 'rapocore.views.WriteBookReview', name='write-bookreview'),
+    
     url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
     url(r'^test/', 'rapocore.views.Test', name='book-view'),
 
