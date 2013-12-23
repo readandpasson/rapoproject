@@ -11,7 +11,7 @@ from django.views.generic.list import ListView
 
 from allauth.socialaccount.models import SocialAccount
 from rapocore.models import RealBook,Transaction, Queue, Defect
-from rapogen.models import Author,Book,Genre
+from rapogen.models import Author,Book,Genre, BookReview
 from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
 from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
 
@@ -152,10 +152,12 @@ def BookDetails(request,bookid):
     book = RealBook.objects.get(id=bookid)
     member = SocialAccount.objects.get(user_id=request.user)
     queueDetails = ViewQueue(request, bookid)
+    bookReviewDetails = BookReviewDetails(request, bookid)
     booksTran = Transaction.objects.filter(book_id=bookid)
     dateTran = Transaction.objects.filter(book_id=bookid).filter(date_received__isnull = True )
     data = {  'book' : results, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid }
     data.update(queueDetails)
+    data.update(bookReviewDetails)
     return render_to_response('rapocore/book_details.html', data, RequestContext(request))
 
 @login_required
@@ -208,6 +210,15 @@ def ViewQueue(request, bookid):
             qset = ()
 	return {'queue':qset,'to_member':to_member}
 #        return render_to_response('rapocore/viewqueue.html',{ 'book': b.title,'queue':qset,'to_member':to_member}, RequestContext(request))
+
+@login_required
+def BookReviewDetails(request, bookid):
+    try:
+        user = SocialAccount.objects.get(user_id = request.user)
+        bookReview = BookReview.objects.select_related().get(book_id= bookid, status= 'S',reviewer_id=user.id)
+    except Exception:
+        bookReview = None
+    return {'bookReview': bookReview}
 
 @login_required
 def Add2Queue(request, bookid):
@@ -369,13 +380,16 @@ def MyAccount(request):
 def WriteBookReview(request,bookid):
 	rbook = RealBook.objects.select_related().get(id= bookid)
 	book = Book.objects.select_related().get(id= rbook.book_id)
+	bookReviewDetails = BookReviewDetails(request, bookid)
 	if request.method == 'POST': # If the form has been submitted...
-		form = WriteBookReviewForm(request.user,request.POST) # A form bound to the POST data
+		form = WriteBookReviewForm(request.user,bookReviewDetails,request.POST) # A form bound to the POST data
 		if form.has_changed():
 			if form.is_valid():
 				f_type = form.save(commit=False)
 				f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
-				f_type.book_id = book.id
+				f_type.book_id = bookid
+				if bookReviewDetails['bookReview'] and bookReviewDetails['bookReview'].status == 'S':
+					f_type.id = bookReviewDetails['bookReview'].id
 				f_type.save()
 				#book.publisher = form.cleaned_data['spublisher']
 				#book.save()
@@ -385,7 +399,7 @@ def WriteBookReview(request,bookid):
 			else:
 				 messages.error(request, "Error")
 	else:
-		form = WriteBookReviewForm(request.user)
+		form = WriteBookReviewForm(request.user, bookReviewDetails)
 	return render_to_response('rapocore/write_bookreviewform.html',{ 'form': form, 
 				'formtitle':'Write book review', 
 				'formnote':'Share your views of the book with others...', 
