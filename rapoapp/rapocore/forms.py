@@ -208,11 +208,17 @@ class WriteBookReviewForm(ModelForm):
 		model = BookReview
 		fields = [ 'rating', 'review']
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, user, bookReviewDetails, *args, **kwargs):
         super(WriteBookReviewForm, self).__init__(*args, **kwargs)
         #self.fields['spublisher'].widget.attrs.update({'class' : 'form-control'})
         #self.fields['spages'].widget.attrs.update({'class' : 'form-control'})
         #self.fields['sbookprice'].widget.attrs.update({'class' : 'form-control'})
         self.fields['rating'].widget.attrs.update({'class' : 'form-control'})
         self.fields['review'].widget.attrs.update({'class' : 'form-control'})
+        reviewParam=bookReviewDetails['bookReview']
+		
+        if reviewParam:
+            if reviewParam.reviewer.user.username == user.username and reviewParam.status == 'S':
+                self.fields['review'].initial = reviewParam.review
+                self.fields['rating'].initial = reviewParam.rating
 
