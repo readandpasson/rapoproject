@@ -30,6 +30,8 @@ urlpatterns = patterns('',
     url(r'^contact/', TemplateView.as_view(template_name="contact.html"), name="index"),
     url(r'^readme$', TemplateView.as_view(template_name="rapocore/readme.html"), name="index"),
     url(r'^disclaimer$', TemplateView.as_view(template_name="rapocore/disclaimer.html"), name="disclaimer"),
+    url(r'^meet1$', TemplateView.as_view(template_name="rapocore/rapofirstmeet.html"), name="meet1"),
+    url(r'^contest1$', TemplateView.as_view(template_name="rapocore/ReviewContestDec2013.html"), name="meet1"),
 
     url(r'^thanks/', TemplateView.as_view(template_name="rapocore/thanks.html"), name="thanks"),
 

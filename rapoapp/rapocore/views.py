@@ -148,14 +148,15 @@ def Browse(request):
 
 @login_required
 def BookDetails(request,bookid):
-    results = RealBook.objects.select_related().get(id= bookid)
-    book = RealBook.objects.get(id=bookid)
+    #results = RealBook.objects.select_related().get(id= bookid)
+    rbook = RealBook.objects.get(id=bookid)
+    book = Book.objects.select_related().get(id= rbook.book_id)
     member = SocialAccount.objects.get(user_id=request.user)
     queueDetails = ViewQueue(request, bookid)
-    bookReviewDetails = BookReviewDetails(request, bookid)
+    bookReviewDetails = BookReviewDetails(request, book.id)
     booksTran = Transaction.objects.filter(book_id=bookid)
     dateTran = Transaction.objects.filter(book_id=bookid).filter(date_received__isnull = True )
-    data = {  'book' : results, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid }
+    data = {  'book' : rbook, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid , 'bookReview': bookReviewDetails}
     data.update(queueDetails)
     data.update(bookReviewDetails)
     return render_to_response('rapocore/book_details.html', data, RequestContext(request))
@@ -215,7 +216,7 @@ def ViewQueue(request, bookid):
 def BookReviewDetails(request, bookid):
     try:
         user = SocialAccount.objects.get(user_id = request.user)
-        bookReview = BookReview.objects.select_related().get(book_id= bookid, status= 'S',reviewer_id=user.id)
+        bookReview = BookReview.objects.select_related().get(book_id= bookid, reviewer_id=user.id)
     except Exception:
         bookReview = None
     return {'bookReview': bookReview}
@@ -380,14 +381,14 @@ def MyAccount(request):
 def WriteBookReview(request,bookid):
 	rbook = RealBook.objects.select_related().get(id= bookid)
 	book = Book.objects.select_related().get(id= rbook.book_id)
-	bookReviewDetails = BookReviewDetails(request, bookid)
+	bookReviewDetails = BookReviewDetails(request, book.id)
 	if request.method == 'POST': # If the form has been submitted...
 		form = WriteBookReviewForm(request.user,bookReviewDetails,request.POST) # A form bound to the POST data
 		if form.has_changed():
 			if form.is_valid():
 				f_type = form.save(commit=False)
 				f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
-				f_type.book_id = bookid
+				f_type.book_id = book.id
 				if bookReviewDetails['bookReview'] and bookReviewDetails['bookReview'].status == 'S':
 					f_type.id = bookReviewDetails['bookReview'].id
 				f_type.save()

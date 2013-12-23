@@ -275,16 +275,13 @@ var f = document.getElementById('viewhistory');
 <tr>
 		{% if bookReview %}
 			{% if bookReview.status == 'S' and bookReview.reviewer.user.username == user.username %}
-					<td id ="editreview" ><b> Edit Reviews </b></td>
-					<td> <a href="/writebookreview/{{book.id}}"> Click to edit book review </td>
+					<td id ="edit" colspan=2 align="center"><a href="/writebookreview/{{book.id}}">Refine your review </a></td>
 			{% else %}
-				<td id ="submitreview" ><b> Submit Reviews </b></td>
-				<td> <a href="/writebookreview/{{book.id}}"> Click to review this book </td>
+				<td colspan=2 align="center">Your review of this book has been submitted.</td>
 			
 			{% endif %}
 		{% else %}
-			<td id ="submitreview" ><b> Submit Reviews </b></td>
-			<td> <a href="/writebookreview/{{book.id}}"> Click to review this book </td>
+			<td colspan=2 align="center"> <a href="/writebookreview/{{book.id}}">Review this book </a></td>
 		{% endif %}
 </tr>
 
