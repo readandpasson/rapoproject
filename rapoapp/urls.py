@@ -10,7 +10,7 @@ from allauth.account.views import logout
 from django.contrib import admin
 admin.autodiscover()
 
-from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers
+from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount
 from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView
 #from rapocore.views import SendBookWizard

@@ -273,9 +273,21 @@ var f = document.getElementById('viewhistory');
 </tr>
 -->
 <tr>
-        <td id ="submitreview" ><b> Submit Reviews </b></td>
-        <td> <a href="/writebookreview/{{book.id}}"> Click to review this book </td>
+		{% if bookReview %}
+			{% if bookReview.status == 'S' and bookReview.reviewer.user.username == user.username %}
+					<td id ="editreview" ><b> Edit Reviews </b></td>
+					<td> <a href="/writebookreview/{{book.id}}"> Click to edit book review </td>
+			{% else %}
+				<td id ="submitreview" ><b> Submit Reviews </b></td>
+				<td> <a href="/writebookreview/{{book.id}}"> Click to review this book </td>
+			
+			{% endif %}
+		{% else %}
+			<td id ="submitreview" ><b> Submit Reviews </b></td>
+			<td> <a href="/writebookreview/{{book.id}}"> Click to review this book </td>
+		{% endif %}
 </tr>
+
 
 </table>
 </div>
