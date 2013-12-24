@@ -274,7 +274,7 @@ var f = document.getElementById('viewhistory');
 -->
 <tr>
 		{% if bookReview %}
-			{% if bookReview.status == 'S' and bookReview.reviewer.user.username == user.username %}
+			{% if bookReview.status == 'S' or bookReview.status == 'R' %}
 					<td id ="edit" colspan=2 align="center"><a href="/writebookreview/{{book.id}}">Refine your review </a></td>
 			{% else %}
 				<td colspan=2 align="center">Your review of this book has been submitted.</td>
