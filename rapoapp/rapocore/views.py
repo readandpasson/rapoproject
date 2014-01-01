@@ -129,6 +129,7 @@ def SearchResults(request):
         return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'search': True, 'form':form }, RequestContext(request))
     else:
         member = SocialAccount.objects.get(user_id=request.user)
+	form = SearchForm(request.GET or None)
         return render_to_response('rapocore/book_list.html',{  'data' : [], 'member': member, 'search': True, 'form':form }, RequestContext(request))
 
 
