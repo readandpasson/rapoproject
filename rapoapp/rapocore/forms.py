@@ -83,7 +83,7 @@ class ReleaseBookForm(ModelForm):
     genre = forms.ModelMultipleChoiceField(Genre.objects, widget= MultipleSelectWithPopUp, initial=Genre.objects.filter(genrelabel='Uncategorized'))
 #    docfile = forms.FileField(label='Select the book cover', help_text='Max. size 1MB')
     class Meta:
-        model = RealBook
+        model = Book
         fields = [ 'language', 'title', 'author', 'genre']
 
     def __init__(self, user, *args, **kwargs):
@@ -92,9 +92,9 @@ class ReleaseBookForm(ModelForm):
         self.fields['author'].widget.attrs.update({'class' : 'form-control'})
         self.fields['genre'].widget.attrs.update({'class' : 'form-control'})
         self.fields['language'].widget.attrs.update({'class' : 'form-control'})
-        self.ownermember = user
-        self.withmember = user
-        self.status = RealBook.AVAILABLE
+        #self.ownermember = user
+        #self.withmember = user
+        #self.status = RealBook.AVAILABLE
         defLanguage = Language.objects.filter(languagename='English')
         self.fields['language'].initial = defLanguage[0].id
         self.fields['language'].help_text=mark_safe('Select the language of the book')
@@ -200,7 +200,7 @@ class WriteBookReviewForm(ModelForm):
     #spublisher = forms.CharField(label= 'Publisher')
     #spages= forms.IntegerField(label= 'No. of Pages')
     #sbookprice= forms.FloatField(label='Book Price')
-    rating= forms.ChoiceField(label= 'Rating', choices=(('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),('6','6'),('7','7'),('8','8'),('9','9'),('10','10')))
+    rating= forms.ChoiceField(label= 'Rating', choices=(('1','1'),('2','2'),('3','3'),('4','4'),('5','5')))
     review= forms.CharField(label= 'Review', widget=forms.Textarea)
     sdeclare = forms.BooleanField(label='Declaration',initial=False)
     

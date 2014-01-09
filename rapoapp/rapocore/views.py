@@ -23,24 +23,23 @@ def ReleaseBook(request):
         if form.has_changed():
             if form.is_valid(): # All validation rules pass
                 f_type = form.save(commit=False)
-                f_type.ownermember = SocialAccount.objects.get(user_id = request.user)
-                f_type.withmember = SocialAccount.objects.get(user_id = request.user)
-#		f_type.doc = Document(docfile = request.FILES['docfile'])
-#		f_type.doc.save()
+                member = SocialAccount.objects.get(user_id = request.user)
                 f_type.save()
                 form.save_m2m()
+                rb = RealBook(book = f_type,ownermember = member, withmember = member,status = RealBook.AVAILABLE)
+                rb.save()
                 return HttpResponseRedirect('/thanks/')
-	    else:
-		messages.error(request, "Error")
+            else:
+                messages.error(request, "Error")
     else:
         form = ReleaseBookForm(request.user)
 
     #documents = Document.objects.all()
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 
-			'formtitle':'Release a book', 
-			'formnote':'Do you want to release a book? Please Fill in the details in the form below and click on Release.', 
-			'submitmessage':'Release',
-			'formaction':'releasebook'},RequestContext(request))
+                        'formtitle':'Release a book', 
+                        'formnote':'Do you want to release a book? Please Fill in the details in the form below and click on Release.', 
+                        'submitmessage':'Release',
+                        'formaction':'releasebook'},RequestContext(request))
 
 # receive a book
 @login_required
@@ -65,10 +64,10 @@ def ReceiveBook(request):
         form = ReceiveBookForm(request.user)
 
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 
-		'formtitle':'Receive a book', 
-		'formnote':'Has a book sent to you by another member reached you? Please confirm here by choosing the book received by you.', 
-		'submitmessage':'Receive',
-		'formaction':'receivebook'},RequestContext(request))
+                'formtitle':'Receive a book', 
+                'formnote':'Has a book sent to you by another member reached you? Please confirm here by choosing the book received by you.', 
+                'submitmessage':'Receive',
+                'formaction':'receivebook'},RequestContext(request))
 
 @login_required
 def PassOn(request): # Pass On is the act of moving a book from status 'Reading' to 'Available' 
@@ -76,11 +75,11 @@ def PassOn(request): # Pass On is the act of moving a book from status 'Reading'
     results = RealBook.objects.filter(withmember=SocialAccount.objects.get(user=request.user), status=RealBook.READ).select_related()
     member = SocialAccount.objects.get(user_id=request.user)
     return render_to_response('rapocore/book_list.html',{  'data' : results, 
-			'formtitle':'Pass On',
-			'formnote':'Finished reading a book? Let others know. Select which book you have completed/read and click on Pass On', 
-			'member': member, 
-			'search' : False ,
-			'passon' : True}, RequestContext(request))
+                        'formtitle':'Pass On',
+                        'formnote':'Finished reading a book? Let others know. Select which book you have completed/read and click on Pass On', 
+                        'member': member, 
+                        'search' : False ,
+                        'passon' : True}, RequestContext(request))
 
 @login_required
 def Search(request):
@@ -89,10 +88,10 @@ def Search(request):
         if form.is_valid():
             print "the form is valid"
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 
-			'formtitle':'Search for a book', 
-			'formnote':'Looking for something? Search our repository by providing search criteria', 
-			'submitmessage':'Search',
-			'formaction':'searchresults'},RequestContext(request))
+                        'formtitle':'Search for a book', 
+                        'formnote':'Looking for something? Search our repository by providing search criteria', 
+                        'submitmessage':'Search',
+                        'formaction':'searchresults'},RequestContext(request))
 
 
 @login_required
@@ -113,8 +112,8 @@ def SearchResults(request):
             results = results.filter(Q(book__author__first_name__icontains=sauthor)|Q(book__author__last_name__icontains=sauthor)).select_related()
         if slanguage:
             results = results.filter(book__language__id__exact=slanguage).select_related()
-	if sgenre:
-	    results = results.filter(book__genre__id__exact=sgenre).select_related()
+        if sgenre:
+            results = results.filter(book__genre__id__exact=sgenre).select_related()
         if sownermember:
             results = results.filter(ownermember__id__exact=sownermember).select_related()
         if swithmember:
@@ -125,11 +124,11 @@ def SearchResults(request):
         #results = results.values('id','title','author__first_name','author__last_name','language__languagename','ownermember__user__first_name','ownermember__user__last_name','withmember__user__first_name','withmember__user__last_name','status')
         
         member = SocialAccount.objects.get(user_id=request.user)
-	form = SearchForm(request.GET or None)
+        form = SearchForm(request.GET or None)
         return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'search': True, 'form':form }, RequestContext(request))
     else:
         member = SocialAccount.objects.get(user_id=request.user)
-	form = SearchForm(request.GET or None)
+        form = SearchForm(request.GET or None)
         return render_to_response('rapocore/book_list.html',{  'data' : [], 'member': member, 'search': True, 'form':form }, RequestContext(request))
 
 
@@ -142,8 +141,8 @@ def Browse(request):
     transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
 
     return render_to_response('rapocore/book_list.html',{  'data' : results, 
-			'formtitle': 'Browse books',
-			'member': member, 'bookqueue': bookqueue, 'transaction': transaction, 'search' : False }, RequestContext(request))
+                        'formtitle': 'Browse books',
+                        'member': member, 'bookqueue': bookqueue, 'transaction': transaction, 'search' : False }, RequestContext(request))
 
 # Benitha: added code for Book details page: 06-Nov-2013
 
@@ -210,7 +209,7 @@ def ViewQueue(request, bookid):
             qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
         else :
             qset = ()
-	return {'queue':qset,'to_member':to_member}
+        return {'queue':qset,'to_member':to_member}
 #        return render_to_response('rapocore/viewqueue.html',{ 'book': b.title,'queue':qset,'to_member':to_member}, RequestContext(request))
 
 @login_required
@@ -258,10 +257,10 @@ def SendBook(request):
         form = SendBookForm(request.user)
 
     return render_to_response('rapocore/sendbook_form.html',{ 'form': form, 
-		'formtitle':'Send a book', 
-		'formnote':'Have you physically sent a book to another member in the queue? Fill in the details below.', 
-		'submitmessage':'Send',
-		'formaction':'sendbook'},RequestContext(request))
+                'formtitle':'Send a book', 
+                'formnote':'Have you physically sent a book to another member in the queue? Fill in the details below.', 
+                'submitmessage':'Send',
+                'formaction':'sendbook'},RequestContext(request))
 
 # send a book to a particular member
 @login_required
@@ -311,10 +310,10 @@ def ReportDefect(request):
     else:
         form = ReportDefectForm(request.user)
     return render_to_response('rapocore/generic_form.html',{ 'form': form, 
-		'formtitle':'Report a defect', 
-		'formnote':'Have you noticed any error in the database? Or a bug in the application? Do you need a new feature? Please let us know', 
-		'submitmessage':'Report',
-		'formaction':'defect'},RequestContext(request))
+                'formtitle':'Report a defect', 
+                'formnote':'Have you noticed any error in the database? Or a bug in the application? Do you need a new feature? Please let us know', 
+                'submitmessage':'Report',
+                'formaction':'defect'},RequestContext(request))
 
 class DefectListView(ListView):
     model  = Defect
@@ -372,7 +371,7 @@ def MyAccount(request):
     bookswith = RealBook.objects.filter(withmember=me).select_related().exclude(status=RealBook.TRANSIT)
     bookswithqlist = []
     for bk in bookswith:
-    	bookswithqlist.extend(list(Queue.objects.filter(book=bk).order_by('id').values('book__id','member__user__first_name','member__user__last_name')))
+        bookswithqlist.extend(list(Queue.objects.filter(book=bk).order_by('id').values('book__id','member__user__first_name','member__user__last_name')))
 
     booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
     booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
@@ -380,30 +379,30 @@ def MyAccount(request):
 
 @login_required
 def WriteBookReview(request,bookid):
-	rbook = RealBook.objects.select_related().get(id= bookid)
-	book = Book.objects.select_related().get(id= rbook.book_id)
-	bookReviewDetails = BookReviewDetails(request, book.id)
-	if request.method == 'POST': # If the form has been submitted...
-		form = WriteBookReviewForm(request.user,bookReviewDetails,request.POST) # A form bound to the POST data
-		if form.has_changed():
-			if form.is_valid():
-				f_type = form.save(commit=False)
-				f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
-				f_type.book_id = book.id
-				if bookReviewDetails['bookReview'] and bookReviewDetails['bookReview'].status == 'S':
-					f_type.id = bookReviewDetails['bookReview'].id
-				f_type.save()
-				#book.publisher = form.cleaned_data['spublisher']
-				#book.save()
-				#form.save_m2m()
-				#print "the form is valid"
-				return HttpResponseRedirect('/thanks/')
-			else:
-				 messages.error(request, "Error")
-	else:
-		form = WriteBookReviewForm(request.user, bookReviewDetails)
-	return render_to_response('rapocore/write_bookreviewform.html',{ 'form': form, 
-				'formtitle':'Write book review', 
-				'formnote':'Share your views of the book with others...', 
-				'book':book,
-				'submitmessage':'Submit Review', 'formaction':'writebookreview/'+bookid},RequestContext(request))
+        rbook = RealBook.objects.select_related().get(id= bookid)
+        book = Book.objects.select_related().get(id= rbook.book_id)
+        bookReviewDetails = BookReviewDetails(request, book.id)
+        if request.method == 'POST': # If the form has been submitted...
+                form = WriteBookReviewForm(request.user,bookReviewDetails,request.POST) # A form bound to the POST data
+                if form.has_changed():
+                        if form.is_valid():
+                                f_type = form.save(commit=False)
+                                f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
+                                f_type.book_id = book.id
+                                if bookReviewDetails['bookReview'] and bookReviewDetails['bookReview'].status == 'S':
+                                        f_type.id = bookReviewDetails['bookReview'].id
+                                f_type.save()
+                                #book.publisher = form.cleaned_data['spublisher']
+                                #book.save()
+                                #form.save_m2m()
+                                #print "the form is valid"
+                                return HttpResponseRedirect('/thanks/')
+                        else:
+                                 messages.error(request, "Error")
+        else:
+                form = WriteBookReviewForm(request.user, bookReviewDetails)
+        return render_to_response('rapocore/write_bookreviewform.html',{ 'form': form, 
+                                'formtitle':'Write book review', 
+                                'formnote':'Share your views of the book with others...', 
+                                'book':book,
+                                'submitmessage':'Submit Review', 'formaction':'writebookreview/'+bookid},RequestContext(request))
