@@ -77,7 +77,7 @@ function popitup(url,message) {
  {% endcomment %}
         <td>{{ book.id }} {% if book.is_new %} <img src="{% static "new.jpg" %}" alt="New" height="15" width="30"> {% endif %} </td>
     <!--    <td> <a href="/bookdetails/{{ book.id }}" title="Click to view the details of the book"> <img src={{book.imgurl}}  alt="New" height="15" width="30"> </a> </td> -->
-    	<td> <a href = "/bookdetails/{{ book.id }}" title="Click to view the details of the book" >{{ book.book.title }}  </a> </td>
+    	<td> <a href = "/bookdetails/{{ book.id }}" title="Click to view the details of the book" >{{ book.book.title }}</a> </td>
 	<td> {% for author in book.book.author.all %}
   		{{ author.first_name }} {{ author.last_name }}{% if not forloop.last %},{% endif %}
 		{% endfor %}
@@ -94,7 +94,7 @@ function popitup(url,message) {
                                 {% for tran in transaction %}
                                     {% ifequal book.id tran.book_id %}
 					{% ifequal tran.to_member.user.username user.username %}
-						<a href="/receivebook" title="Click to acknowledge reciept of the book" >Receive Book</a>
+						<a href="/receivebook" title="Click to acknowledge receipt of the book" >Receive Book</a>
 					{% else %}
 						{% ifequal tran.from_member.user.username user.username %}
 							In Transit
