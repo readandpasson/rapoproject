@@ -10,7 +10,7 @@ from allauth.account.views import logout
 from django.contrib import admin
 admin.autodiscover()
 
-from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview
+from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview, WithdrawBook
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount
 from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView
 #from rapocore.views import SendBookWizard
@@ -40,6 +40,7 @@ urlpatterns = patterns('',
     url(r'^logout/', 'allauth.account.views.logout',name='logout'),
 
     url(r'^releasebook/', 'rapocore.views.ReleaseBook',name='release-book'),
+    url(r'^withdrawbook(?P<bookid>[0-9]*)/', 'rapocore.views.WithdrawBook',name='withdraw-book'),
     url(r'^sendbook/', 'rapocore.views.SendBook',name='send-book'),
     url(r'^getmembersinqueue/(?P<bookid>[0-9]*)/', 'rapocore.views.GetMembers',name='send-book-get-members'),
     url(r'^receivebook/', 'rapocore.views.ReceiveBook',name='receive-book'),

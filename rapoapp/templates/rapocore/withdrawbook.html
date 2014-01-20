@@ -4,7 +4,7 @@
 
 <html>
     <head>
-        <title>Add to queue</title>
+        <title>Withdraw Book</title>
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -14,16 +14,12 @@
     </head>
     <body>
         {% if success %}
-        	<h1>Added to queue </h1>
-			<p>{{ user}} successfully added to queue for {{ book }}</p>
+        	<h1>Withdraw a previously released book </h1>
+			<p>{{ user }} successfully withdrew {{ book }}</p>
         {% else %}
-        	<h1>Already in queue </h1>
-			<p>{{ user}} already in queue for {{ book }}</p>
+        	<h1>Already withdrawn </h1>
+			<p>{{ book }} already withdrawn by {{ user }}</p>
         {% endif %}
-            <table>
-            {% for m in queue  %}
-                 <tr> {{ m.member__user__first_name }} {{ m.member__user__last_name }} </br></tr>
-            {% endfor %}
 				
             </table>
             <p><a href="javascript: window.close();"/>Close</p></a>

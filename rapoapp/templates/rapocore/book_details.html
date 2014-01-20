@@ -13,9 +13,12 @@
 <script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
 <script>
 function popup(url,message) {
+    var response= confirm(message) 
+    if (response==true){
+		window.opener.location.href="./profile";
         newwindow=window.open(url,'{{title}}','height=200,width=1000');
         if (window.focus) {newwindow.focus()}
-		return false;
+    }
 }
 function popitup(url,message) {
     var response= confirm(message) 
@@ -127,7 +130,8 @@ var f = document.getElementById('viewhistory');
 <tr>
 	<td id="status"><b> Status </b></td>
 	<td> {% ifequal book.status 'A' %}
-				Available {% else %} {% ifequal book.status 'T' %}
+				Available 
+		{% else %} {% ifequal book.status 'T' %}
 					In Transit {% else %} {% ifequal book.status 'R' %} Reading {% endifequal %} {% endifequal %} {% endifequal %} </td>
 </tr>
 <tr>
@@ -197,6 +201,11 @@ var f = document.getElementById('viewhistory');
                     {% else %}
                         {% ifequal book.status 'A' %}
                                 <a href="/sendbook" title="Click to send the book to the receiver" >Send Book</a>
+{% comment %}
+								{% ifequal book.ownermember book.withmember %}
+									<a href="/withdrawbook{{ book.id }}" title="Click to withdraw this book" onclick="return popitup(this,'Are you sure you want to withdraw this book - {{ book.book.title }}?');">&nbsp;Withdraw Book</a>
+								{% endifequal %}
+{% endcomment %}
                         {% else %}
                                 {% ifequal book.status 'R' %}
                                         <a href="/passon{{ book.id }}" id="passon" class="passon" title ="Click to Pass on the book back to the next person in the queue" onclick="return popitup(this,'Are you sure you want to pass this book on - {{ book.title }}?');">Pass On</a>

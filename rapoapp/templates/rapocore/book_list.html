@@ -111,6 +111,9 @@ function popitup(url,message) {
                     {% else %}
                         {% ifequal book.status 'A' %}
                             <a href="/sendbook" title="Click to send the book to the receiver" >Send Book</a>
+							{% ifequal book.ownermember book.withmember %}
+								<a href="/withdrawbook{{ book.id }}" title="Click to withdraw this book" onclick="return popitup(this,'Are you sure you want to withdraw this book - {{ book.book.title }}?');">&nbsp;Withdraw</a>
+							{% endifequal %}
                         {% else %}
                             {% ifequal book.status 'R' %}
                                 <a href="/passon{{ book.id }}" id="passon" class="passon" title ="Click to Pass on the book back to the next person in the queue" onclick="return popitup(this,'Are you sure you want to pass this book on - {{ book.title }}?');">Pass On</a>

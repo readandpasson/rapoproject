@@ -64,7 +64,13 @@ function popitup(url,message) {
 					</br>  {% endifequal %}
 					{% endfor %} </td>
 				{% else %}
-				<td> {{ bk.get_status_display }} </td> 
+				<td> {{ bk.get_status_display }} 
+					{% ifequal bk.status 'A' %}
+						{% ifequal bk.ownermember bk.withmember %}
+							<a href="/withdrawbook{{ bk.id }}" title="Click to withdraw this book" onclick="return popitup(this,'Are you sure you want to withdraw this book - {{ bk.book.title }}?');">Withdraw Book</a>
+						{% endifequal %}
+					{% endifequal %}
+				</td> 
 				{% endifnotequal %}
 			</tr> 
 			{% endfor %} 

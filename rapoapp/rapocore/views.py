@@ -35,7 +35,7 @@ def ReleaseBook(request):
         form = ReleaseBookForm(request.user)
 
     #documents = Document.objects.all()
-    return render_to_response('rapocore/generic_form.html',{ 'form': form, 
+    return render_to_response('rapocore/release.html',{ 'form': form, 
                         'formtitle':'Release a book', 
                         'formnote':'Do you want to release a book? Please Fill in the details in the form below and click on Release.', 
                         'submitmessage':'Release',
@@ -406,3 +406,20 @@ def WriteBookReview(request,bookid):
                                 'formnote':'Share your views of the book with others...', 
                                 'book':book,
                                 'submitmessage':'Submit Review', 'formaction':'writebookreview/'+bookid},RequestContext(request))
+
+@login_required
+def WithdrawBook(request,bookid):
+        b = RealBook.objects.get(id= bookid)
+        Queue.objects.filter(book=b).delete()  # Delete all queued entries for the book
+        b.delete()
+        success = True # Success will be false when sender has already sent to this person  - To be implemented TBD
+        return render_to_response('rapocore/withdrawbook.html',{ 'book': b.book.title, 'success': success}, RequestContext(request))
+
+@login_required
+def CancelRequest(request,bookid):
+        b = RealBook.objects.get(id= bookid)
+        instance = Queue.objects.get(member=SocialAccount.objects.get(user_id=request.user),book=b)
+        instance.delete()
+        success = True # Success will be false when sender has already sent to this person  - To be implemented TBD
+        return render_to_response('rapocore/cancelrequest.html',{ 'book': b.book.title, 'success': success}, RequestContext(request))
+

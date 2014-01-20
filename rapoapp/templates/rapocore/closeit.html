@@ -6,6 +6,12 @@
 <html>
     <head>
         <title>Close defect</title>
+	<script>
+        window.onunload = refreshParent;
+        function refreshParent() {
+            window.opener.location.reload();
+        }
+    </script>
     </head>
     <body>
         	<h1>Closed </h1>
