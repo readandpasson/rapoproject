@@ -266,12 +266,11 @@ var f = document.getElementById('viewhistory');
 <!--<tr>
         <td id ="goodreadreview" ><b> Goodreads Reviews </b></td>
         <td> <a href="https://www.goodreads.com/book/title.xml?&key=3RYtL3RCPlCSBdOA03bsvQ&title=Hound+of+the+Baskervilles"> Click to read Goodreads Reviews </td>
-</tr>
+</tr>-->
 <tr>
         <td id ="raporeview" ><b> RAPO™ Reviews </b></td>
         <td> <a href="/rapobookreview/{{book.id}}"> Click to read RAPO™ Reviews </td>
 </tr>
--->
 <tr>
 		{% if bookReview %}
 			{% if bookReview.status == 'S' or bookReview.status == 'R' %}

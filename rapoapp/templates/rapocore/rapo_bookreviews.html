@@ -1,0 +1,47 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+
+</script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+<div class="panel panel-success">
+<div class="panel-heading">
+    <strong> RAPO™ Book Reviews </strong>
+</div>
+<div class="panel-heading">
+	<strong> Book Title: {{ book.title }} </strong>
+	<br>
+	<br>
+	<strong> Overall rating: {{ avg_rating}} </strong>
+</div>
+{% if rapoReview %}
+	{% for review in rapoReview %}
+		<div class="form-group" >
+			<p> <b> Rating: </b> {{ review.rating }} </p>
+			<p> <b> Reviewer: </b> {{ review.reviewer_id__user__first_name }} {{ review.reviewer_id__user__last_name }} </p>
+			<p> <b> Review: </b> <i>{{ review.review }} </i> </p>
+			<hr size="1" noshade="1">
+		</div>
+	{% endfor %}
+{% endif %}
+</div>
+{% endblock %}
