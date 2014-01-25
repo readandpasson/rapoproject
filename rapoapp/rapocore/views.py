@@ -12,7 +12,7 @@ from django.views.generic.list import ListView
 from allauth.socialaccount.models import SocialAccount
 from rapocore.models import RealBook,Transaction, Queue, Defect
 from rapogen.models import Author,Book,Genre, BookReview
-from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
+from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm, ContactUsForm
 from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
 
 from django.db.models import Avg, Max, Min
@@ -203,15 +203,24 @@ def PassOnBook(request, bookid):
 def ViewQueue(request, bookid):
         b = RealBook.objects.get(id= bookid)
         if b.status  == RealBook.TRANSIT:
-            temp_tr = Transaction.objects.get(book=b,date_received__isnull = True )
-            to_member = SocialAccount.objects.get(id=temp_tr.to_member.id)
+            try:
+                temp_tr = Transaction.objects.get(book=b,date_received__isnull = True )
+            except Transaction.DoesNotExist:
+                temp_tr = None
+            if temp_tr:
+                to_member = SocialAccount.objects.get(id=temp_tr.to_member.id)
+                from_member = SocialAccount.objects.get(id=temp_tr.from_member.id)
+            else:
+                to_member = ()
+                from_member = ()
         else:
             to_member = ()
+            from_member = ()
         if Queue.objects.filter(book=b).exists() :
             qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
         else :
             qset = ()
-        return {'queue':qset,'to_member':to_member}
+        return {'queue':qset,'to_member':to_member,'from_member':from_member}
 #        return render_to_response('rapocore/viewqueue.html',{ 'book': b.title,'queue':qset,'to_member':to_member}, RequestContext(request))
 
 @login_required
@@ -418,3 +427,21 @@ def RAPOBookReview(request,bookid):
         rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = bookid).values('rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
         data = {  'book' : book,  'rapoReview': rapoReview, 'avg_rating':avg_rating['rating__avg']}
         return render_to_response('rapocore/rapo_bookreviews.html', data, RequestContext(request))
+
+def ContactUs(request):
+        if request.method == 'POST': # If the form has been submitted...
+                form = ContactUsForm(request.user,request.POST) # A form bound to the POST data
+                if form.has_changed():
+                        if form.is_valid():
+                                f_type = form.save(commit=False)
+                                f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
+                                f_type.save()
+                                return HttpResponseRedirect('/thanks/')
+                        else:
+                                 messages.error(request, "Error")
+        else:
+                form = ContactUsForm(request.user)
+        return render_to_response('rapocore/generic_form.html',{ 'form': form, 
+                                'formtitle':'Contact Us...', 
+                                'formnote':'Use this form to provide your comments, concerns, questions, or suggestions to Admin. We will respond ASAP ', 
+                                'submitmessage':'Submit', 'formaction':'contactus/'},RequestContext(request))
