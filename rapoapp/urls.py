@@ -14,7 +14,7 @@ from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBo
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount
 from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount, ContactUs
-from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView
+from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView, MemberProfile
 #from rapocore.views import SendBookWizard
 from rapocore.models import Book
 
@@ -39,6 +39,7 @@ urlpatterns = patterns('',
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/profile/','rapocore.views.MyAccount' ,name='myaccount'),
+    url(r'^accounts/memberprofile/(?P<username>.*)/', 'rapocore.views.MemberProfile',name='member-profile'),
     url(r'^logout/', 'allauth.account.views.logout',name='logout'),
     url(r'^contact/', 'rapocore.views.ContactUs', name="contact"),
     
@@ -71,6 +72,7 @@ urlpatterns = patterns('',
 
     url(r'^defect/', 'rapocore.views.ReportDefect',name='report-defect'),
     url(r'^defectbrowse/', DefectListView.as_view(),name='defect-browse'),
+    url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
     
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

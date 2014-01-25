@@ -1,0 +1,161 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} My Account
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+
+function popitup(url,message) {
+	var response= confirm(message) 
+		if (response==true){
+			newwindow=window.open(url,'{{title}}','height=200,width=1000');
+			if (window.focus) {newwindow.focus()}
+		}
+	return false;
+}
+/*
+   function ToggleList(IDS) {
+   var CState = document.getElementById(IDS);
+   if (CState.style.display != "table-row") { CState.style.display = "table-row"; }
+   else { CState.style.display = "none"; }
+   }*/
+
+</script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>Books with {{ member.user.first_name }} {{member.user.last_name }}</strong>
+	</div>
+	<div class="panel-body">
+		<table class="table table-hover" >
+			{% comment %} Books currently with me {% endcomment %}
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			{% for bk in bookswith %} 
+    		<tr> <td> <a href = "/bookdetails/{{ bk.id }}" title="Click to view the details of the book" >{{ bk.book.title }}</a> </td>
+				{% ifnotequal bk.rqueue.count 0 %} 
+				<td> In queue : </br>  {% for m in bookswithqlist %} 
+					{% ifequal bk.id m.book__id %}  {{ m.member__user__first_name }} {{ m.member__user__last_name }} 
+					{% comment %}
+					{% ifequal user.is_staff 1 %}
+					<a href="/sendbookto{{ m.uid }}/{{ book.id }}">Send Book</a>   
+					{% endifequal %}
+					{% endcomment %}
+					</br>  {% endifequal %}
+					{% endfor %} </td>
+				{% else %}
+				<td> {{ bk.get_status_display }} 
+					{% ifequal bk.status 'A' %}
+                        {% comment %}
+						{% ifequal bk.ownermember bk.withmember %}
+							<a href="/withdrawbook{{ bk.id }}" title="Click to withdraw this book" onclick="return popitup(this,'Are you sure you want to withdraw this book - {{ bk.book.title }}?');">Withdraw Book</a>
+						{% endifequal %}
+                        {% endcomment %}
+					{% endifequal %}
+				</td> 
+				{% endifnotequal %}
+			</tr> 
+			{% endfor %} 
+
+</table>
+</div>
+</div>
+			{% comment %} Books in transit {% endcomment %}
+			{% if booksintransitfromme %}  
+<div class="panel panel-success">
+		  <div class="panel-heading">
+		    <strong>Books In Transit from {{member.user.first_name}} {{member.user.last_name}}</strong>
+		  </div>
+  <div class="panel-body">
+<table class="table table-hover">
+
+			<th> Title </th>  <th> To </th></tr>
+		{% for tr in booksintransitfromme %} <tr> <td> <a href = "/bookdetails/{{ tr.book.id }}" title="Click to view the details of the book" >{{ tr.book.book.title }}</a> </td> <td>  --> {{ tr.to_member.user.first_name }} {{tr.to_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} 
+    		
+</table>
+</div>
+</div>
+{% endif %}
+
+{% if booksintransittome %}
+ <div class="panel panel-success">
+		  <div class="panel-heading">
+		    <strong>Books In Transit to {{member.user.first_name}} {{member.user.last_name}}</strong>
+		  </div>
+  <div class="panel-body">
+<table class="table table-hover">
+		<th> Title </th>  <th> From </th></tr>
+	{% for tr in booksintransittome %} <tr> <td> <a href = "/bookdetails/{{ tr.book.id }}" title="Click to view the details of the book" >{{ tr.book.book.title }}</a> </td> <td>  <-- {{ tr.from_member.user.first_name }} {{tr.from_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %}
+
+</table>
+</div>
+</div>
+ {% endif %}
+
+	{% comment %} Books requested by me {% endcomment %}
+<div class="panel panel-success">
+		  <div class="panel-heading">
+		    <strong>Books Requested by {{member.user.first_name}} {{member.user.last_name}}</strong>
+		  </div>
+  <div class="panel-body">
+<table class="table table-hover">
+	{% if booksrequested %} 
+  <thead>
+	  <tr>
+<th>Title</th>
+<th>Currently With</th>
+	  </tr>
+	</thead>
+{% for qu  in booksrequested %} <tr> <td> <a href = "/bookdetails/{{ qu.book.id }}" title="Click to view the details of the book" >{{ qu.book.book.title }}</a> </td> <td>  {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }} ( {{ qu.book.withmember.user.username }} ) </td> </tr> {% endfor %} </td> </tr>
+{% else %}
+<tr> <td>No books requested </td> </tr>
+{% endif %}
+</table>
+</div>
+</div>
+
+
+
+{% comment %} Books released by me {% endcomment %}
+
+<!--<a href="#" color = "#ff00ff" onclick="ToggleList('a')">Books released by me</a> -->
+<div class="panel panel-success">
+		  <div class="panel-heading">
+		    <strong>Books Released by {{member.user.first_name}} {{member.user.last_name}}</strong>
+		  </div>
+  <div class="panel-body">
+<table class="table table-hover">
+  <thead>
+	  <tr>
+<th>Title</th>
+<th>On</th>
+<th>Currently With</th>
+	  </tr>
+	</thead>
+{% for bk in booksreleased %} <tr> <td> <a href = "/bookdetails/{{ bk.id }}" title="Click to view the details of the book" >{{ bk.book.title }}</a> </td><td>  {{ bk.datereleased }} </td> <td>{{ bk.withmember.user.first_name }} {{ bk.withmember.user.last_name }} ( {{ bk.withmember.user.username }} )</td> </tr> {% endfor %} </td> </tr>
+</table> 
+</div>
+</div>
+
+
+{% endblock %}

@@ -10,6 +10,7 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
 
 from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.models import User
 from rapocore.models import RealBook,Transaction, Queue, Defect
 from rapogen.models import Author,Book,Genre, BookReview
 from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm, ContactUsForm
@@ -460,3 +461,26 @@ def ContactUs(request):
                                 'formtitle':'Contact Us...', 
                                 'formnote':'Use this form to provide your comments, concerns, questions, or suggestions to Admin. We will respond ASAP ', 
                                 'submitmessage':'Submit', 'formaction':'contactus/'},RequestContext(request))
+
+@login_required
+def MemberProfile(request,username):
+    try:
+        uid = User.objects.get(username = username)
+        me = SocialAccount.objects.get(user_id=uid)
+    except User.DoesNotExist:
+        print "User does not exist"
+    else:
+        booksreleased = RealBook.objects.filter(ownermember = me).order_by('datereleased')
+        booksrequested = Queue.objects.filter(member= me).select_related()
+        bookswith = RealBook.objects.filter(withmember=me).select_related().exclude(status=RealBook.TRANSIT)
+        booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
+        booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
+    return render_to_response('rapocore/memberprofile.html',{ 'member': me, 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookswith': bookswith, 'booksintransitfromme': booksintransitfromme,'booksintransittome': booksintransittome}, RequestContext(request))
+
+class MemberListView(ListView):
+    model  = SocialAccount
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(MemberListView, self).get_context_data(**kwargs)
+        return context
+

@@ -1,0 +1,58 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+
+{% block title %}
+{{ block.super }} Browse Members
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script language="javascript" type="text/javascript">
+<!--
+function popitup(url,message) {
+    var response= confirm(message) 
+    if (response==true){
+        newwindow=window.open(url,'{{title}}','height=200,width=1000');
+        if (window.focus) {newwindow.focus()}
+    }
+    return false;
+}
+
+// -->
+</script>
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+	
+{% block Centre %}
+<div class="panel panel-success">
+     <div class="panel-heading">
+     <strong>Members</strong>
+</div>
+<table id="members" class="table" style="table-layout:fixed">
+	<thead>
+   	<tr>
+	<th style="width: 20%" id="fname"> First Name </th>
+	<th  style="width:15%" id="lname"> Last Name </th>
+	<th style="width: 15%"  id="prof"> Profile </th>
+	<th style="width: 28%"  id="city"> City </th>
+	</tr>
+</thead>
+{% for member in object_list %}
+   	<tr>
+			<td>{{ member.user.first_name }}</td>
+			<td>{{ member.user.last_name }}</td>
+			<td><a href="/accounts/memberprofile/{{ member.user.username }}/">{{ member.user.first_name }}</a></td>
+			<td> Not Available </td>
+	</tr>
+{% endfor %}
+   <tfoot><tr> <td class="closedstatus" colspan="8"> {{ object_list.count }} members  </td> </tr></tfoot>
+</table>
+</div>
+{% endblock %}
