@@ -439,8 +439,8 @@ def RAPOBookReview(request,bookid):
         rbook = RealBook.objects.select_related().get(id= bookid)
         book = Book.objects.select_related().get(id= rbook.book_id)
         #rapoReviewDetails = RAPOReviewDetails(request, book.id)
-        avg_rating = BookReview.objects.select_related().filter(status = 'A', book_id = bookid).aggregate(Avg('rating'))
-        rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = bookid).values('rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
+        avg_rating = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).aggregate(Avg('rating'))
+        rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).values('rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
         data = {  'book' : book,  'rapoReview': rapoReview, 'avg_rating':avg_rating['rating__avg']}
         return render_to_response('rapocore/rapo_bookreviews.html', data, RequestContext(request))
 
