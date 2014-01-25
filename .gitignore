@@ -5,3 +5,4 @@ rapoapp/basic
 rapoapp/settings.py
 rapoapp/mystatic
 django
+rapoapp/getmembercount.sh
