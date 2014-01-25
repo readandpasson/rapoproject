@@ -222,3 +222,23 @@ class WriteBookReviewForm(ModelForm):
                 self.fields['review'].initial = reviewParam.review
                 self.fields['rating'].initial = reviewParam.rating
 
+
+class ContactUsForm(ModelForm):
+
+    name = forms.CharField(label='Name', widget=forms.TextInput(attrs={'size':'50'})) 
+    email = forms.CharField(label= 'Email', widget=forms.TextInput(attrs={'size':'50'}))
+    phone = forms.IntegerField(label= 'Phone', widget=forms.TextInput(attrs={'size':'10'}))
+    subject = forms.CharField(label= 'Subject', widget=forms.TextInput(attrs={'size':'50'}))
+    query = forms.CharField(label= 'Query/Feedback', widget=forms.Textarea)
+
+    class Meta:
+        model = Book
+        fields = [ 'name', 'email', 'phone', 'subject','query']
+
+    def __init__(self, user, *args, **kwargs):
+        super(ContactUsForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['email'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['phone'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['subject'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['query'].widget.attrs.update({'class' : 'form-control'})
