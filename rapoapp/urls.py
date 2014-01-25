@@ -12,6 +12,8 @@ admin.autodiscover()
 
 from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview, WithdrawBook
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount
+from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview
+from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount, ContactUs
 from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView
 #from rapocore.views import SendBookWizard
 from rapocore.models import Book
@@ -38,7 +40,7 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/profile/','rapocore.views.MyAccount' ,name='myaccount'),
     url(r'^logout/', 'allauth.account.views.logout',name='logout'),
-    url(r'^contact/', TemplateView.as_view(template_name="rapocore/contact.html"), name="contact"),
+    url(r'^contact/', 'rapocore.views.ContactUs', name="contact"),
     
     url(r'^releasebook/', 'rapocore.views.ReleaseBook',name='release-book'),
     url(r'^withdrawbook(?P<bookid>[0-9]*)/', 'rapocore.views.WithdrawBook',name='withdraw-book'),
