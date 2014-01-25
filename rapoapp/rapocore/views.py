@@ -15,6 +15,8 @@ from rapogen.models import Author,Book,Genre, BookReview
 from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
 from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
 
+from django.db.models import Avg, Max, Min
+
 # make a book release
 @login_required
 def ReleaseBook(request):
@@ -423,3 +425,11 @@ def CancelRequest(request,bookid):
         success = True # Success will be false when sender has already sent to this person  - To be implemented TBD
         return render_to_response('rapocore/cancelrequest.html',{ 'book': b.book.title, 'success': success}, RequestContext(request))
 
+def RAPOBookReview(request,bookid):
+        rbook = RealBook.objects.select_related().get(id= bookid)
+        book = Book.objects.select_related().get(id= rbook.book_id)
+        #rapoReviewDetails = RAPOReviewDetails(request, book.id)
+        avg_rating = BookReview.objects.select_related().filter(status = 'A', book_id = bookid).aggregate(Avg('rating'))
+        rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = bookid).values('rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
+        data = {  'book' : book,  'rapoReview': rapoReview, 'avg_rating':avg_rating['rating__avg']}
+        return render_to_response('rapocore/rapo_bookreviews.html', data, RequestContext(request))
