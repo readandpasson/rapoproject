@@ -72,36 +72,43 @@ class Book(models.Model):
 
 
 class EBookFormat(models.Model):
-	name = models.CharField(verbose_name="Name of format",max_length=50)
-	reader_url = models.URLField(max_length=2048)
+        name = models.CharField(verbose_name="Name of format",max_length=50)
+        reader_url = models.URLField(max_length=2048)
 
 class EBook(models.Model):
-	FREE='F'	
-	PAID='P'
-	PRICE_CHOICES = (
-		(FREE,'Free'),
-		(PAID,'Paid'),
-	)
-	book = models.ForeignKey(Book)
-	eformat = models.ForeignKey(EBookFormat)
-	pricestatus = models.CharField(max_length=1,choices=PRICE_CHOICES,default=FREE)
-	download_url = models.URLField(max_length=2048)
+        FREE='F'        
+        PAID='P'
+        PRICE_CHOICES = (
+                (FREE,'Free'),
+                (PAID,'Paid'),
+        )
+        book = models.ForeignKey(Book)
+        eformat = models.ForeignKey(EBookFormat)
+        pricestatus = models.CharField(max_length=1,choices=PRICE_CHOICES,default=FREE)
+        download_url = models.URLField(max_length=2048)
 
 class BookReview(models.Model):
-	SUB ='S'
-	APP ='A'
-	REJ ='R'
-	PUB ='P'
-	STATUS_CHOICES =(
-		(SUB,'Submitted'),
-		(APP,'Approved'),
-		(REJ,'Rejected'),
-		(PUB,'Published'),
-	)
-	book = models.ForeignKey(Book)
-	reviewer = models.ForeignKey(SocialAccount)
-	review = models.TextField(null=True,blank=True)
-	rating = models.PositiveSmallIntegerField(verbose_name='Rating')
-	status = models.CharField(max_length=1,choices=STATUS_CHOICES,default=SUB)
-	comments = models.TextField(null=True,blank=True)
+        SUB ='S'
+        APP ='A'
+        REJ ='R'
+        PUB ='P'
+        STATUS_CHOICES =(
+                (SUB,'Submitted'),
+                (APP,'Approved'),
+                (REJ,'Rejected'),
+                (PUB,'Published'),
+        )
+        book = models.ForeignKey(Book)
+        reviewer = models.ForeignKey(SocialAccount)
+        review = models.TextField(null=True,blank=True)
+        rating = models.PositiveSmallIntegerField(verbose_name='Rating')
+        status = models.CharField(max_length=1,choices=STATUS_CHOICES,default=SUB)
+        comments = models.TextField(null=True,blank=True)
 
+class Feedback(models.Model):
+    name = models.TextField()
+    email = models.TextField(null=True,blank=True) 
+    phone = models.TextField(null=True,blank=True) 
+    subject = models.TextField()
+    feedback = models.TextField()
+    comments = models.TextField(null=True,blank=True)
