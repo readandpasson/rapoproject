@@ -159,7 +159,8 @@ def BookDetails(request,bookid):
     bookReviewDetails = BookReviewDetails(request, book.id)
     booksTran = Transaction.objects.filter(book_id=bookid)
     dateTran = Transaction.objects.filter(book_id=bookid).filter(date_received__isnull = True )
-    data = {  'book' : rbook, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid , 'bookReview': bookReviewDetails}
+    rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).values('rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
+    data = {  'book' : rbook, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid , 'bookReview': bookReviewDetails, 'rapoReview':rapoReview}
     data.update(queueDetails)
     data.update(bookReviewDetails)
     return render_to_response('rapocore/book_details.html', data, RequestContext(request))
