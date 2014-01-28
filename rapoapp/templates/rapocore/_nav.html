@@ -10,9 +10,12 @@
 <a href="/bookbrowse" class="list-group-item" title="View all RAPO™ books">Browse books</a>
 <a href="/defect" class="list-group-item" title="Click to report a defect">Report a defect</a>
 <a href="/defectbrowse" class="list-group-item" title="View all defects">Browse defects</a>
-<!--<a href="/logout" class="list-group-item" title="Click to signout">Logout</a>-->
+{% ifequal user.username 'ks.selvakumar.3' %}
+	<a href="/feedback" class="list-group-item" title="Click to view feedback">Feedback</a>
+{% endifequal %}
+{% ifequal user.username 'menaka.sankaralingam' %}
+	<a href="/feedback" class="list-group-item" title="Click to view feedback">Feedback</a>
+{% endifequal %}
 
 </div>
 <a href="/contest1"  ><img alt="QEA Contest" height="" width="250" src="{% static "QEAContest.jpg" %}" /></a>
-
-
