@@ -1,0 +1,59 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+
+</script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+<div class="panel panel-success">
+                    <div class="panel-heading">
+{% if passon %} 
+<strong>{{ formtitle }} </strong> </br> {{ formnote }}
+{% else %}
+                    <strong>Feedback/Query List</strong>
+{% endif %}
+                  </div>
+<table id="feedbacklist" class="table table-hover sortable">
+	<thead>
+   <tr>
+        <th id ="id" width="10%"><b> ID </b></th>
+    	<th id="name" width="15%"> Submitted by </th>
+		<th id="email" width="15%"> Email </th>
+		<th id="phone" width="10%"> Phone </th>
+		<th id="subject" width="20%"> Subject </th>
+		<th id="feedback" width="30%"> Feedback/Query </th>
+	</tr>
+</thead>
+{% if data %}
+{% for feedback in data %}
+    <tr>
+		<td> {{ feedback.id }} </td>
+		<td> {{ feedback.name }} </td>
+		<td> {{ feedback.email }} </td>
+		<td> {{ feedback.phone }}</td>
+		<td> {{ feedback.subject }} </td>
+		<td> <a href="/feedbackdetails/{{ feedback.id }}" title="Click to view the feedback details" >{{ feedback.feedback | slice:"0:20" }}... See more </a> </td>
+	</tr>
+{% endfor %}
+{% endif %}
+</table>
+</div>
+{% endblock %}
