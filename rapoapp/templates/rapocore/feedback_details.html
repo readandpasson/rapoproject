@@ -1,0 +1,41 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+{% endblock %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock %}
+
+{% block Centre %}
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>{{ formtitle }}</strong></br>
+        {{ formnote }} 
+	</div>
+	<div class="panel-body">
+		<form role="form" method='post' action='/{{ formaction }}/' enctype="multipart/form-data">{% csrf_token %}
+			<table>
+			{% for field in form %}
+				<tr>
+					<td>
+						{{ field.label_tag }}
+						{% ifequal field.name "comments" %}<span class="required">*</span> {% endifequal %}
+					</td>
+					<td>
+						{{ field }}
+						{{ field.errors }}
+					</td>
+				</tr>
+			{% endfor %}
+			</table>
+			<input type="submit" value="{{ submitmessage }}" class="btn btn-default"/>
+		</form>
+	</div>
+</div>
+{% endblock %}
