@@ -10,11 +10,11 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
 
 from allauth.socialaccount.models import SocialAccount
-from django.contrib.auth.models import User
 from rapocore.models import RealBook,Transaction, Queue, Defect
-from rapogen.models import Author,Book,Genre, BookReview
-from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm, ContactUsForm
+from rapogen.models import Author,Book,Genre, BookReview, Feedback
+from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm, FeedbackForm
 from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
+from rapocore.forms import FeedbackDetailsForm
 
 from django.db.models import Avg, Max, Min
 
@@ -38,7 +38,7 @@ def ReleaseBook(request):
         form = ReleaseBookForm(request.user)
 
     #documents = Document.objects.all()
-    return render_to_response('rapocore/release.html',{ 'form': form, 
+    return render_to_response('rapocore/generic_form.html',{ 'form': form, 
                         'formtitle':'Release a book', 
                         'formnote':'Do you want to release a book? Please Fill in the details in the form below and click on Release.', 
                         'submitmessage':'Release',
@@ -421,21 +421,6 @@ def WriteBookReview(request,bookid):
                                 'submitmessage':'Submit Review', 'formaction':'writebookreview/'+bookid},RequestContext(request))
 
 @login_required
-def WithdrawBook(request,bookid):
-        b = RealBook.objects.get(id= bookid)
-        Queue.objects.filter(book=b).delete()  # Delete all queued entries for the book
-        b.delete()
-        success = True # Success will be false when sender has already sent to this person  - To be implemented TBD
-        return render_to_response('rapocore/withdrawbook.html',{ 'book': b.book.title, 'success': success}, RequestContext(request))
-
-@login_required
-def CancelRequest(request,bookid):
-        b = RealBook.objects.get(id= bookid)
-        instance = Queue.objects.get(member=SocialAccount.objects.get(user_id=request.user),book=b)
-        instance.delete()
-        success = True # Success will be false when sender has already sent to this person  - To be implemented TBD
-        return render_to_response('rapocore/cancelrequest.html',{ 'book': b.book.title, 'success': success}, RequestContext(request))
-
 def RAPOBookReview(request,bookid):
         rbook = RealBook.objects.select_related().get(id= bookid)
         book = Book.objects.select_related().get(id= rbook.book_id)
@@ -445,43 +430,46 @@ def RAPOBookReview(request,bookid):
         data = {  'book' : book,  'rapoReview': rapoReview, 'avg_rating':avg_rating['rating__avg']}
         return render_to_response('rapocore/rapo_bookreviews.html', data, RequestContext(request))
 
-def ContactUs(request):
+def FeedbackInput(request):
         if request.method == 'POST': # If the form has been submitted...
-                form = ContactUsForm(request.user,request.POST) # A form bound to the POST data
+                form = FeedbackForm(request.user,request.POST) # A form bound to the POST data
                 if form.has_changed():
                         if form.is_valid():
                                 f_type = form.save(commit=False)
-                                f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
+                                #f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
                                 f_type.save()
                                 return HttpResponseRedirect('/thanks/')
                         else:
                                  messages.error(request, "Error")
         else:
-                form = ContactUsForm(request.user)
+                form = FeedbackForm(request.user)
         return render_to_response('rapocore/generic_form.html',{ 'form': form, 
                                 'formtitle':'Contact Us...', 
                                 'formnote':'Use this form to provide your comments, concerns, questions, or suggestions to Admin. We will respond ASAP ', 
-                                'submitmessage':'Submit', 'formaction':'contactus/'},RequestContext(request))
+                                'submitmessage':'Submit', 'formaction':'feedback'},RequestContext(request))
 
 @login_required
-def MemberProfile(request,username):
-    try:
-        uid = User.objects.get(username = username)
-        me = SocialAccount.objects.get(user_id=uid)
-    except User.DoesNotExist:
-        print "User does not exist"
+def FeedbackList(request):
+        feedbackList = Feedback.objects.all().order_by('-id').select_related()
+        return render_to_response('rapocore/feedback_list.html',{  'data' : feedbackList, 
+                        'formtitle': 'Feedback/Query List' }, RequestContext(request))
+
+@login_required
+def FeedbackDetails(request,feedbackid):
+    member = SocialAccount.objects.get(user_id=request.user)
+    feedbackDetails = Feedback.objects.select_related().get(id=feedbackid)
+    if request.method == 'POST': # If the form has been submitted...
+        form = FeedbackDetailsForm(request.user,feedbackDetails,request.POST) # A form bound to the POST data
+        if form.has_changed():
+            if form.is_valid():
+                f_type = form.save(commit=False)
+                f_type.save()
+                return HttpResponseRedirect('/thanks/')
+            else:
+                messages.error(request, "Error")
     else:
-        booksreleased = RealBook.objects.filter(ownermember = me).order_by('datereleased')
-        booksrequested = Queue.objects.filter(member= me).select_related()
-        bookswith = RealBook.objects.filter(withmember=me).select_related().exclude(status=RealBook.TRANSIT)
-        booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
-        booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
-    return render_to_response('rapocore/memberprofile.html',{ 'member': me, 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookswith': bookswith, 'booksintransitfromme': booksintransitfromme,'booksintransittome': booksintransittome}, RequestContext(request))
-
-class MemberListView(ListView):
-    model  = SocialAccount
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
-        context = super(MemberListView, self).get_context_data(**kwargs)
-        return context
-
+        form = FeedbackDetailsForm(request.user, feedbackDetails)
+    return render_to_response('rapocore/feedback_details.html',{ 'form': form, 'formtitle':'Feedback/Query Details', 
+                              'formnote':'View the Feedback/Query Details', 
+                              'feedbackDetails': feedbackDetails,
+                              'submitmessage':'Submit Comments', 'formaction':'feedbackdetails/'+feedbackid},RequestContext(request))
