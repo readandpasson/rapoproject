@@ -6,3 +6,8 @@ rapoapp/settings.py
 rapoapp/mystatic
 django
 rapoapp/getmembercount.sh
+rapoapp/static/QEAContest.jpg
+rapoapp/static/rapoMeetPics/
+rapoapp/templates/rapocore/ReviewContestDec2013.html
+rapoapp/templates/rapocore/rapofirstmeet.html
+rapoapp/wordpress/

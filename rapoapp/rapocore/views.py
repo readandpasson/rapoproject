@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
 
-from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialAccount, SocialToken
 from django.contrib.auth.models import User
 from rapocore.models import RealBook,Transaction, Queue, Defect
 from rapogen.models import Author,Book,Genre, BookReview
@@ -17,6 +17,8 @@ from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, Receiv
 from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
 
 from django.db.models import Avg, Max, Min
+from rapocore.facebook import GraphAPI
+from settings import FACEBOOKGROUP_ID
 
 # make a book release
 @login_required
@@ -31,6 +33,13 @@ def ReleaseBook(request):
                 form.save_m2m()
                 rb = RealBook(book = f_type,ownermember = member, withmember = member,status = RealBook.AVAILABLE)
                 rb.save()
+
+                #Message for facebook post"
+                msg = "Hi all, I released \'"+rb.book.title+"\' Do check it out at http://test.rapo.in/bookdetails/"+str(rb.id)
+                permalink=post_to_facebook(request,msg)
+                rb.comments = permalink
+                rb.save(update_fields=['comments'])
+
                 return HttpResponseRedirect('/thanks/')
             else:
                 messages.error(request, "Error")
@@ -484,3 +493,19 @@ class MemberListView(ListView):
         context = super(MemberListView, self).get_context_data(**kwargs)
         return context
 
+def post_to_facebook(request,msg):
+    try:
+        fb_user = SocialAccount.objects.get(user = request.user)
+        atoken = SocialToken.objects.get(account = fb_user)
+        # GraphAPI is the main class from facebook_sdp.py
+        graph = GraphAPI(atoken.token)
+        attachment = {}
+        #message = 'test message'
+        #caption = 'test caption'
+        #attachment['caption'] = caption
+        #attachment['name'] = 'test name'
+        #attachment['link'] = 'link_to_picture'
+        #attachment['description'] = 'test description'
+        return graph.put_wall_post(msg, attachment,FACEBOOKGROUP_ID)
+    except:
+        logging.debug('Facebook post failed')

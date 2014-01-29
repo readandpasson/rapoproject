@@ -12,7 +12,7 @@
 {% block Login %} 
         <form class="navbar-form navbar-right">
 {% for provider in socialaccount.providers %}
-  <a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}">Authenticate with {{provider.name}}</a>
+  <a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}"  perms="publish_checkins,publish_stream,publish_actions">Authenticate with {{provider.name}}</a>
 {% endfor %}
 </form>
 {% endblock %}

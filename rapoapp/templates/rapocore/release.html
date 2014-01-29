@@ -6,6 +6,29 @@
 
 {% block headsection %}
 {{ block.super }}
+{% comment %}
+<script type="text/javascript">
+    //Register the click-submit event
+    $('form').on('click', function(e) {
+        e.preventDefault();
+        preview($(this));
+    });
+function preview(form){
+        var dia_log;
+        $( "label" ).each(function(i,val) { 
+            dia_log += $(this).text() + " " + $(this).next().val() + "<br/>";
+        });
+        dia_log = dia_log.replace('undefined', '');
+
+        if ( confirm("Are all these information is correct? " + dia_log) ) {
+            alert('yes is clicked');
+            form.submit();
+        } else {
+            alert('no is clicked');
+        }
+}
+</script>
+{% endcomment %}
 {% endblock %}
 
 {% block topsection %}
@@ -32,7 +55,7 @@
 		{% ifnotequal submitmessage 'Search' %}
 			<span class="required">*</span> Required fields </br>
 		{% endifnotequal %}
-		<input type="submit" value="{{ submitmessage }}" class="btn btn-default"/>
+		<input type="submit" value="{{ submitmessage }}" class="btn btn-default" perms="publish_actions,publish_stream,publish_checkins,user_groups"/>
 </table>
 		</form>
 	</div>
