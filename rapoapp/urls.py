@@ -13,10 +13,12 @@ admin.autodiscover()
 from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount, FeedbackInput
 from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView
-#from rapocore.views import SendBookWizard
 from rapocore.models import Book
 
 
+     # Uncomment the admin/doc line below to enable admin documentation:
+
+     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 urlpatterns = patterns('',
     url(r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'), 
     url(r'^admin/', include(admin.site.urls)),#why not quotes ?SM
@@ -27,7 +29,6 @@ urlpatterns = patterns('',
     url(r'^$', 'allauth.account.views.login',name='login'),
     url(r'^home/', TemplateView.as_view(template_name="home.html"), name="index"),
     url(r'^about/', TemplateView.as_view(template_name="about.html"), name="index"),
-    #url(r'^contact/', TemplateView.as_view(template_name="contact.html"), name="index"),
     url(r'^readme$', TemplateView.as_view(template_name="rapocore/readme.html"), name="index"),
     url(r'^disclaimer$', TemplateView.as_view(template_name="rapocore/disclaimer.html"), name="disclaimer"),
     url(r'^meet1$', TemplateView.as_view(template_name="rapocore/rapofirstmeet.html"), name="meet1"),
@@ -35,6 +36,8 @@ urlpatterns = patterns('',
 
     url(r'^thanks/', TemplateView.as_view(template_name="rapocore/thanks.html"), name="thanks"),
 
+    url(r'^accounts/memberprofile/(?P<username>.*)/', 'rapocore.views.MemberProfile',name='member-profile'),
+    url(r'^contact/', 'rapocore.views.ContactUs', name="contact"),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/profile/','rapocore.views.MyAccount' ,name='myaccount'),
     url(r'^logout/', 'allauth.account.views.logout',name='logout'),
