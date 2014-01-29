@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     url(r'^thanks/', TemplateView.as_view(template_name="rapocore/thanks.html"), name="thanks"),
 
     url(r'^accounts/memberprofile/(?P<username>.*)/', 'rapocore.views.MemberProfile',name='member-profile'),
-    url(r'^contact/', 'rapocore.views.ContactUs', name="contact"),
+    url(r'^contact/', 'rapocore.views.FeedbackInput', name="contact"),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/profile/','rapocore.views.MyAccount' ,name='myaccount'),
     url(r'^logout/', 'allauth.account.views.logout',name='logout'),
