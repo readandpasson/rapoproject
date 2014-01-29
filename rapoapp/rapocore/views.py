@@ -463,23 +463,6 @@ def FeedbackList(request):
         return render_to_response('rapocore/feedback_list.html',{  'data' : feedbackList, 
                         'formtitle': 'Feedback/Query List' }, RequestContext(request))
 
-def post_to_facebook(request,msg):
-    try:
-        fb_user = SocialAccount.objects.get(user = request.user)
-        atoken = SocialToken.objects.get(account = fb_user)
-        # GraphAPI is the main class from facebook_sdp.py
-        graph = GraphAPI(atoken.token)
-        attachment = {}
-        #message = 'test message'
-        #caption = 'test caption'
-        #attachment['caption'] = caption
-        #attachment['name'] = 'test name'
-        #attachment['link'] = 'link_to_picture'
-        #attachment['description'] = 'test description'
-        return graph.put_wall_post(msg, attachment,FACEBOOKGROUP_ID)
-    except:
-        logging.debug('Facebook post failed')
-
 @login_required
 def FeedbackDetails(request,feedbackid):
     member = SocialAccount.objects.get(user_id=request.user)
