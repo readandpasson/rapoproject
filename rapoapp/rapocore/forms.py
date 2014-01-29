@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from django.contrib.admin import widgets
 from rapoapp.rapocore.widgets import MultipleSelectWithPopUp, SelectWithPopUp
 from rapocore.models import RealBook,Transaction, Queue, Defect
-from rapogen.models import Author,Book,Genre, Language, BookReview
+from rapogen.models import Author,Book,Genre, Language, BookReview, Feedback
 from allauth.socialaccount.models import SocialAccount
 from django.utils.safestring import mark_safe
 
@@ -223,22 +223,54 @@ class WriteBookReviewForm(ModelForm):
                 self.fields['rating'].initial = reviewParam.rating
 
 
-class ContactUsForm(ModelForm):
+class FeedbackForm(ModelForm):
 
     name = forms.CharField(label='Name', widget=forms.TextInput(attrs={'size':'50'})) 
     email = forms.CharField(label= 'Email', widget=forms.TextInput(attrs={'size':'50'}))
     phone = forms.IntegerField(label= 'Phone', widget=forms.TextInput(attrs={'size':'10'}))
     subject = forms.CharField(label= 'Subject', widget=forms.TextInput(attrs={'size':'50'}))
-    query = forms.CharField(label= 'Query/Feedback', widget=forms.Textarea)
+    feedback = forms.CharField(label= 'Query/Feedback', widget=forms.Textarea)
 
     class Meta:
-        model = Book
-        fields = [ 'name', 'email', 'phone', 'subject','query']
+        model = Feedback
+        fields = [ 'name', 'email', 'phone', 'subject','feedback']
 
     def __init__(self, user, *args, **kwargs):
-        super(ContactUsForm, self).__init__(*args, **kwargs)
+        super(FeedbackForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs.update({'class' : 'form-control'})
         self.fields['email'].widget.attrs.update({'class' : 'form-control'})
         self.fields['phone'].widget.attrs.update({'class' : 'form-control'})
         self.fields['subject'].widget.attrs.update({'class' : 'form-control'})
-        self.fields['query'].widget.attrs.update({'class' : 'form-control'})
+        self.fields['feedback'].widget.attrs.update({'class' : 'form-control'})
+
+class FeedbackDetailsForm(ModelForm):
+
+    id = forms.CharField(label='Id', widget=forms.TextInput(attrs={'size':'50'})) 
+    name = forms.CharField(label='Name', widget=forms.TextInput(attrs={'size':'50'})) 
+    email = forms.CharField(label= 'Email', widget=forms.TextInput(attrs={'size':'50'}))
+    phone = forms.IntegerField(label= 'Phone', widget=forms.TextInput(attrs={'size':'10'}))
+    subject = forms.CharField(label= 'Subject', widget=forms.TextInput(attrs={'size':'50'}))
+    feedback = forms.CharField(label= 'Query/Feedback', widget=forms.Textarea)
+    comments = forms.CharField(label= 'Comments by Admin', widget=forms.Textarea)
+    
+    class Meta:
+		model = Feedback
+		fields = [ 'id','name','email','phone','subject','feedback','comments']
+
+    def __init__(self, user, feedbackDetails, *args, **kwargs):
+        super(FeedbackDetailsForm, self).__init__(*args, **kwargs)
+        self.fields['id'].widget.attrs.update({'class' : 'form-control', 'readonly':'readonly'})
+        self.fields['name'].widget.attrs.update({'class' : 'form-control', 'readonly':'readonly'})
+        self.fields['email'].widget.attrs.update({'class' : 'form-control', 'readonly':'readonly'})
+        self.fields['phone'].widget.attrs.update({'class' : 'form-control', 'readonly':'readonly'})
+        self.fields['subject'].widget.attrs.update({'class' : 'form-control', 'readonly':'readonly'})
+        self.fields['feedback'].widget.attrs.update({'class' : 'form-control', 'readonly':'readonly'})
+        self.fields['comments'].widget.attrs.update({'class' : 'form-control'})
+
+        if feedbackDetails:
+            self.fields['id'].initial = feedbackDetails.id
+            self.fields['name'].initial = feedbackDetails.name
+            self.fields['email'].initial = feedbackDetails.email
+            self.fields['phone'].initial = feedbackDetails.phone
+            self.fields['subject'].initial = feedbackDetails.subject
+            self.fields['feedback'].initial = feedbackDetails.feedback
