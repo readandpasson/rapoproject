@@ -34,11 +34,21 @@ def ReleaseBook(request):
                 rb = RealBook(book = f_type,ownermember = member, withmember = member,status = RealBook.AVAILABLE)
                 rb.save()
 
-                #Message for facebook post"
+                #Message for facebook post
                 msg = "Hi all, I released \'"+rb.book.title+"\' Do check it out at http://test.rapo.in/bookdetails/"+str(rb.id)
-                permalink=post_to_facebook(request,msg)
-                rb.comments = permalink
-                rb.save(update_fields=['comments'])
+                try:
+                    graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
+                    #attachment = {}
+                    #message = 'test message'
+                    #caption = 'test caption'
+                    #attachment['caption'] = caption
+                    #attachment['name'] = 'test name'
+                    #attachment['link'] = 'link_to_picture'
+                    #attachment['description'] = 'test description'
+                    rb.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                    rb.save(update_fields=['comments'])
+                except:
+                    logging.debug('Facebook post failed')
 
                 return HttpResponseRedirect('/thanks/')
             else:
@@ -70,6 +80,14 @@ def ReceiveBook(request):
             b.withmember = SocialAccount.objects.get(user=request.user)
             b.status = RealBook.READ
             b.save()
+            #Message for facebook comment
+            msg = "Got it"
+            if FACEBOOKGROUP_ID in b.comments:
+                try:
+                    graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
+                    graph.put_comment(b.comments,msg)
+                except:
+                    logging.debug('Facebook post failed')
             return HttpResponseRedirect('/thanks/')
 
     else:
@@ -208,6 +226,15 @@ def PassOnBook(request, bookid):
         b = RealBook.objects.get(id= bookid)
         b.status = RealBook.AVAILABLE
         b.save()
+        #Message for facebook comment
+        msg = "Passing on book id "+str(b.id)+" titled "+b.book.title
+        if FACEBOOKGROUP_ID in b.comments:
+            try:
+                graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
+                b.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                b.save(update_fields=['comments'])
+            except:
+                logging.debug('Facebook post failed')
         return render_to_response('rapocore/passon.html',{ 'book': b.book.title},RequestContext(request))
 
 @login_required
@@ -253,6 +280,15 @@ def Add2Queue(request, bookid):
         else:
             q=Queue(book=b,member=m)
             q.save()
+             #Message for facebook comment
+            msg = "I would like to read it please!"
+            if FACEBOOKGROUP_ID in b.comments:
+                try:
+                    graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
+                    graph.put_comment(b.comments,msg)
+                except:
+                    logging.debug('Facebook post failed')
+
             success = True
             qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
         return render_to_response('rapocore/add2queue.html',{ 'book': b.book.title,'queue':qset, 'success': success}, RequestContext(request))
@@ -271,6 +307,14 @@ def SendBook(request):
             b = form.cleaned_data['book']
             b.status = RealBook.TRANSIT
             b.save()
+            #Message for facebook comment
+            msg = "I sent it on .... via xxx couriers"
+            if FACEBOOKGROUP_ID in b.comments:
+                try:
+                    graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
+                    graph.put_comment(b.comments,msg)
+                except:
+                    logging.debug('Facebook post failed')
             
             m = form.cleaned_data['to_member']
             Queue.objects.get(book=b,member=m).delete()
@@ -506,3 +550,4 @@ class MemberListView(ListView):
         # Call the base implementation first to get a context
         context = super(MemberListView, self).get_context_data(**kwargs)
         return context
+
