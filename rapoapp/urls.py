@@ -10,9 +10,9 @@ from allauth.account.views import logout
 from django.contrib import admin
 admin.autodiscover()
 
-from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview
+from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview, WithdrawBook
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount, FeedbackInput
-from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView
+from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView, MemberProfile
 #from rapocore.views import SendBookWizard
 from rapocore.models import Book
 
@@ -37,12 +37,14 @@ urlpatterns = patterns('',
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/profile/','rapocore.views.MyAccount' ,name='myaccount'),
+    url(r'^accounts/memberprofile/(?P<username>.*)/', 'rapocore.views.MemberProfile',name='member-profile'),
     url(r'^logout/', 'allauth.account.views.logout',name='logout'),
     url(r'^feedback/', 'rapocore.views.FeedbackInput', name="feedback"),
     url(r'^feedbacklist/', 'rapocore.views.FeedbackList', name="feedback-list"),
     url(r'^feedbackdetails/(?P<feedbackid>\d+)/$', 'rapocore.views.FeedbackDetails', name="feedback-details"),    
 
     url(r'^releasebook/', 'rapocore.views.ReleaseBook',name='release-book'),
+    url(r'^withdrawbook(?P<bookid>[0-9]*)/', 'rapocore.views.WithdrawBook',name='withdraw-book'),
     url(r'^sendbook/', 'rapocore.views.SendBook',name='send-book'),
     url(r'^getmembersinqueue/(?P<bookid>[0-9]*)/', 'rapocore.views.GetMembers',name='send-book-get-members'),
     url(r'^receivebook/', 'rapocore.views.ReceiveBook',name='receive-book'),
@@ -71,6 +73,7 @@ urlpatterns = patterns('',
 
     url(r'^defect/', 'rapocore.views.ReportDefect',name='report-defect'),
     url(r'^defectbrowse/', DefectListView.as_view(),name='defect-browse'),
+    url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
     
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
