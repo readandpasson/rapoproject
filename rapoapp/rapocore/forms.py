@@ -213,7 +213,7 @@ class WriteBookReviewForm(ModelForm):
         #self.fields['sbookprice'].widget.attrs.update({'class' : 'form-control'})
         self.fields['rating'].widget.attrs.update({'class' : 'form-control'})
         self.fields['review'].widget.attrs.update({'class' : 'form-control'})
-        reviewParam=bookReviewDetails['bookReview']
+        reviewParam=bookReviewDetails['bookReviews']
 		
         if reviewParam:
             if reviewParam.reviewer.user.username == user.username and reviewParam.status == 'S':
