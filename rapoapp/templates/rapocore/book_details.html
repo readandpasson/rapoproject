@@ -283,19 +283,20 @@ var f = document.getElementById('viewhistory');
 {% if rapoReview %}
 <tr>
         <td id ="raporeview" ><b> RAPO™ Reviews </b></td>
-        <td> <a href="/rapobookreview/{{book.id}}"> Click to view RAPO™ Reviews </td>
+        <td> <a href="/rapobookreviewslist/{{rapobook.id}}"> Click to view RAPO™ Reviews </td>
 {% endif %}
 </tr>
 <tr>
-		{% if bookReview %}
-			{% if bookReview.status == 'S' or bookReview.status == 'R' %}
-					<td id ="edit" colspan=2 align="center"><a href="/writebookreview/{{book.id}}">Refine your review </a></td>
+		{% if bookReviews %}
+
+			{% if bookReviews.status == 'S' or bookReviews.status == 'R' %}
+					<td id ="edit" colspan=2 align="center"><a href="/writebookreview/{{rapobook.id}}">Refine your review </a></td>
 			{% else %}
 				<td colspan=2 align="center">Your review of this book has been submitted.</td>
 			
 			{% endif %}
 		{% else %}
-			<td colspan=2 align="center"> <a href="/writebookreview/{{book.id}}">Review this book </a></td>
+			<td colspan=2 align="center"> <a href="/writebookreview/{{rapobook.id}}">Review this book </a></td>
 		{% endif %}
 </tr>
 
