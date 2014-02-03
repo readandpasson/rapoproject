@@ -57,7 +57,8 @@ urlpatterns = patterns('',
 
     #url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
     url(r'^writebookreview/(?P<bookid>\d+)/$', 'rapocore.views.WriteBookReview', name='write-bookreview'),
-    url(r'^rapobookreview/(?P<bookid>\d+)/$', 'rapocore.views.RAPOBookReview', name='rapo-bookreview'),
+    url(r'^rapobookreviewslist/(?P<bookid>\d+)/$', 'rapocore.views.RAPOBookReviewsList', name='rapo-bookreview-list'),
+    url(r'^rapobookreviewsdetails/(?P<bookid>\d+)/(?P<reviewid>\d+)/$', 'rapocore.views.RAPOBookReviewsDetails', name='rapo-bookreview-details'),
     
     url(r'^addauthor/', 'rapocore.views.NewAuthor',name='add-author'),
     url(r'^addgenre/', 'rapocore.views.NewGenre',name='add-genre'),
