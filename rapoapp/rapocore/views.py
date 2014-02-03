@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect, HttpResponseNotFound, HttpResponse
 from django.views.generic.list import ListView
 
+from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from rapocore.models import RealBook,Transaction, Queue, Defect
 from rapogen.models import Author,Book,Genre, BookReview, Feedback
@@ -187,7 +188,7 @@ def BookDetails(request,bookid):
     booksTran = Transaction.objects.filter(book_id=bookid)
     dateTran = Transaction.objects.filter(book_id=bookid).filter(date_received__isnull = True )
     rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).values('rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
-    data = {  'book' : rbook, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid , 'bookReview': bookReviewDetails, 'rapoReview':rapoReview}
+    data = {  'book' : rbook, 'rapobook': book, 'member': member, 'tran' : booksTran, 'dateNull' : dateTran, 'bookid':bookid , 'bookReviews': bookReviewDetails, 'rapoReview':rapoReview}
     data.update(queueDetails)
     data.update(bookReviewDetails)
     return render_to_response('rapocore/book_details.html', data, RequestContext(request))
@@ -265,10 +266,10 @@ def ViewQueue(request, bookid):
 def BookReviewDetails(request, bookid):
     try:
         user = SocialAccount.objects.get(user_id = request.user)
-        bookReview = BookReview.objects.select_related().get(book_id= bookid, reviewer_id=user.id)
+        bookReviews = BookReview.objects.select_related().get(book_id= bookid, reviewer_id=user.id)
     except Exception:
-        bookReview = None
-    return {'bookReview': bookReview}
+        bookReviews = None
+    return {'bookReviews': bookReviews}
 
 @login_required
 def Add2Queue(request, bookid):
@@ -445,8 +446,8 @@ def MyAccount(request):
 
 @login_required
 def WriteBookReview(request,bookid):
-        rbook = RealBook.objects.select_related().get(id= bookid)
-        book = Book.objects.select_related().get(id= rbook.book_id)
+        #rbook = RealBook.objects.select_related().get(id= bookid)
+        book = Book.objects.select_related().get(id= bookid)
         bookReviewDetails = BookReviewDetails(request, book.id)
         if request.method == 'POST': # If the form has been submitted...
                 form = WriteBookReviewForm(request.user,bookReviewDetails,request.POST) # A form bound to the POST data
@@ -455,8 +456,8 @@ def WriteBookReview(request,bookid):
                                 f_type = form.save(commit=False)
                                 f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
                                 f_type.book_id = book.id
-                                if bookReviewDetails['bookReview'] and bookReviewDetails['bookReview'].status == 'S':
-                                        f_type.id = bookReviewDetails['bookReview'].id
+                                if bookReviewDetails['bookReviews'] and bookReviewDetails['bookReviews'].status == 'S':
+                                        f_type.id = bookReviewDetails['bookReviews'].id
                                 f_type.save()
                                 #book.publisher = form.cleaned_data['spublisher']
                                 #book.save()
@@ -474,14 +475,28 @@ def WriteBookReview(request,bookid):
                                 'submitmessage':'Submit Review', 'formaction':'writebookreview/'+bookid},RequestContext(request))
 
 @login_required
-def RAPOBookReview(request,bookid):
-        rbook = RealBook.objects.select_related().get(id= bookid)
-        book = Book.objects.select_related().get(id= rbook.book_id)
+def RAPOBookReviewsList(request,bookid):
+        #rbook = RealBook.objects.select_related().get(id= bookid)
+        book = Book.objects.select_related().get(id= bookid)
         #rapoReviewDetails = RAPOReviewDetails(request, book.id)
         avg_rating = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).aggregate(Avg('rating'))
-        rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).values('rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
+        rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).values('id','rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
         data = {  'book' : book,  'rapoReview': rapoReview, 'avg_rating':avg_rating['rating__avg']}
-        return render_to_response('rapocore/rapo_bookreviews.html', data, RequestContext(request))
+        return render_to_response('rapocore/rapo_bookreview_list.html', data, RequestContext(request))
+
+
+@login_required
+def RAPOBookReviewsDetails(request,bookid,reviewid):
+        book = Book.objects.select_related().get(id= bookid)
+        #rbook = RealBook.objects.select_related().get(book_id= bookid)
+        avg_rating = BookReview.objects.select_related().filter(status = 'A', book_id = bookid).aggregate(Avg('rating'))
+        rapoReview = BookReview.objects.select_related('id','rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name').get(id = reviewid)
+        reviewer = SocialAccount.objects.select_related().get(id=rapoReview.reviewer_id)
+        #reviewername = User.objects.select_related().get(id = reviewer.user_id)
+        bookReviewDetails = BookReviewDetails(request, bookid)
+        data = {  'book' : book, 'rapoReview': rapoReview, 'avg_rating':avg_rating['rating__avg'], 'reviewer': reviewer.user.first_name+" " + reviewer.user.last_name,'bookReviews': bookReviewDetails}
+        data.update(bookReviewDetails)
+        return render_to_response('rapocore/rapo_bookreview_details.html', data, RequestContext(request))
 
 def FeedbackInput(request):
         if request.method == 'POST': # If the form has been submitted...
