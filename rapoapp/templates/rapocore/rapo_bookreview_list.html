@@ -1,0 +1,60 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
+<script>
+
+</script>
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+<div class="panel panel-success">
+                    <div class="panel-heading">
+{% if passon %} 
+<strong>{{ formtitle }} </strong> </br> {{ formnote }}
+{% else %}
+                    <strong> List of RAPO™ Book Reviews </strong>
+{% endif %}
+                  </div>
+<div class="panel-heading">
+	<strong> Book Title: {{ book.title }} </strong>
+	<br>
+	<br>
+	<strong> Overall rating: {{ avg_rating|floatformat}} </strong>
+</div>
+
+<table id="raporeviewslist" class="table table-hover sortable">
+	<thead>
+   <tr>
+        <th id ="rating" width="10%"><b> Rating </b></th>
+    	<th id="reviewer" width="15%"> Reviewer </th>
+		<th id="review" width="15%"> Review </th>
+	</tr>
+</thead>
+{% if rapoReview %}
+    {% for review in rapoReview %}
+		<tr>
+			<td> {{ review.rating }} </td>
+			<td> <a href="/accounts/memberprofile/{{ review.reviewer_id__user__username }}" title="Click to view the member details" >{{ review.reviewer_id__user__first_name }} {{ review.reviewer_id__user__last_name }} </a> </td>
+			<td> <a href="/rapobookreviewsdetails/{{ book.id }}/{{ review.id }}" title="Click to view the detailed review" >{{ review.review | slice:"0:20" }}...  </a> </td>
+		</tr>
+   {% endfor %}
+{% endif %}
+</table>
+</div>
+{% endblock %}
