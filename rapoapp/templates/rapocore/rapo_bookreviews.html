@@ -25,23 +25,46 @@
 {% block Centre %}
 <div class="panel panel-success">
 <div class="panel-heading">
-    <strong> RAPO™ Book Reviews </strong>
+    <strong> RAPO™ Book Review Details </strong>
 </div>
 <div class="panel-heading">
 	<strong> Book Title: {{ book.title }} </strong>
 	<br>
 	<br>
-	<strong> Overall rating: {{ avg_rating}} </strong>
+	<strong> Overall rating: {{ avg_rating|floatformat}} </strong>
 </div>
 {% if rapoReview %}
-	{% for review in rapoReview %}
+
 		<div class="form-group" >
-			<p> <b> Rating: </b> {{ review.rating }} </p>
-			<p> <b> Reviewer: </b> {{ review.reviewer_id__user__first_name }} {{ review.reviewer_id__user__last_name }} </p>
-			<p> <b> Review: </b> <i>{{ review.review }} </i> </p>
-			<hr size="1" noshade="1">
+		<table id="raporeviewsdetails" class="table table-hover sortable">
+			<tr>
+				<td> Rating </td>
+				<td> {{ rapoReview.rating }}  </td>
+			</tr>
+			<tr>
+				<td> Reviewer </td>
+				<td> {{ reviewer }} </td>
+			</tr>
+			<tr>
+				<td> Detailed Book Review </td>
+				<td> <i> {{ rapoReview.review }} </i> </td>
+			</tr>
+			<tr>
+				<td> Your review for this book </td>
+			{% if bookReviews %}
+				{% if bookReviews.status == 'S' or bookReviews.status == 'R' %}
+					<td id ="edit" colspan=2><a href="/writebookreview/{{book.id}}">Refine your review </a></td>
+				{% else %}
+					<td colspan=2 >Your review of this book has been submitted.</td>
+				{% endif %}
+			{% else %}
+				<td> <a href="/writebookreview/{{book.id}}" title="Click to review the book" > Click to write a review </a> </td>
+			{% endif %}
+			</tr>
+		</table>
+
 		</div>
-	{% endfor %}
+
 {% endif %}
 </div>
 {% endblock %}
