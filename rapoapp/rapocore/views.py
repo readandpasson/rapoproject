@@ -405,6 +405,15 @@ def Archiveit(request, defectid):
         return render_to_response('rapocore/archiveit.html',{ 'defect': d.description}, RequestContext(request))
 
 @login_required
+def WithdrawBook(request,bookid):
+        b = RealBook.objects.get(id= bookid)
+        Queue.objects.filter(book=b).delete() # Delete all queued entries for the book
+        b.delete()
+        success = True # Success will be false when sender has already sent to this person - To be implemented TBD
+        return render_to_response('rapocore/withdrawbook.html',{ 'book': b.book.title, 'success': success}, RequestContext(request))
+
+
+@login_required
 def CancelRequest(request,bookid):
         b = RealBook.objects.get(id= bookid)
         instance = Queue.objects.get(member=SocialAccount.objects.get(user_id=request.user),book=b)
