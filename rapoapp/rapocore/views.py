@@ -567,7 +567,7 @@ def RAPOBookReviewsDetails(request,bookid,reviewid):
 
 
 @login_required
-def Feedback(request):
+def FeedbackPage(request):
         #feedbackList = Feedback.objects.all().order_by('-id').select_related()
         return render_to_response('rapocore/feedback.html',{  
                         'formtitle': 'Feedback/Query Page' }, RequestContext(request))
