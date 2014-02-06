@@ -1,0 +1,35 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+
+<div class="panel panel-success">
+<div class="panel-heading">
+    <strong> Contact Us... </strong> </br></br>
+	 Use this form to provide your comments, concerns, questions, or suggestions to us. We will respond ASAP 
+</div>
+</br>
+<p align="center"> Contact us with your query/feedback/suggestion at <b> readandpasson@gmail.com </b> </p>
+</br>
+<p align="center"> <a href='/defect/'> Click here </a> to log your query/feedback/suggestion </p>
+</br>
+<p align="center"> <a href='/defectbrowse/'> Click here </a> to view the existing queries/feedback </p>
+</div>
+{% endblock %}

@@ -565,50 +565,12 @@ def RAPOBookReviewsDetails(request,bookid,reviewid):
         data.update(bookReviewDetails)
         return render_to_response('rapocore/rapo_bookreview_details.html', data, RequestContext(request))
 
-def FeedbackInput(request):
-        if request.method == 'POST': # If the form has been submitted...
-                form = FeedbackForm(request.user,request.POST) # A form bound to the POST data
-                if form.has_changed():
-                        if form.is_valid():
-                                f_type = form.save(commit=False)
-                                #f_type.reviewer = SocialAccount.objects.get(user_id = request.user)
-                                f_type.save()
-                                return HttpResponseRedirect('/thanks/')
-                        else:
-                                 messages.error(request, "Error")
-        else:
-                form = FeedbackForm(request.user)
-        return render_to_response('rapocore/generic_form.html',{ 'form': form, 
-                                'formtitle':'Contact Us...', 
-                                'formnote':'Use this form to provide your comments, concerns, questions, or suggestions to Admin. We will respond ASAP ', 
-                                'submitmessage':'Submit', 'formaction':'feedback'},RequestContext(request))
 
 @login_required
-def FeedbackList(request):
-        feedbackList = Feedback.objects.all().order_by('-id').select_related()
-        return render_to_response('rapocore/feedback_list.html',{  'data' : feedbackList, 
-                        'formtitle': 'Feedback/Query List' }, RequestContext(request))
-
-@login_required
-def FeedbackDetails(request,feedbackid):
-    member = SocialAccount.objects.get(user_id=request.user)
-    feedbackDetails = Feedback.objects.select_related().get(id=feedbackid)
-    if request.method == 'POST': # If the form has been submitted...
-        form = FeedbackDetailsForm(request.user,feedbackDetails,request.POST) # A form bound to the POST data
-        if form.has_changed():
-            if form.is_valid():
-                f_type = form.save(commit=False)
-                f_type.save()
-                return HttpResponseRedirect('/thanks/')
-            else:
-                messages.error(request, "Error")
-    else:
-        form = FeedbackDetailsForm(request.user, feedbackDetails)
-    return render_to_response('rapocore/feedback_details.html',{ 'form': form, 'formtitle':'Feedback/Query Details', 
-                              'formnote':'View the Feedback/Query Details', 
-                              'feedbackDetails': feedbackDetails,
-                              'submitmessage':'Submit Comments', 'formaction':'feedbackdetails/'+feedbackid},RequestContext(request))
-
+def FeedbackPage(request):
+        #feedbackList = Feedback.objects.all().order_by('-id').select_related()
+        return render_to_response('rapocore/feedback.html',{  
+                        'formtitle': 'Feedback/Query Page' }, RequestContext(request))
 
 @login_required
 
