@@ -46,8 +46,8 @@ def ReleaseBook(request):
                     #attachment['name'] = 'test name'
                     #attachment['link'] = 'link_to_picture'
                     #attachment['description'] = 'test description'
-                    rb.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
-                    rb.save(update_fields=['comments'])
+                    rb.fb_permalink = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                    rb.save(update_fields=['fb_permalink'])
                 except:
                     logging.debug('Facebook post failed')
 
@@ -82,19 +82,19 @@ def ReceiveBook(request):
             b.status = RealBook.READ
             b.save()
             #Message for facebook comment
-            if b.comments and FACEBOOKGROUP_ID in b.comments:
+            if b.fb_permalink and FACEBOOKGROUP_ID in b.fb_permalink:
                 msg = "Automated message: \nGot it"
                 try:
                     graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                    graph.put_comment(b.comments,msg)
+                    graph.put_comment(b.fb_permalink,msg)
                 except:
                     logging.debug('Facebook post failed')
             else:
                 msg = "Automated message: \nGot the book titled \'"+b.book.title+"\' with id "+str(b.id)
                 try:
                     graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                    b.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
-                    b.save(update_fields=['comments'])
+                    b.fb_permalink = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                    b.save(update_fields=['fb_permalink'])
                 except:
                     logging.debug('Facebook post failed')
 
@@ -238,11 +238,11 @@ def PassOnBook(request, bookid):
         b.save()
         #Message for facebook comment
         msg = "Automated message: \nPassing on book id "+str(b.id)+" titled "+b.book.title
-        if b.comments and FACEBOOKGROUP_ID in b.comments:
+        if b.fb_permalink and FACEBOOKGROUP_ID in b.fb_permalink:
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                b.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
-                b.save(update_fields=['comments'])
+                b.fb_permalink = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                b.save(update_fields=['fb_permalink'])
             except:
                 logging.debug('Facebook post failed')
         return render_to_response('rapocore/passon.html',{ 'book': b.book.title},RequestContext(request))
@@ -291,19 +291,19 @@ def Add2Queue(request, bookid):
             q=Queue(book=b,member=m)
             q.save()
              #Message for facebook comment
-        if b.comments and FACEBOOKGROUP_ID in b.comments:
+        if b.fb_permalink and FACEBOOKGROUP_ID in b.fb_permalink:
             msg = "Automated message: \nI would like to read it please!"
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                graph.put_comment(b.comments,msg)
+                graph.put_comment(b.fb_permalink,msg)
             except:
                 logging.debug('Facebook post failed')
         else:
             msg = "Automated message: \nI would like to read the book titled \'"+b.book.title+"\' with id "+str(b.id)+" currently with "+str(b.withmember.user.first_name)+" "+str(b.withmember.user.last_name)
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                b.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
-                b.save(update_fields=['comments'])
+                b.fb_permalink = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                b.save(update_fields=['fb_permalink'])
             except:
                 logging.debug('Facebook post failed')
 
@@ -327,19 +327,19 @@ def SendBook(request):
             b.status = RealBook.TRANSIT
             b.save()
             #Message for facebook comment
-            if b.comments and FACEBOOKGROUP_ID in b.comments:
+            if b.fb_permalink and FACEBOOKGROUP_ID in b.fb_permalink:
                 msg = "Automated message: \nI sent it on "+f.date_sent+"via"+f.via
                 try:
                     graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                    graph.put_comment(b.comments,msg)
+                    graph.put_comment(b.fb_permalink,msg)
                 except:
                     logging.debug('Facebook post failed')
             else:
                 msg = "Automated message: \nI sent the book titled\'"+b.book.title+"\' with id "+str(b.id)
                 try:
                     graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                    b.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
-                    b.save(update_fields=['comments'])
+                    b.fb_permalink = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                    b.save(update_fields=['fb_permalink'])
                 except:
                     logging.debug('Facebook post failed')
 
@@ -435,17 +435,17 @@ def WithdrawBook(request,bookid):
         b = RealBook.objects.get(id= bookid)
         Queue.objects.filter(book=b).delete() # Delete all queued entries for the book
         msg = "Automated message: \nI don't want to part with"+b.book.title+" with id "+str(b.id)+". Changed my mind. Sorry!Thanks!"
-        if b.comments and FACEBOOKGROUP_ID in b.comments:
+        if b.fb_permalink and FACEBOOKGROUP_ID in b.fb_permalink:
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                graph.put_comment(b.comments,msg)
+                graph.put_comment(b.fb_permalink,msg)
             except:
                 logging.debug('Facebook post failed')
         else:
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                b.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
-                #b.save(update_fields=['comments'])
+                b.fb_permalink = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                #b.save(update_fields=['fb_permalink'])
             except:
                 logging.debug('Facebook post failed')
 
@@ -460,19 +460,19 @@ def CancelRequest(request,bookid):
         instance = Queue.objects.get(member=SocialAccount.objects.get(user_id=request.user),book=b)
         instance.delete()
          
-        if b.comments and FACEBOOKGROUP_ID in b.comments:
+        if b.fb_permalink and FACEBOOKGROUP_ID in b.fb_permalink:
             msg = "Automated message: \nI don't want it. Changed my mind. Thanks!"
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                graph.put_comment(b.comments,msg)
+                graph.put_comment(b.fb_permalink,msg)
             except:
                 logging.debug('Facebook post failed')
         else:
             msg = "Automated message: \nI don't want the book titled "+b.book.title+" with id "+str(b.id)+". Changed my mind! Thanks!"
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
-                b.comments = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
-                b.save(update_fields=['comments'])
+                b.fb_permalink = graph.put_wall_post(msg, {},FACEBOOKGROUP_ID)['id'] # permalink
+                b.save(update_fields=['fb_permalink'])
             except:
                 logging.debug('Facebook post failed')
 

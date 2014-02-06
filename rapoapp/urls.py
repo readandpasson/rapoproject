@@ -10,6 +10,7 @@ from allauth.account.views import logout
 from django.contrib import admin
 admin.autodiscover()
 
+from allauth.socialaccount.models import SocialAccount
 from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview, WithdrawBook
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount, FeedbackInput
 from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView, MemberProfile
@@ -73,7 +74,7 @@ urlpatterns = patterns('',
 
     url(r'^defect/', 'rapocore.views.ReportDefect',name='report-defect'),
     url(r'^defectbrowse/', DefectListView.as_view(),name='defect-browse'),
-    url(r'^memberbrowse/', MemberListView.as_view(),name='member-browse'),
+    url(r'^memberbrowse/', MemberListView.as_view(queryset=SocialAccount.objects.order_by("user__first_name","user__last_name")),name='member-browse'),
     
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

@@ -38,17 +38,13 @@ function popitup(url,message) {
 <table id="members" class="table" style="table-layout:fixed">
 	<thead>
    	<tr>
-	<th style="width: 20%" id="fname"> First Name </th>
-	<th  style="width:15%" id="lname"> Last Name </th>
-	<th style="width: 15%"  id="prof"> Profile </th>
+	<th style="width: 20%" id="fname"> Member Name </th>
 	<th style="width: 28%"  id="city"> City </th>
 	</tr>
 </thead>
 {% for member in object_list %}
    	<tr>
-			<td>{{ member.user.first_name }}</td>
-			<td>{{ member.user.last_name }}</td>
-			<td><a href="/accounts/memberprofile/{{ member.user.username }}/">{{ member.user.first_name }}</a></td>
+			<td><a href="/accounts/memberprofile/{{ member.user.username }}/">{{ member.user.first_name }} {{ member.user.last_name }}</a></td>
 			<td> Not Available </td>
 	</tr>
 {% endfor %}

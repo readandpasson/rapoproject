@@ -31,6 +31,7 @@ class RealBook(models.Model):
     status = models.CharField(max_length=1,choices=STATUS_CHOICES,default=AVAILABLE)
     datereleased = models.DateTimeField( verbose_name='Date of release',auto_now_add=True)
     rqueue = models.ManyToManyField(SocialAccount,through='Queue',related_name='Queue',verbose_name='Reservation Queue')
+    fb_permalink = models.TextField(null=True,blank=True)
     comments = models.TextField(null=True,blank=True)
     def __unicode__(self):
         return self.book.title
