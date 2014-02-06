@@ -55,7 +55,8 @@ function popitup(url,message) {
     		<tr> <td> <a href = "/bookdetails/{{ bk.id }}" title="Click to view the details of the book" >{{ bk.book.title }}</a> </td>
 				{% ifnotequal bk.rqueue.count 0 %} 
 				<td> In queue : </br>  {% for m in bookswithqlist %} 
-					{% ifequal bk.id m.book__id %}  {{ m.member__user__first_name }} {{ m.member__user__last_name }} 
+					{% ifequal bk.id m.book__id %}  
+			                <a href="/accounts/memberprofile/{{ m.member__user__username }}/">{{ m.member__user__first_name }} {{ m.member__user__last_name }}</a>
 					{% comment %}
 					{% ifequal user.is_staff 1 %}
 					<a href="/sendbookto{{ m.uid }}/{{ book.id }}">Send Book</a>   
@@ -90,7 +91,7 @@ function popitup(url,message) {
 <table class="table table-hover">
 
 			<th> Title </th>  <th> To </th></tr>
-		{% for tr in booksintransitfromme %} <tr> <td> <a href = "/bookdetails/{{ tr.book.id }}" title="Click to view the details of the book" >{{ tr.book.book.title }}</a> </td> <td>  --> {{ tr.to_member.user.first_name }} {{tr.to_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %} 
+		{% for tr in booksintransitfromme %} <tr> <td> <a href = "/bookdetails/{{ tr.book.id }}" title="Click to view the details of the book" >{{ tr.book.book.title }}</a> </td> <td>  --> <a href="/accounts/memberprofile/{{ tr.to_member.user.username }}/">{{ tr.to_member.user.first_name }} {{ tr.to_member.user.last_name }}</a> ON {{ tr.date_sent }} </td></tr> {% endfor %} 
     		
 </table>
 </div>
@@ -105,7 +106,7 @@ function popitup(url,message) {
   <div class="panel-body">
 <table class="table table-hover">
 		<th> Title </th>  <th> From </th></tr>
-	{% for tr in booksintransittome %} <tr> <td> <a href = "/bookdetails/{{ tr.book.id }}" title="Click to view the details of the book" >{{ tr.book.book.title }}</a> </td> <td>  <-- {{ tr.from_member.user.first_name }} {{tr.from_member.user.last_name }} ON {{ tr.date_sent }} </td></tr> {% endfor %}
+	{% for tr in booksintransittome %} <tr> <td> <a href = "/bookdetails/{{ tr.book.id }}" title="Click from view the details of the book" >{{ tr.book.book.title }}</a> </td> <td>  <-- <a href="/accounts/memberprofile/{{ tr.from_member.user.username }}/">{{ tr.from_member.user.first_name }} {{ tr.from_member.user.last_name }}</a> ON {{ tr.date_sent }} </td></tr> {% endfor %}
 
 </table>
 </div>
@@ -126,7 +127,7 @@ function popitup(url,message) {
 <th>Currently With</th>
 	  </tr>
 	</thead>
-{% for qu  in booksrequested %} <tr> <td> <a href = "/bookdetails/{{ qu.book.id }}" title="Click to view the details of the book" >{{ qu.book.book.title }}</a> </td> <td>  {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }} ( {{ qu.book.withmember.user.username }} ) </td> </tr> {% endfor %} </td> </tr>
+{% for qu  in booksrequested %} <tr> <td> <a href = "/bookdetails/{{ qu.book.id }}" title="Click to view the details of the book" >{{ qu.book.book.title }}</a> </td> <td> <a href="/accounts/memberprofile/{{ qu.book.withmember.username }}/"> {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }}</a> </td> </tr> {% endfor %} </td> </tr>
 {% else %}
 <tr> <td>No books requested </td> </tr>
 {% endif %}
@@ -152,7 +153,7 @@ function popitup(url,message) {
 <th>Currently With</th>
 	  </tr>
 	</thead>
-{% for bk in booksreleased %} <tr> <td> <a href = "/bookdetails/{{ bk.id }}" title="Click to view the details of the book" >{{ bk.book.title }}</a> </td><td>  {{ bk.datereleased }} </td> <td>{{ bk.withmember.user.first_name }} {{ bk.withmember.user.last_name }} ( {{ bk.withmember.user.username }} )</td> </tr> {% endfor %} </td> </tr>
+{% for bk in booksreleased %} <tr> <td> <a href = "/bookdetails/{{ bk.id }}" title="Click to view the details of the book" >{{ bk.book.title }}</a> </td><td>  {{ bk.datereleased }} </td> <td><a href="/accounts/memberprofile/{{bk.withmember.user.username}}/">{{ bk.withmember.user.first_name }} {{ bk.withmember.user.last_name }}</a></td> </tr> {% endfor %} </td> </tr>
 </table> 
 </div>
 </div>

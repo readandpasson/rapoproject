@@ -49,7 +49,7 @@ function popitup(url,message) {
 {% for defect in object_list %}
     {% ifnotequal defect.status 'AR' %}
    	<tr>
-			<td>{{ defect.bymember }}</td>
+			<td><a href="/accounts/memberprofile/{{ defect.bymember.user.username }}/">{{ defect.bymember.user.first_name }} {{defect.bymember.user.last_name }}</a></td>
 			<td>{{ defect.logdate|date:"Y/m/d h:i:s A" }}</td>
 			<td>{{ defect.get_category_display }}</td>
 			<td>{{ defect.description }} </td>
@@ -66,7 +66,7 @@ function popitup(url,message) {
     {% else %}
        {% ifequal user.is_staff 1 %}
    	       <tr>
-	       		<td>{{ defect.bymember }}</td>
+			    <td><a href="/accounts/memberprofile/{{ defect.bymember.user.username }}/">{{ defect.bymember.user.first_name }} {{defect.bymember.user.last_name }}</a></td>
 	       		<td>{{ defect.logdate|date:"Y/m/d h:i:s A" }}</td>
 	       		<td>{{ defect.get_category_display }}</td>
 	       		<td>{{ defect.description }} </td>

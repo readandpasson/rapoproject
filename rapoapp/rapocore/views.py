@@ -13,9 +13,8 @@ from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount, SocialToken
 from rapocore.models import RealBook,Transaction, Queue, Defect
 from rapogen.models import Author,Book,Genre, BookReview, Feedback
-from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm, FeedbackForm
+from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, ReceiveBookForm, SearchForm, ReportDefectForm
 from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
-from rapocore.forms import FeedbackDetailsForm
 
 from django.db.models import Avg, Max, Min
 from rapocore.facebook import GraphAPI
@@ -505,7 +504,7 @@ def MyAccount(request):
     bookswith = RealBook.objects.filter(withmember=me).select_related().exclude(status=RealBook.TRANSIT)
     bookswithqlist = []
     for bk in bookswith:
-        bookswithqlist.extend(list(Queue.objects.filter(book=bk).order_by('id').values('book__id','member__user__first_name','member__user__last_name')))
+        bookswithqlist.extend(list(Queue.objects.filter(book=bk).order_by('id').values('book__id','member__user__first_name','member__user__last_name','member__user__username')))
 
     booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
     booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
@@ -547,7 +546,7 @@ def RAPOBookReviewsList(request,bookid):
         book = Book.objects.select_related().get(id= bookid)
         #rapoReviewDetails = RAPOReviewDetails(request, book.id)
         avg_rating = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).aggregate(Avg('rating'))
-        rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).values('id','rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name')
+        rapoReview = BookReview.objects.select_related().filter(status = 'A', book_id = book.id).values('id','rating','review','reviewer_id__user__first_name','reviewer_id__user__last_name','reviewer_id__user__username')
         data = {  'book' : book,  'rapoReview': rapoReview, 'avg_rating':avg_rating['rating__avg']}
         return render_to_response('rapocore/rapo_bookreview_list.html', data, RequestContext(request))
 
@@ -586,7 +585,10 @@ def MemberProfile(request,username):
         bookswith = RealBook.objects.filter(withmember=me).select_related().exclude(status=RealBook.TRANSIT)
         booksintransitfromme = Transaction.objects.filter(Q(book__withmember=me)&Q(from_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
         booksintransittome = Transaction.objects.filter(Q(date_received__isnull=True)&Q(to_member=me)&Q(book__status=RealBook.TRANSIT)).select_related()
-    return render_to_response('rapocore/memberprofile.html',{ 'member': me, 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookswith': bookswith, 'booksintransitfromme': booksintransitfromme,'booksintransittome': booksintransittome}, RequestContext(request))
+        bookswithqlist = []
+        for bk in bookswith:
+            bookswithqlist.extend(list(Queue.objects.filter(book=bk).order_by('id').values('book__id','member__user__first_name','member__user__last_name','member__user__username')))
+    return render_to_response('rapocore/memberprofile.html',{ 'member': me, 'booksreleased': booksreleased, 'booksrequested': booksrequested,'bookswith': bookswith, 'booksintransitfromme': booksintransitfromme,'booksintransittome': booksintransittome,'bookswithqlist':bookswithqlist}, RequestContext(request))
 
 class MemberListView(ListView):
     model  = SocialAccount

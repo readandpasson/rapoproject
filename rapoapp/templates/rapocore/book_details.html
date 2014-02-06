@@ -120,12 +120,12 @@ var f = document.getElementById('viewhistory');
 <tr>
 	<td id="oowner"><b> Released By </b></td>
 	<td> {% ifequal book.ownermember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
-		 {{ book.ownermember.user.first_name }} {{ book.ownermember.user.last_name }} {% endifequal %}</td>
+		 <a href="/accounts/memberprofile/{{book.ownermember.user.username}}/">{{ book.ownermember.user.first_name }} {{ book.ownermember.user.last_name }}</a> {% endifequal %}</td>
 </tr>
 <tr>
 	<td id="currentowner"><b> Currently With </b></td>
 	<td> {% ifequal book.withmember.user.username 'rapo.admin' %} <em> Not Known </em> {% else %}
-		 {{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }} {% endifequal %} </td>
+		 <a href="/accounts/memberprofile/{{book.withmember.user.username}}/">{{ book.withmember.user.first_name }} {{ book.withmember.user.last_name }}</a> {% endifequal %}</td>
 </tr>
 <tr>
 	<td id="status"><b> Status </b></td>
@@ -145,7 +145,7 @@ var f = document.getElementById('viewhistory');
 	  <td></td>
 	  <td>
 		{% if to_member %}
-   			In Transit ---> {{ to_member.user.first_name }} {{ to_member.user.last_name }} </br>
+		 In Transit ---> <a href="/accounts/memberprofile/{{to_member.user.username}}/">{{ to_member.user.first_name }} {{ to_member.user.last_name }}</a> 
 		{% endif %}
 	
 			{% if queue %}
@@ -159,7 +159,7 @@ var f = document.getElementById('viewhistory');
 						{% for m in queue  %}
 							<tr>
 								<td> {{ forloop.counter }} </td>
-								<td> {{ m.member__user__first_name }} {{ m.member__user__last_name }} </td>
+		 <td> <a href="/accounts/memberprofile/{{m.member__user__username}}/">{{ m.member__user__first_name }} {{ m.member__user__last_name }}</a> </td>
 								</br>
 							</tr>
 						{% endfor %}
@@ -248,8 +248,8 @@ var f = document.getElementById('viewhistory');
                   	</tr>
 
         	    {% for t in tran  %}
-                  	<tr>
-                    		<td> {{ t.from_member.user.first_name  }} {{ t.from_member.user.last_name }}  </td>
+                  	
+		 <tr> <td> <a href="/accounts/memberprofile/{{t.from_member.user.username}}/">{{ t.from_member.user.first_name }} {{ t.from_member.user.last_name }}</a> </td>
                     		<td> {{ t.date_received }} </td>
                     		</br>
                   	</tr>
