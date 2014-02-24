@@ -143,7 +143,7 @@ def SearchResults(request):
     sownermember = request.POST['sownermember']
     swithmember = request.POST['swithmember']
     sstatus = request.POST['sstatus']
-    results = RealBook.objects.all().select_related()
+    results = RealBook.objects.all().order_by('-id').select_related()
     if stitle or sauthor or slanguage or sgenre or sownermember or swithmember or sstatus:
         if stitle:
             results = results.filter(book__title__icontains=stitle).select_related()
@@ -164,11 +164,17 @@ def SearchResults(request):
         
         member = SocialAccount.objects.get(user_id=request.user)
         form = SearchForm(request.GET or None)
-        return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'search': True, 'form':form }, RequestContext(request))
+        bookqueue = Queue.objects.all().order_by('id').select_related()
+        transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
+
+        return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'bookqueue': bookqueue, 'transaction': transaction, 'search': True, 'form':form }, RequestContext(request))
     else:
         member = SocialAccount.objects.get(user_id=request.user)
         form = SearchForm(request.GET or None)
-        return render_to_response('rapocore/book_list.html',{  'data' : [], 'member': member, 'search': True, 'form':form }, RequestContext(request))
+        bookqueue = Queue.objects.all().order_by('id').select_related()
+        transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
+
+        return render_to_response('rapocore/book_list.html',{  'data' : [], 'member': member, 'bookqueue': bookqueue, 'transaction': transaction, 'search': True, 'form':form }, RequestContext(request))
 
 
 
