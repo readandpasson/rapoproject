@@ -127,7 +127,7 @@ function popitup(url,message) {
 <th>Currently With</th>
 	  </tr>
 	</thead>
-{% for qu  in booksrequested %} <tr> <td> <a href = "/bookdetails/{{ qu.book.id }}" title="Click to view the details of the book" >{{ qu.book.book.title }}</a> </td> <td> <a href="/accounts/memberprofile/{{ qu.book.withmember.username }}/"> {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }}</a> </td> </tr> {% endfor %} </td> </tr>
+{% for qu  in booksrequested %} <tr> <td> <a href = "/bookdetails/{{ qu.book.id }}" title="Click to view the details of the book" >{{ qu.book.book.title }}</a> </td> <td> <a href="/accounts/memberprofile/{{ qu.book.withmember.user.username }}/"> {{ qu.book.withmember.user.first_name }} {{ qu.book.withmember.user.last_name }}</a> </td> </tr> {% endfor %} </td> </tr>
 {% else %}
 <tr> <td>No books requested </td> </tr>
 {% endif %}

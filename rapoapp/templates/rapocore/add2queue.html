@@ -5,6 +5,7 @@
 <html>
     <head>
         <title>Add to queue</title>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -13,12 +14,14 @@
     </script>
     </head>
     <body>
+    <div class="container">
+    <div class="col-sm-9">
         {% if success %}
         	<h1>Added to queue </h1>
-			<p>{{ user}} successfully added to queue for {{ book }}</p>
+            <p> {{ user.first_name }} {{ user.last_name }} successfully added to queue for {{ book }}</p>
         {% else %}
         	<h1>Already in queue </h1>
-			<p>{{ user}} already in queue for {{ book }}</p>
+            <p> {{ user.first_name }} {{ user.last_name }} already in queue for {{ book }}</p>
         {% endif %}
             <table>
             {% for m in queue  %}
@@ -27,5 +30,7 @@
 				
             </table>
             <p><a href="javascript: window.close();"/>Close</p></a>
+	</div>
+	</div>
     </body>
 </html>

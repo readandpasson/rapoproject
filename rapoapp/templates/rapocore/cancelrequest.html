@@ -5,6 +5,7 @@
 <html>
     <head>
         <title>Cancel request</title>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -13,15 +14,18 @@
     </script>
     </head>
     <body>
+    <div class="container">
+    <div class="col-sm-9">
         {% if success %}
         	<h1>Removed from queue </h1>
-			<p>{{ user }} successfully removed from  queue for {{ book }}</p>
+			<p>{{ user.first_name }} {{ user.last_name }}  successfully removed from  queue for {{ book }}</p>
         {% else %}
         	<h1>Already sent to you </h1>
-			<p>{{ book }} already sent to  {{ user }}</p>
+			<p>{{ book }} already sent to  {{ user.first_name }} {{ user.last_name }} </p>
+	</div>
+	</div>
         {% endif %}
 				
-            </table>
-            <p><a href="javascript: window.close();"/>Close</p></a>
+   <p><a href="javascript: window.close();"/>Close</p></a>
     </body>
 </html>

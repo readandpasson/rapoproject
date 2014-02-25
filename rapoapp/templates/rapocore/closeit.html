@@ -6,6 +6,7 @@
 <html>
     <head>
         <title>Close defect</title>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -14,8 +15,12 @@
     </script>
     </head>
     <body>
+    <div class="container">
+    <div class="col-sm-9">
         	<h1>Closed </h1>
-			<p>{{ user}} successfully closed defect "{{ defect }}"</p>
+			<p>{{ user.first_name }} {{ user.last_name }}  successfully closed defect "{{ defect }}"</p>
             <p><a href="javascript: window.close();"/>Close</p></a>
+    </div>
+    </div>
     </body>
 </html>

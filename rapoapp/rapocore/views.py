@@ -35,7 +35,7 @@ def ReleaseBook(request):
                 rb.save()
 
                 #Message for facebook post
-                msg = "Automated message: \nHi all, I released \'"+rb.book.title+"\' Do check it out at http://test.rapo.in/bookdetails/"+str(rb.id)
+                msg = "Automated message: #releasedbooks \nHi all, I released \'"+rb.book.title+"\' Do check it out at http://test.rapo.in/bookdetails/"+str(rb.id)
                 try:
                     graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
                     #attachment = {}
@@ -264,7 +264,7 @@ def ViewQueue(request, bookid):
             to_member = ()
             from_member = ()
         if Queue.objects.filter(book=b).exists() :
-            qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name')
+            qset = Queue.objects.filter(book=b).order_by('id').values('member__user__first_name','member__user__last_name','member__user__username')
         else :
             qset = ()
         return {'queue':qset,'to_member':to_member,'from_member':from_member}
@@ -433,7 +433,7 @@ def Archiveit(request, defectid):
 def WithdrawBook(request,bookid):
         b = RealBook.objects.get(id= bookid)
         Queue.objects.filter(book=b).delete() # Delete all queued entries for the book
-        msg = "Automated message: \nI don't want to part with"+b.book.title+" with id "+str(b.id)+". Changed my mind. Sorry!Thanks!"
+        msg = "Automated message: \nI don't want to part with "+b.book.title+" with id "+str(b.id)+". Changed my mind. Sorry!Thanks!"
         if b.fb_permalink and FACEBOOKGROUP_ID in b.fb_permalink:
             try:
                 graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)

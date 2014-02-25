@@ -5,6 +5,7 @@
 <html>
     <head>
         <title>Withdraw Book</title>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -13,15 +14,19 @@
     </script>
     </head>
     <body>
+    <div class="container">
+    <div class="col-sm-9">
         {% if success %}
         	<h1>Withdraw a previously released book </h1>
-			<p>{{ user }} successfully withdrew {{ book }}</p>
+			<p>{{ user.first_name }} {{ user.last_name }}  successfully withdrew {{ book }}</p>
         {% else %}
         	<h1>Already withdrawn </h1>
-			<p>{{ book }} already withdrawn by {{ user }}</p>
+			<p>{{ book }} already withdrawn by {{ user.first_name }} {{ user.last_name }} </p>
         {% endif %}
 				
             </table>
             <p><a href="javascript: window.close();"/>Close</p></a>
+    </div>
+    </div>
     </body>
 </html>

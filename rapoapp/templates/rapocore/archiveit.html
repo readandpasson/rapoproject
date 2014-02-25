@@ -5,6 +5,7 @@
 <html>
     <head>
         <title>Archive it</title>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -13,8 +14,12 @@
     </script>
     </head>
     <body>
-        	<h1>Archived </h1>
-			<p>{{ user}} successfully archived defect "{{ defect }}"</p>
+	<h1>Archived </h1>
+    <div class="container">
+    <div class="col-sm-9">
+			<p>{{ user.first_name }} {{ user.last_name }} successfully archived defect "{{ defect }}"</p>
             <p><a href="javascript: window.close();"/>Close</p></a>
+	</div>
+	</div>
     </body>
 </html>

@@ -1,12 +1,9 @@
 {% load i18n admin_static admin_list %} 
 {% load admin_urls %} 
-
-
-
-
 <html>
     <head>
         <title>Are you sure?</title>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -15,9 +12,11 @@
     </script>
     </head>
     <body>
+    <div class="container">
+    <div class="col-sm-9">
         	<h1>Are you sure? </h1>
         <p>{{ message }}</p>
-			<p>{{ user}} successfully archived defect "{{ defect }}"</p>
+			<p>{{ user.first_name }} {{ user.last_name }}  successfully archived defect "{{ defect }}"</p>
         		<div>
         		    <a href="{{ prev_link }}">Cancel</a>
         		    <form action="{{ action_link }}" method="post">
@@ -26,5 +25,7 @@
         		    </form>
         		</div>
 
+	</div>
+	</div>
     </body>
 </html>

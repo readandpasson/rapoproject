@@ -6,6 +6,7 @@
 <html>
     <head>
         <title>Pass On</title>
+	<link rel="stylesheet" type="text/css" href="{% static "admin/css/bootstrap.min.css" %}" /> 
 	<script>
         window.onunload = refreshParent;
         function refreshParent() {
@@ -14,9 +15,13 @@
     </script>
     </head>
     <body>
+    <div class="container">
+    <div class="col-sm-9">
         	<h1>Passed on </h1>
-			<p>{{ user}} successfully passed on {{ book }}</p>
+			<p>{{ user.first_name }} {{ user.last_name }}  successfully passed on {{ book }}</p>
             <p><a href="javascript: window.close();"/>Close</p>
+	</div>
+	</div>
     </body>
 </html>
 

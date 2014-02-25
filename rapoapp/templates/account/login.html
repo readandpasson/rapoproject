@@ -1,30 +1,21 @@
 {% extends "rapocore/rapobase.html" %}
-
 {% load i18n %}
 {% load account %}
 {% load url from future %}
 {% load socialaccount %}
-
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
-
-
-
 {% block Login %} 
-        <form class="navbar-form navbar-right">
+<form class="navbar-form navbar-right">
 {% for provider in socialaccount.providers %}
-  <a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}"  >Authenticate with {{provider.name}}</a>
+<a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}"  >Authenticate with {{provider.name}}</a>
 {% endfor %}
 </form>
 {% endblock %}
-
 <h1>{% trans "Sign In" %}</h1>
 {% comment %}
-
 {% if socialaccount.providers  %}
 {% endcomment %}
 <p>{% blocktrans with site.name as site_name %} Welcome to RAPO&trade;. Please sign in using your {% endblocktrans %}
-
 {% for provider in socialaccount.providers %}
-
 {% endfor %}
 {% blocktrans %} account.{% endblocktrans %}
