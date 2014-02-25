@@ -14,6 +14,7 @@
 {% for provider in socialaccount.providers %}
   <a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}"  >Authenticate with {{provider.name}}</a>
 {% endfor %}
+ <a title="Guest" class="btn btn-success"  href="/bookbrowse/"  > Continue as Guest </a>
 </form>
 {% endblock %}
 
