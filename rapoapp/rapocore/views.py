@@ -120,7 +120,7 @@ def PassOn(request): # Pass On is the act of moving a book from status 'Reading'
                         'search' : False ,
                         'passon' : True}, RequestContext(request))
 
-@login_required
+#@login_required
 def Search(request):
     form = SearchForm(request.GET or None)
     if form.has_changed():
@@ -133,7 +133,7 @@ def Search(request):
                         'formaction':'searchresults'},RequestContext(request))
 
 
-@login_required
+#@login_required
 def SearchResults(request):
 
     stitle = request.POST['stitle']
@@ -162,14 +162,20 @@ def SearchResults(request):
 
         #results = results.values('id','title','author__first_name','author__last_name','language__languagename','ownermember__user__first_name','ownermember__user__last_name','withmember__user__first_name','withmember__user__last_name','status')
         
-        member = SocialAccount.objects.get(user_id=request.user)
+        if request.user.is_authenticated() :
+            member = SocialAccount.objects.get(user_id=request.user)
+        else:
+            member = ()
         form = SearchForm(request.GET or None)
         bookqueue = Queue.objects.all().order_by('id').select_related()
         transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
 
         return render_to_response('rapocore/book_list.html',{  'data' : results, 'member': member, 'bookqueue': bookqueue, 'transaction': transaction, 'search': True, 'form':form }, RequestContext(request))
     else:
-        member = SocialAccount.objects.get(user_id=request.user)
+        if request.user.is_authenticated() :
+            member = SocialAccount.objects.get(user_id=request.user)
+        else:
+            member = ()
         form = SearchForm(request.GET or None)
         bookqueue = Queue.objects.all().order_by('id').select_related()
         transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
@@ -178,10 +184,13 @@ def SearchResults(request):
 
 
 
-@login_required
+#@login_required
 def Browse(request):
     results = RealBook.objects.all().order_by('-id').select_related()
-    member = SocialAccount.objects.get(user_id=request.user)
+    if request.user.is_authenticated() :
+        member = SocialAccount.objects.get(user_id=request.user)
+    else:
+        member = ()
     bookqueue = Queue.objects.all().order_by('id').select_related()
     transaction = Transaction.objects.filter(date_received__isnull = True).order_by('-id').select_related()
 
@@ -191,12 +200,15 @@ def Browse(request):
 
 # Benitha: added code for Book details page: 06-Nov-2013
 
-@login_required
+#@login_required
 def BookDetails(request,bookid):
     #results = RealBook.objects.select_related().get(id= bookid)
     rbook = RealBook.objects.get(id=bookid)
     book = Book.objects.select_related().get(id= rbook.book_id)
-    member = SocialAccount.objects.get(user_id=request.user)
+    if request.user.is_authenticated() :
+        member = SocialAccount.objects.get(user_id=request.user)
+    else:
+        member = ()
     queueDetails = ViewQueue(request, bookid)
     bookReviewDetails = BookReviewDetails(request, book.id)
     booksTran = Transaction.objects.filter(book_id=bookid)
@@ -252,7 +264,7 @@ def PassOnBook(request, bookid):
                 logging.debug('Facebook post failed')
         return render_to_response('rapocore/passon.html',{ 'book': b.book.title},RequestContext(request))
 
-@login_required
+#@login_required
 def ViewQueue(request, bookid):
         b = RealBook.objects.get(id= bookid)
         if b.status  == RealBook.TRANSIT:
@@ -276,7 +288,7 @@ def ViewQueue(request, bookid):
         return {'queue':qset,'to_member':to_member,'from_member':from_member}
 #        return render_to_response('rapocore/viewqueue.html',{ 'book': b.title,'queue':qset,'to_member':to_member}, RequestContext(request))
 
-@login_required
+#@login_required
 def BookReviewDetails(request, bookid):
     try:
         user = SocialAccount.objects.get(user_id = request.user)
@@ -546,7 +558,7 @@ def WriteBookReview(request,bookid):
                                 'book':book,
                                 'submitmessage':'Submit Review', 'formaction':'writebookreview/'+bookid},RequestContext(request))
 
-@login_required
+#@login_required
 def RAPOBookReviewsList(request,bookid):
         #rbook = RealBook.objects.select_related().get(id= bookid)
         book = Book.objects.select_related().get(id= bookid)
@@ -557,7 +569,7 @@ def RAPOBookReviewsList(request,bookid):
         return render_to_response('rapocore/rapo_bookreview_list.html', data, RequestContext(request))
 
 
-@login_required
+#@login_required
 def RAPOBookReviewsDetails(request,bookid,reviewid):
         book = Book.objects.select_related().get(id= bookid)
         #rbook = RealBook.objects.select_related().get(book_id= bookid)
@@ -571,14 +583,13 @@ def RAPOBookReviewsDetails(request,bookid,reviewid):
         return render_to_response('rapocore/rapo_bookreview_details.html', data, RequestContext(request))
 
 
-@login_required
+#@login_required
 def FeedbackPage(request):
         #feedbackList = Feedback.objects.all().order_by('-id').select_related()
         return render_to_response('rapocore/feedback.html',{  
                         'formtitle': 'Feedback/Query Page' }, RequestContext(request))
 
 @login_required
-
 def MemberProfile(request,username):
     try:
         uid = User.objects.get(username = username)
