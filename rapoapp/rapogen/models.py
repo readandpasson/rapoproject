@@ -1,10 +1,40 @@
 from django.db import models
-from django.db.models.signals import m2m_changed,pre_save
-from django.dispatch import receiver
-from django.db.utils import IntegrityError
 from allauth.socialaccount.models import SocialAccount
+from django.contrib.auth.models import User
 
 # Create your models here.
+class Country(models.Model):
+    iso_code = models.CharField(unique=True,max_length=2)
+    name = models.CharField(max_length=50)
+    def __unicode__(self):
+        return self.name
+    class Meta:
+        ordering = ['name']
+
+class Region(models.Model):
+    iso_code = models.CharField(max_length=3)
+    name = models.CharField(max_length=50)
+    country = models.ForeignKey(Country)
+    def __unicode__(self):
+        return self.name
+    class Meta:
+        ordering = ['name']
+
+class City(models.Model):
+    iso_code = models.CharField(unique=True,max_length=3)
+    name = models.CharField(max_length=50)
+    region = models.ForeignKey(Region)
+    def __unicode__(self):
+        return self.name
+    class Meta:
+        ordering = ['name']
+
+        
+class Profile(models.Model):
+    user = models.OneToOneField(User)
+    city = models.ForeignKey(City)
+    email = models.EmailField(unique=True,max_length=50)
+
 class Language(models.Model):
     languagename = models.CharField(unique=True,max_length=25)
 
@@ -112,3 +142,19 @@ class Feedback(models.Model):
     subject = models.TextField()
     feedback = models.TextField()
     comments = models.TextField(null=True,blank=True)
+
+#class UserProfile(models.Model):  
+#    user = models.OneToOneField(User)  
+#       location = models.
+#    language = models.ForeignKey(Language,default='English')
+#    #other fields here
+#
+#    def __str__(self):  
+#          return "%s's profile" % self.user  
+#
+#       def create_user_profile(sender, instance, created, **kwargs):  
+#       if created:  
+#                       profile, created = UserProfile.objects.get_or_create(user=instance)  
+#
+#post_save.connect(create_user_profile, sender=User) 
+#
