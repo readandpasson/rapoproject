@@ -11,3 +11,4 @@ rapoapp/static/rapoMeetPics/
 rapoapp/templates/rapocore/ReviewContestDec2013.html
 rapoapp/templates/rapocore/rapofirstmeet.html
 rapoapp/wordpress/
+django/
