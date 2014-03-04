@@ -32,6 +32,12 @@ ul.nav li.li-no-hover>a:hover {
 	background-color:#468847;
 }
 
+.authenticate
+{
+	background-color:#ffaa22;
+	border-color:#ffaa22;
+}
+
 .required {
 	color: red;
 }
