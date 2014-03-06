@@ -12,7 +12,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
 from django.shortcuts import redirect
+from django.db.models import Count
 
 from ..exceptions import ImmediateHttpResponse
 from ..utils import get_user_model
@@ -30,6 +32,10 @@ from . import signals
 from . import app_settings
 
 from .adapter import get_adapter
+
+from rapogen.models import Book, BookReview
+from rapocore.models import RealBook, Transaction
+
 
 User = get_user_model()
 
@@ -68,6 +74,28 @@ class LoginView(RedirectAuthenticatedUserMixin, FormView):
 
     def get_context_data(self, **kwargs):
         ret = super(LoginView, self).get_context_data(**kwargs)
+ 
+        latest_books = RealBook.objects.select_related().filter().order_by('-datereleased')[:5]
+
+        tempBookTran = Transaction.objects.values('book').annotate(count=Count('book')).order_by('-count')[:5]
+        mostrapo_books = []
+        for rapobook in tempBookTran:
+            mostrapo_books.append(RealBook.objects.get(id=rapobook.get('book')))
+
+        tempUserTran = Transaction.objects.values('from_member').annotate(count=Count('from_member')).order_by('-count')[:5]
+        mostrapo_users = []
+        for user in tempUserTran:
+            mostrapo_users.append(User.objects.get(id=user.get('from_member')))
+        
+        tempReviews = BookReview.objects.select_related().filter(status='A').order_by('-id')[:5]
+        latest_reviews = []
+        for review in tempReviews:
+            dict={}
+            dict['book']=Book.objects.get(id=review.book_id)
+            dict['realbook']=RealBook.objects.filter(book_id=review.book_id)[:1][0]
+            dict['review']=review
+            latest_reviews.append(dict)
+
         ret.update({
                 "signup_url": passthrough_next_redirect_url(self.request,
                                                             reverse("account_signup"),
@@ -75,6 +103,8 @@ class LoginView(RedirectAuthenticatedUserMixin, FormView):
                 "site": Site.objects.get_current(),
                 "redirect_field_name": self.redirect_field_name,
                 "redirect_field_value": self.request.REQUEST.get(self.redirect_field_name),
+                "extra_context":{"latest_books":latest_books, "mostrapo_books":mostrapo_books, "mostrapo_users":mostrapo_users,
+                "latest_reviews":latest_reviews}
                 })
         return ret
 
