@@ -18,6 +18,109 @@
 </form>
 {% endblock %}
 
+{% block Books %}
+<table>
+<tr>
+<td width="50%" height="50%">
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>Latest RAPO'ed Books</strong>
+	</div>
+	
+	<div class="panel-body">
+	<table class="table table-hover" >
+			<thead>
+				<tr>
+					<th>Title</th>
+				</tr>
+			</thead>
+	{% for latestbook in extra_context.latest_books %}
+	<tr>
+	<td> <a href = "/bookdetails/{{ latestbook.id }}" title="Click to view the details of the book" >{{latestbook}} </td> 
+	</tr>
+	{% endfor %}
+	</table>
+	</div>
+</div>
+</td>
+<td width="50%" height="50%">
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>Most RAPO'ed Books</strong>
+	</div>
+	
+	<div class="panel-body">
+	<table class="table table-hover" >
+			<thead>
+				<tr>
+					<th>Title</th>
+				</tr>
+			</thead>
+	{% for mostrapo in extra_context.mostrapo_books %}
+	<tr>
+	<td><a href = "/bookdetails/{{ mostrapo.id }}" title="Click to view the details of the book" >{{mostrapo}} </td> 
+	</tr>
+	{% endfor %}
+	</table>
+	</div>
+</div>
+</td>
+</tr>
+<tr>
+<td width="50%" height="50%">
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>Top RAPO'ers</strong>
+	</div>
+	
+	<div class="panel-body">
+	<table class="table table-hover" >
+			<thead>
+				<tr>
+					<th>Member</th>
+				</tr>
+			</thead>
+	{% for user in extra_context.mostrapo_users %}
+	<tr>
+	{% if user.first_name %}
+	<td> <a href = "accounts/memberprofile/{{ user.username }}" title="Click to view the member profile" >{{user.first_name}} {{user.last_name}} </td>
+	{% else %}
+	<td>RAPO ADMIN</td>
+	{% endif %}
+	</tr>
+	{% endfor %}
+	</table>
+	</div>
+</div>
+</td>
+<td width="50%" height="50%">
+<div class="panel panel-success">
+	<div class="panel-heading">
+		<strong>Latest RAPO Reviews</strong>
+	</div>
+	
+	<div class="panel-body">
+	<table class="table table-hover" >
+			<thead>
+				<tr>
+					<th>Book Title</th>
+					<th>Review</th>
+				</tr>
+			</thead>
+	{% for review_detail in extra_context.latest_reviews %}
+	<tr>
+	<td> <a href = "/bookdetails/{{ review_detail.realbook.id }}" title="Click to view the details of the book" >{{review_detail.book.title}}</td>
+	<td> <a href = "rapobookreviewsdetails/{{review_detail.book.id}}/{{ review_detail.review.id }}" title="Click to view the detailed book review" >{{review_detail.review.review}} </td>
+	</tr>
+	{% endfor %}
+	</table>
+	</div>
+</div>
+</td>
+</tr>
+</table>
+{% endblock %}
+
 <h1>{% trans "Sign In" %}</h1>
 {% comment %}
 
