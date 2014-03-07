@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block Books %}
-<table>
+<table align = "center" width="80%" >
 <tr>
 <td width="50%" height="50%">
 <div class="panel panel-success">
@@ -26,7 +26,7 @@
 	<table class="table table-hover" >
 			<thead>
 				<tr>
-					<th>Title</th>
+					<th>Book Title</th>
 				</tr>
 			</thead>
 	{% for latestbook in extra_context.latest_books %}
@@ -48,7 +48,7 @@
 	<table class="table table-hover" >
 			<thead>
 				<tr>
-					<th>Title</th>
+					<th>Book Title</th>
 				</tr>
 			</thead>
 	{% for mostrapo in extra_context.mostrapo_books %}
@@ -72,16 +72,12 @@
 	<table class="table table-hover" >
 			<thead>
 				<tr>
-					<th>Member</th>
+					<th>RAPO Member</th>
 				</tr>
 			</thead>
 	{% for user in extra_context.mostrapo_users %}
 	<tr>
-	{% if user.first_name %}
 	<td> <a href = "accounts/memberprofile/{{ user.username }}" title="Click to view the member profile" >{{user.first_name}} {{user.last_name}} </td>
-	{% else %}
-	<td>RAPO ADMIN</td>
-	{% endif %}
 	</tr>
 	{% endfor %}
 	</table>
@@ -105,7 +101,7 @@
 	{% for review_detail in extra_context.latest_reviews %}
 	<tr>
 	<td> <a href = "/bookdetails/{{ review_detail.realbook.id }}" title="Click to view the details of the book" >{{review_detail.book.title}}</td>
-	<td> <a href = "rapobookreviewsdetails/{{review_detail.book.id}}/{{ review_detail.review.id }}" title="Click to view the detailed book review" >{{review_detail.review.review}} </td>
+	<td> <a href = "rapobookreviewsdetails/{{review_detail.book.id}}/{{ review_detail.review.id }}" title="Click to view the detailed book review" >{{review_detail.review.review| slice:"0:20"}}... </td>
 	</tr>
 	{% endfor %}
 	</table>
