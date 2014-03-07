@@ -101,7 +101,7 @@
 	{% for review_detail in extra_context.latest_reviews %}
 	<tr>
 	<td> <a href = "/bookdetails/{{ review_detail.realbook.id }}" title="Click to view the details of the book" >{{review_detail.book.title}}</td>
-	<td> <a href = "rapobookreviewsdetails/{{review_detail.book.id}}/{{ review_detail.review.id }}" title="Click to view the detailed book review" >{{review_detail.review.review| slice:"0:20"}}... </td>
+	<td> <a href = "/rapobookreviewsdetails/{{review_detail.book.id}}/{{ review_detail.review.id }}" title="Click to view the detailed book review" >{{review_detail.review.review| slice:"0:20"}}... </td>
 	</tr>
 	{% endfor %}
 	</table>
