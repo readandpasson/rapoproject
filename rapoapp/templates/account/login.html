@@ -77,7 +77,7 @@
 			</thead>
 	{% for user in extra_context.mostrapo_users %}
 	<tr>
-	<td> <a href = "accounts/memberprofile/{{ user.username }}" title="Click to view the member profile" >{{user.first_name}} {{user.last_name}} </td>
+	<td> <a href = "/accounts/memberprofile/{{ user.username }}" title="Click to view the member profile" >{{user.first_name}} {{user.last_name}} </td>
 	</tr>
 	{% endfor %}
 	</table>
