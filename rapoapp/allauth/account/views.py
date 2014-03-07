@@ -82,7 +82,8 @@ class LoginView(RedirectAuthenticatedUserMixin, FormView):
         for rapobook in tempBookTran:
             mostrapo_books.append(RealBook.objects.get(id=rapobook.get('book')))
 
-        tempUserTran = Transaction.objects.values('from_member').annotate(count=Count('from_member')).order_by('-count')[:5]
+        rapoadmin = User.objects.get(username='rapoadmin');
+        tempUserTran = Transaction.objects.exclude(from_member=rapoadmin.id).values('from_member').annotate(count=Count('from_member')).order_by('-count')[:5]
         mostrapo_users = []
         for user in tempUserTran:
             mostrapo_users.append(User.objects.get(id=user.get('from_member')))
