@@ -9,20 +9,41 @@
 
 {% block headsection %}
 {{ block.super }}
-<script type="text/javascript" src="{% static "sorttable.js" %}"></script> 
-<script language="javascript" type="text/javascript">
-<!--
-function popitup(url,message) {
-    var response= confirm(message) 
-    if (response==true){
-        newwindow=window.open(url,'{{title}}','height=200,width=1000');
-        if (window.focus) {newwindow.focus()}
-    }
-    return false;
-}
+<style>
 
-// -->
-</script>
+.bar1 {
+    width: 8px;
+    margin: 1px;
+    display: inline-block;
+    position: relative;
+    background-color: green;
+    vertical-align: baseline;
+}
+.bar2 {
+    width: 8px;
+    margin: 1px;
+    display: inline-block;
+    position: relative;
+    background-color: red;
+    vertical-align: baseline;
+}
+.bar3{
+    width: 8px;
+    margin: 1px;
+    display: inline-block;
+    position: relative;
+    background-color: steelblue;
+    vertical-align: baseline;
+}
+.bar4 {
+    width: 8px;
+    margin: 1px;
+    display: inline-block;
+    position: relative;
+    background-color: aqua;
+    vertical-align: baseline;
+}
+</style>
 {{ form.media }}
 {% endblock headsection %}
 
@@ -35,7 +56,7 @@ function popitup(url,message) {
      <div class="panel-heading">
      <strong>Members</strong>
 </div>
-<table id="members" class="table" style="table-layout:fixed">
+<table id="members" class="table" >
 	<thead>
    	<tr>
 	<th style="width: 20%" id="fname"> Member Name </th>
@@ -44,7 +65,13 @@ function popitup(url,message) {
 </thead>
 {% for member in object_list %}
    	<tr>
-			<td><a href="/accounts/memberprofile/{{ member.user.username }}/">{{ member.user.first_name }} {{ member.user.last_name }}</a></td>
+			<td width="30%"><a href="/accounts/memberprofile/{{ member.user.username }}/">{{ member.user.first_name }} {{ member.user.last_name }}</a>
+        <div title="Released" style="height: 22px;" class="bar1" ></div><!--
+        --><div title="Sent" style="height: 11px;" class="bar2" ></div><!--
+        --><div title="Received" style="height: 6px;" class="bar3" ></div><!--
+        --><div title="Rating" style="height: 49px;" class="bar4" ></div><!--
+		-->
+			</td>
 			<td> Not Available </td>
 	</tr>
 {% endfor %}
