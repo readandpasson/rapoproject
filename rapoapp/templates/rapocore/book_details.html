@@ -80,12 +80,12 @@ var f = document.getElementById('viewhistory');
 </div>
 {% if book %}
  {% comment %}
-        <td> <img src="{% static "new.jpg" %}" alt="New" height="2" width="2"> </td>
+        <td> <img src="{% static "admin/img/new.jpg" %}" alt="New" height="2" width="2"> </td>
  {% endcomment %}
 <table id="books" class="table table-hover" rules="rows">
 <tr>
         <td id ="id" ><b> Book ID </b></td>
-        <td> {% if book.is_new %} <img src="{% static "new.jpg" %}" alt="New" height="15" width="30"> {% endif %} {{ book.id }}</td>
+        <td> {% if book.is_new %} <img src="{% static "admin/img/new.jpg" %}" alt="New" height="15" width="30"> {% endif %} {{ book.id }}</td>
 </tr>
 <tr>
 	<td id ="bookcover"><b> Book Cover </b></td>

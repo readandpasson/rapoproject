@@ -31,7 +31,7 @@
 			</thead>
 	{% for latestbook in extra_context.latest_books %}
 	<tr>
-	<td> <a href = "/bookdetails/{{ latestbook.id }}" title="Click to view the details of the book" >{{latestbook}} </td> 
+	<td> <a href = "/bookdetails/{{ latestbook.id }}" title="Click to view the details of the book" >{{latestbook}}</a> </td> 
 	</tr>
 	{% endfor %}
 	</table>
@@ -53,7 +53,7 @@
 			</thead>
 	{% for mostrapo in extra_context.mostrapo_books %}
 	<tr>
-	<td><a href = "/bookdetails/{{ mostrapo.id }}" title="Click to view the details of the book" >{{mostrapo}} </td> 
+	<td><a href = "/bookdetails/{{ mostrapo.id }}" title="Click to view the details of the book" >{{mostrapo}}</a></td> 
 	</tr>
 	{% endfor %}
 	</table>
@@ -78,7 +78,7 @@
 	{% for user in extra_context.mostrapo_users %}
 	<tr>
 	{% if user.first_name %}
-	<td> <a href = "accounts/memberprofile/{{ user.username }}" title="Click to view the member profile" >{{user.first_name}} {{user.last_name}} </td>
+	<td> <a href = "accounts/memberprofile/{{ user.username }}" title="Click to view the member profile" >{{user.first_name}} {{user.last_name}}</a></td>
 	{% else %}
 	<td>RAPO ADMIN</td>
 	{% endif %}
@@ -104,8 +104,8 @@
 			</thead>
 	{% for review_detail in extra_context.latest_reviews %}
 	<tr>
-	<td> <a href = "/bookdetails/{{ review_detail.realbook.id }}" title="Click to view the details of the book" >{{review_detail.book.title}}</td>
-	<td> <a href = "rapobookreviewsdetails/{{review_detail.book.id}}/{{ review_detail.review.id }}" title="Click to view the detailed book review" >{{review_detail.review.review}} </td>
+	<td> <a href = "/bookdetails/{{ review_detail.realbook.id }}" title="Click to view the details of the book" >{{review_detail.book.title}}</a></td>
+	<td> <a href = "rapobookreviewsdetails/{{review_detail.book.id}}/{{ review_detail.review.id }}" title="Click to view the detailed book review" >{{review_detail.review.review}}</a></td>
 	</tr>
 	{% endfor %}
 	</table>

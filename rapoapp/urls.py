@@ -1,10 +1,7 @@
 import settings
-import settings
 from django.conf.urls import patterns, include, url
 from django.views.generic import TemplateView, ListView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-
-
 import allauth
 from allauth.account.views import logout
 from django.contrib import admin
@@ -14,14 +11,12 @@ from allauth.socialaccount.models import SocialAccount
 from rapocore.views import ReleaseBook,ReceiveBook,SendBook, GetMembers, WriteBookReview, WithdrawBook
 from rapocore.views import Search, Browse, SearchResults, PassOn,PassOnBook, Test, MyAccount, FeedbackPage
 from rapocore.views import NewAuthor,NewLanguage, NewGenre, ReportDefect, DefectListView, MemberListView, MemberProfile
-#from rapocore.views import SendBookWizard
 from rapocore.models import Book
 
 
 urlpatterns = patterns('',
     url(r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'), 
     url(r'^admin/', include(admin.site.urls)),#why not quotes ?SM
-#    url(r'^some/', include('djang0byte.urls')),
 
 
     #url(r'^$', TemplateView.as_view(template_name="underconstruction.html"), name="index"),
@@ -36,12 +31,13 @@ urlpatterns = patterns('',
 
     url(r'^thanks/', TemplateView.as_view(template_name="rapocore/thanks.html"), name="thanks"),
 
-    url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/profile/','rapocore.views.MyAccount' ,name='myaccount'),
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/memberprofile/(?P<username>.*)/', 'rapocore.views.MemberProfile',name='member-profile'),
-    url(r'^accounts/memberprofile/', 'allauth.account.views.login',name='login'),
     url(r'^logout/', 'allauth.account.views.logout',name='logout'),
     url(r'^feedback/', 'rapocore.views.FeedbackPage', name="feedback"),
+    url(r'^meets/', 'rapocore.views.MeetsHome', name="meets"),
+    url(r'^qea/', 'rapocore.views.QEAHome', name="qea"),
     #url(r'^feedbacklist/', 'rapocore.views.FeedbackList', name="feedback-list"),
     #url(r'^feedbackdetails/(?P<feedbackid>\d+)/$', 'rapocore.views.FeedbackDetails', name="feedback-details"),    
 
@@ -76,6 +72,7 @@ urlpatterns = patterns('',
     url(r'^defect/', 'rapocore.views.ReportDefect',name='report-defect'),
     url(r'^defectbrowse/', DefectListView.as_view(),name='defect-browse'),
     url(r'^memberbrowse/', MemberListView.as_view(queryset=SocialAccount.objects.order_by("user__first_name","user__last_name")),name='member-browse'),
+    url(r'^$', 'allauth.account.views.login',name='login'),
     
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

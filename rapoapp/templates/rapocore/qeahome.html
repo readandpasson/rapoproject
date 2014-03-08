@@ -1,0 +1,35 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+
+<div class="panel panel-success">
+<div class="panel-heading">
+    <strong> Quarter End Awards </strong> </br>
+	 Take a look at our past Quarter End Awardees
+</div>
+<p>
+<ul>
+<li> QEA February-June 2013 was won by <a href="/accounts/memberprofile/adityachandrapv/">Achaarya Didn't</a> for releasing 27 books and <a href="/accounts/memberprofile/aaroo/">Aarti Krishnakumar</a> for releasing 14 books. They got a Landmark gift voucher worth Rs.500 each. </p></li>
+<li> QEA July-October 2013 was won by <a href="/accounts/memberprofile/sumipai/">Sumita Pai</a> for her unwavering enthusiasm and for being the most active member in the group. She got a Landmark gift voucher worth Rs.500 </p> </li>
+<li> QEA October-December 2013 was decided by a <a href="/contest1">Review Contest</a> and <a href="/accounts/memberprofile/shinybabu/">Shiny Babu</a> emerged the winner for this <a href="">review</a>. She got a Flipkart gift vouvher worth Rs.500</p></li>
+</ul>
+</div>
+{% endblock %}

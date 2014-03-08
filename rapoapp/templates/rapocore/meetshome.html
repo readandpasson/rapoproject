@@ -1,0 +1,33 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+
+<div class="panel panel-success">
+<div class="panel-heading">
+    <strong> Our Meets </strong> </br>
+	 Take a look at what happens in our meets!
+</div>
+<p>
+<ul>
+<li> <a href="/meet1">Our first meet - Icebreaker and Impromptu</a></p></li>
+</ul>
+</div>
+{% endblock %}

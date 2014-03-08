@@ -22,7 +22,7 @@
 	  {% if user.first_name %}
 	        <li><img height="50px" width="50px" src="http://graph.facebook.com/{{ user.username }}/picture"></img></li> 
 	  {% else %}
-	        <li><img height="50px" width="50px" src="{% static "guest.png" %}"></img></li>
+	        <li><img height="50px" width="50px" src="{% static "admin/img/guest.png" %}"></img></li>
 	  {% endif %}
           
           <li><a href="/accounts/profile" title="View your RAPO&#153; information">My Account</a></li>

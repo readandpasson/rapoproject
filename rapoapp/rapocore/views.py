@@ -17,8 +17,9 @@ from rapocore.forms import ReleaseBookForm, SendBookForm, SendBookToForm, Receiv
 from rapocore.forms import AuthorForm, GenreForm, LanguageForm, PassonForm, Add2QueueForm, CancelRequestForm, WriteBookReviewForm
 
 from django.db.models import Avg, Max, Min
+from django.contrib.sites.models import Site
 from rapocore.facebook import GraphAPI
-from settings import FACEBOOKGROUP_ID
+from settings import FACEBOOKGROUP_ID, SITE_ID
 
 # make a book release
 @login_required
@@ -35,7 +36,8 @@ def ReleaseBook(request):
                 rb.save()
 
                 #Message for facebook post
-                msg = "Automated message: #releasedbooks \nHi all, I released \'"+rb.book.title+"\' Do check it out at http://test.rapo.in/bookdetails/"+str(rb.id)
+                site = Site.objects.get(id =SITE_ID);
+                msg = "Automated message: #releasedbooks \nHi all, I released \'"+rb.book.title+"\' Do check it out at http://"+site.domain+"/bookdetails/"+str(rb.id)
                 try:
                     graph = GraphAPI(SocialToken.objects.get(account = SocialAccount.objects.get(user = request.user)).token)
                     #attachment = {}
@@ -582,6 +584,16 @@ def RAPOBookReviewsDetails(request,bookid,reviewid):
         data.update(bookReviewDetails)
         return render_to_response('rapocore/rapo_bookreview_details.html', data, RequestContext(request))
 
+
+def QEAHome(request):
+        #feedbackList = Feedback.objects.all().order_by('-id').select_related()
+        return render_to_response('rapocore/qeahome.html',{  
+                        'formtitle': 'Quarter End Awards' }, RequestContext(request))
+
+def MeetsHome(request):
+        #feedbackList = Feedback.objects.all().order_by('-id').select_related()
+        return render_to_response('rapocore/meetshome.html',{  
+                        'formtitle': 'Our Meets' }, RequestContext(request))
 
 #@login_required
 def FeedbackPage(request):
