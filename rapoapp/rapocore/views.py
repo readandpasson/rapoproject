@@ -52,6 +52,7 @@ def ReleaseBook(request):
                 except:
                     logging.debug('Facebook post failed')
 
+                #updateProfile(request.user)
                 return HttpResponseRedirect('/thanks/')
             else:
                 messages.error(request, "Error")
@@ -626,3 +627,17 @@ class MemberListView(ListView):
         context = super(MemberListView, self).get_context_data(**kwargs)
         return context
 
+
+def updateProfile(username):
+    try:
+        user = User.objects.get(username = username)
+        me = SocialAccount.objects.get(user_id=user)
+    except User.DoesNotExist:
+        print "User does not exist"
+    else:
+        user.profile.Nbooksreleased = RealBook.objects.filter(ownermember_id = me).count()
+        user.profile.Nbookssent = RealBook.objects.filter(ownermember_id = me).exclude(currentmember_id = me).count()
+        user.profile.Nbookswith = RealBook.objects.filter(currentmember_id = me).count()
+        user.profile.rating = user.profile.Nbookssent - user.profile.Nbookswith +1
+        user.profile.update()
+    return

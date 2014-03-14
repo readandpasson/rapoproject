@@ -1,6 +1,7 @@
 from django.db import models
 from allauth.socialaccount.models import SocialAccount
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
+from django.db.models.signals import post_save
 
 # Create your models here.
 class Country(models.Model):
@@ -30,10 +31,22 @@ class City(models.Model):
         ordering = ['name']
 
         
-class Profile(models.Model):
-    user = models.OneToOneField(User)
-    city = models.ForeignKey(City)
-    email = models.EmailField(unique=True,max_length=50)
+#class Profile(User):
+#    user = models.OneToOneField(User)
+#    city = models.ForeignKey(City)
+#    Nbooksreleased = models.IntegerField()
+#    Nbookssent = models.IntegerField()
+#    Nbookswith = models.IntegerField()
+#    rating = models.IntegerField()
+#    objects = UserManager()
+
+#def __str__(self):  
+#    return "%s's profile" % self.user  
+#
+#def create_profile(sender, instance, created, **kwargs):
+#    if created:
+#        profile, created = Profile.objects.get_or_create(user=instance)
+#post_save.connect(create_profile, sender=User)
 
 class Language(models.Model):
     languagename = models.CharField(unique=True,max_length=25)
