@@ -21,12 +21,19 @@
 	  
 	  {% if user.first_name %}
 	        <li><img height="50px" width="50px" src="http://graph.facebook.com/{{ user.username }}/picture"></img></li> 
+          	<li><a href="/accounts/profile" title="View your RAPO&#153; information">My Account</a></li>
+	  	<li class="li-no-hover"> <a href="/logout" class="btn btn-success" title="Click to signout">Logout</a> </li>
 	  {% else %}
 	        <li><img height="50px" width="50px" src="{% static "admin/img/guest.png" %}"></img></li>
+	        <li><img height="50px" width="50px" src="{% static "guest.png" %}"></img></li>
+	
+		{% for provider in socialaccount.providers %}
+			<a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}"  >Authenticate with {{provider.name}}</a>
+		{% endfor %}
+
 	  {% endif %}
           
-          <li><a href="/accounts/profile" title="View your RAPO&#153; information">My Account</a></li>
-	  <li class="li-no-hover"> <a href="/logout" class="btn btn-success" title="Click to signout">Logout</a> </li>
+
           </ul>
 {% endblock %}
 	 
