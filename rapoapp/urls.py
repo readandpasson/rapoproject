@@ -38,6 +38,7 @@ urlpatterns = patterns('',
     url(r'^feedback/', 'rapocore.views.FeedbackPage', name="feedback"),
     url(r'^meets/', 'rapocore.views.MeetsHome', name="meets"),
     url(r'^qea/', 'rapocore.views.QEAHome', name="qea"),
+    url(r'^howitworks/', TemplateView.as_view(template_name="rapocore/howitworks.html"), name="howitworks"),
     #url(r'^feedbacklist/', 'rapocore.views.FeedbackList', name="feedback-list"),
     #url(r'^feedbackdetails/(?P<feedbackid>\d+)/$', 'rapocore.views.FeedbackDetails', name="feedback-details"),    
 

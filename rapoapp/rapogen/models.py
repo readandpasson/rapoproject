@@ -5,15 +5,13 @@ from django.db.models.signals import post_save
 
 # Create your models here.
 class Country(models.Model):
-    iso_code = models.CharField(unique=True,max_length=2)
     name = models.CharField(max_length=50)
     def __unicode__(self):
         return self.name
     class Meta:
         ordering = ['name']
 
-class Region(models.Model):
-    iso_code = models.CharField(max_length=3)
+class State(models.Model):
     name = models.CharField(max_length=50)
     country = models.ForeignKey(Country)
     def __unicode__(self):
@@ -21,10 +19,17 @@ class Region(models.Model):
     class Meta:
         ordering = ['name']
 
-class City(models.Model):
-    iso_code = models.CharField(unique=True,max_length=3)
+class District(models.Model):
     name = models.CharField(max_length=50)
-    region = models.ForeignKey(Region)
+    state = models.ForeignKey(State)
+    def __unicode__(self):
+        return self.name
+    class Meta:
+        ordering = ['name']
+
+class Area(models.Model):
+    name = models.CharField(max_length=50)
+    district = models.ForeignKey(District)
     def __unicode__(self):
         return self.name
     class Meta:

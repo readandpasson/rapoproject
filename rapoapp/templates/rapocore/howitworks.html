@@ -1,0 +1,47 @@
+{% extends "rapocore/myaccount.html" %}
+
+{% load i18n admin_static admin_list %} 
+{% load admin_urls %} 
+{% load staticfiles %} 
+
+{% block title %}
+{{ block.super }} {{ formtitle }}
+{% endblock %}
+
+{% block headsection %}
+{{ block.super }}
+
+{{ form.media }}
+{% endblock headsection %}
+
+{% block topsection %}
+{{ block.super }} 
+{% endblock topsection %}
+
+{% block Centre %}
+
+<div class="panel panel-success">
+<div class="panel-heading">
+    <strong> How it works </strong> </br>
+	This is how it works.... 
+</div>
+<div class = "panel-body">
+<ol>
+<li> <span class="emph">Member A</span> decides to let a book go from his/her shelf </li>
+<li> <span class="emph">A</span> releases the book on our website </li>
+<li> <span class="emph">Member C</span> requests for the book on our website </li>
+<li> <span class="emph">Member B</span> requests for the book too </li>
+<li> <span class="emph">A</span> gets <span class="emph">C</span>'s address though our facebook group and sends the book physically to <span class="emph">C</span> </li>
+<li> <span class="emph">A</span> updates the physical act of sending on our website </li>
+<li> <span class="emph">C</span> receives the book physically </li>
+<li> <span class="emph">C</span> updates the receipt of the book on our website </li>
+<li> <span class="emph">C</span> reads the book. There is no time limit for this activity </li>
+<li> Once <span class="emph">C</span> is done with reading, <span class="emph">C</span> does a pass-on on our website to show that the book is available </li>
+<li> In this case, since <span class="emph">B</span> has already requested for the book, <span class="emph">C</span> sends the book to <span class="emph">B</span> by doing steps from <span class="emph">5</span> </li>
+<li> The journey of the book continues ... </li>
+</ol>
+</div>
+<img alt="How it works" src="{% static "admin/img/how1.png" %}"></a></br>
+<img alt="How it works" src="{% static "admin/img/how2.png" %}"></a>
+</div>
+{% endblock %}
