@@ -27,9 +27,11 @@
 	        <li><img height="50px" width="50px" src="{% static "admin/img/guest.png" %}"></img></li>
 	        <li><img height="50px" width="50px" src="{% static "guest.png" %}"></img></li>
 	
+ {% comment %}yy
 		{% for provider in socialaccount.providers %}
 			<a title="{{provider.name}}" class="btn btn-success"  href="{% provider_login_url provider.id process=process %}"  >Authenticate with {{provider.name}}</a>
 		{% endfor %}
+{% endcomment %}
 
 	  {% endif %}
           

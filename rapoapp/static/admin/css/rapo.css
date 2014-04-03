@@ -11,7 +11,7 @@
 a.list-group-item:hover, a.list-group-item:focus
 {
 	text-decoration: none;
-background-color: #CEFCB8;
+	background-color: #eeee77;
 }
 
 .navbar-brand {

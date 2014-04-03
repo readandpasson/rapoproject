@@ -36,18 +36,17 @@ class Area(models.Model):
         ordering = ['name']
 
         
-#class Profile(User):
-#    user = models.OneToOneField(User)
-#    city = models.ForeignKey(City)
-#    Nbooksreleased = models.IntegerField()
-#    Nbookssent = models.IntegerField()
-#    Nbookswith = models.IntegerField()
-#    rating = models.IntegerField()
-#    objects = UserManager()
+class Profile(models.Model):
+    user = models.OneToOneField(User)
+    location = models.ForeignKey(Area)
+    Nbooksreleased = models.IntegerField(null=True,blank=True)
+    Nbookssent = models.IntegerField(null=True,blank=True)
+    Nbookswith = models.IntegerField(null=True,blank=True)
+    rating = models.IntegerField(null=True,blank=True)
 
-#def __str__(self):  
-#    return "%s's profile" % self.user  
-#
+    def __str__(self):  
+        return "%s's profile" % self.user  
+
 #def create_profile(sender, instance, created, **kwargs):
 #    if created:
 #        profile, created = Profile.objects.get_or_create(user=instance)
